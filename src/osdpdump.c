@@ -179,6 +179,7 @@ int
   int status;
 
 
+  fprintf(stderr, "osdpdump %s is in startup.\n", OSDPDUMP_VERSION);
   status = ST_OK;
   memset(ctx, 0, sizeof(*ctx));
   ctx->input_source = OSDPDUMP_SOURCE_OSDPCAP;

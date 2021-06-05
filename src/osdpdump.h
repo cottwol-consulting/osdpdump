@@ -4,6 +4,8 @@
   (C)2021 Smithee Solutions LLC
 */
 
+#define OSDPDUMP_VERSION "0.0.0-2"
+
 #define EQUALS ==
 #define ST_OK (0)
 #define ST_OSDPDUMP_BAD_INPUT_FORMAT (-1)
