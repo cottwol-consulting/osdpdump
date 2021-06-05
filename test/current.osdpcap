@@ -1,0 +1,8 @@
+{ "time-sec" : "1580342115", "time-nsec" : "772014669", "io" : "trace", "data" : " 10 f9 ff 53 00 08 00 00 61 00 44", "osdp-trace-version":"0", "osdp-source":"libosdp-conformance 0.52-2" }
+{ "time-sec" : "1580342115", "time-nsec" : "801559666", "io" : "trace", "data" : " ff ff 53 80 13 00 00 45 da 0d 38 01 02 54 2f 02 00 01 07 0e 18", "osdp-trace-version":"0", "osdp-source":"libosdp-conformance 0.52-2" }
+{ "time-sec" : "1580342115", "time-nsec" : "826448333", "io" : "trace", "data" : " ff 53 00 08 00 01 62 00 42", "osdp-trace-version":"0", "osdp-source":"libosdp-conformance 0.52-2" }
+{ "time-sec" : "1580342115", "time-nsec" : "864819896", "io" : "trace", "data" : " ff ff 53 80 1f 00 01 46 03 01 00 04 03 01 05 02 01 08 01 00 09 01 01 0a 00 02 0d 00 01 10 01 00 74", "osdp-trace-version":"0", "osdp-source":"libosdp-conformance 0.52-2" }
+{ "time-sec" : "1580342115", "time-nsec" : "902101413", "io" : "trace", "data" : " ff 53 00 15 00 02 69 00 00 00 00 00 00 00 00 00 01 01 1d 02 00 0c", "osdp-trace-version":"0", "osdp-source":"libosdp-conformance 0.52-2" }
+{ "time-sec" : "1580342115", "time-nsec" : "911684590", "io" : "trace", "data" : " ff ff 53 80 07 00 02 40 e4", "osdp-trace-version":"0", "osdp-source":"libosdp-conformance 0.52-2" }
+{ "time-sec" : "1580342115", "time-nsec" : "932559269", "io" : "trace", "data" : " ff 53 00 07 00 03 64 3f", "osdp-trace-version":"0", "osdp-source":"libosdp-conformance 0.52-2" }
+{ "time-sec" : "1580342115", "time-nsec" : "945204200", "io" : "trace", "data" : " ff ff 53 80 09 00 03 48 00 00 d9", "osdp-trace-version":"0", "osdp-source":"libosdp-conformance 0.52-2" }
