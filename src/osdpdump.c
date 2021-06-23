@@ -1,4 +1,4 @@
-zzz keep an accumulator buffer as well as the input queue.  input queue adds not replaces input
+//zzz keep an accumulator buffer as well as the input queue.  input queue adds not replaces input
 
 int verbosity=9;
 /*
@@ -25,6 +25,8 @@ int verbosity=9;
 #include <osdpdump.h>
 FILE *f;
 int zzzmain(int argc, char *argv []);
+int osdpdump_accumulate_input(OSDPDUMP_CONTEXT *ctx, OSDPDUMP_INPUT *input_value);
+int osdpdump_packet_accumulate(OSDPDUMP_INPUT *raw, OSDPDUMP_INPUT *accumulated_packet);
 
 
 int
@@ -105,6 +107,7 @@ int
 
 { /* osdpdump_accumulate_input */
 
+  OSDPDUMP_INPUT *accumulated_message;
 //  int completion_status;
   int done;
   int expected_length;
@@ -114,10 +117,10 @@ int
 //  unsigned char address;
 //  unsigned char remainder [2048];
   int status;
-  unsigned char tmp_buffer [OSDPDUMP_BUFFER_MAX];
 
 
   status = ST_OSDPDUMP_NEED_MORE_DATA;
+  accumulated_message = &(ctx->accumulated_message);
   expected_length = 2; // SOM and address
   done = 1;
   idx = 0;
@@ -127,39 +130,16 @@ int
   {
     while (!done)
     {
-      if (input_value->raw_bytes [0] EQUALS OSDP_SOM)
-      {
-        ctx->osdp_pdu.som = OSDP_SOM;
+      status = osdpdump_packet_accumulate(input_value, accumulated_message);
 
-// for now
+      if (status EQUALS ST_OSDPDUMP_PACKET)
         done = 1;
-        status = ST_OSDPDUMP_NEED_MORE_DATA;
-      }
-      else
+
+      if (!done)
       {
-        if (input_value->length > 1)
-        {
-          // eat the first byte
-          memcpy(tmp_buffer, 1+(input_value->raw_bytes), input_value->length);
-          input_value->length --;
-          memcpy(input_value->raw_bytes, tmp_buffer, input_value->length);
-          ctx->dropped_octets ++;
-        }
-        else
-        {
+        if (input_value->length < 1)
           done = 1;
-          status = ST_OSDPDUMP_NEED_MORE_DATA;
-        };
       };
-    };
-  };
-  if (!done)
-  {
-    if (input_value->length >= expected_length)
-    {
-      ctx->osdp_pdu.command_response = 0x80 & input_value->raw_bytes [1];
-      ctx->osdp_pdu.address = 0x7F & input_value->raw_bytes [1];
-      status = ST_OSDPDUMP_NEED_MORE_DATA;
     };
   };
   return(status);
@@ -288,4 +268,29 @@ int zzzmain (int argc, char *argv [])
 }
 
  
+zzz review
+if not good packet start
+eat first octet
+drop
+          ctx->dropped_octets ++;
+status
+
+if good packet start and not done
+return need-more
+        ctx->osdp_pdu.som = OSDP_SOM;
+
+      ctx->osdp_pdu.command_response = 0x80 & input_value->raw_bytes [1];
+      ctx->osdp_pdu.address = 0x7F & input_value->raw_bytes [1];
+
+int osdpdump_packet_accumulate
+  (OSDP_INPUT *input_bytes,
+  OSDPDUMP_INPUT *pkt)
+{
+  unsigned char tmp_buffer [OSDPDUMP_BUFFER_MAX];
+
+  // take first byte
+          input_value->length --;
+  // if whole update status else status is needs-more
+
+  return(-1); }
 
