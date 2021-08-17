@@ -4,7 +4,7 @@
 
 PROGS=osdpdump
 CC=clang
-CFLAGS=-c -g -I. -Wall -Werror
+CFLAGS=-c -g -I../include -Wall -Werror
 LINK=clang
 LDFLAGS=-g -ljansson
 
@@ -19,9 +19,9 @@ clean:
 osdpdump:	osdpdump.o osdpdump-prims.o Makefile
 	${LINK} -o osdpdump osdpdump.o osdpdump-prims.o ${LDFLAGS}
 
-osdpdump.o:	osdpdump.c osdpdump.h
+osdpdump.o:	osdpdump.c ../include/osdpdump.h
 	${CC} ${CFLAGS} osdpdump.c
 
-osdpdump-prims.o:	osdpdump-prims.c osdpdump.h
+osdpdump-prims.o:	osdpdump-prims.c ../include/osdpdump.h
 	${CC} ${CFLAGS} osdpdump-prims.c
 
