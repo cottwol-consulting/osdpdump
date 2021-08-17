@@ -29,6 +29,8 @@
 #define OSDPDUMP_ANA_PD  (1)
 #define OSDPDUMP_ANA_ACU (2)
 
+#define OSDPDUMP_PDU_SOM (0x53)
+
 // values in the protocol
 
 #define OSDP_SOM (0x53)
@@ -45,10 +47,13 @@ typedef struct osdpdump_pd_context
   int state;
 } OSDPDUMP_PD_CONTEXT;
 
+#define OSDPDUMP_COMPLETION_SOM (0x0001)
 typedef struct osdpdump_working_packet
 {
+  unsigned char octets [2048]; // max
+  int octet_length;
+  unsigned short int completion; // bitmask
   int completion_status;
-  unsigned char som;
   int command_response;
   unsigned char address;
   unsigned char remainder [2048];
@@ -75,6 +80,7 @@ typedef struct osdpdump_context
 int osdpdump_accumulate_input(OSDPDUMP_CONTEXT *ctx, OSDPDUMP_INPUT *input_value);
 int osdpdump_hex_to_raw_bytes(OSDPDUMP_CONTEXT *ctx, char *hex_string, unsigned char *raw_bytes, int *returned_length);
 int osdpdump_initialize(OSDPDUMP_CONTEXT *ctx, int argc, char *argv []);
+int osdpdump_packet_accumulate(OSDPDUMP_CONTEXT *ctx, OSDPDUMP_INPUT *raw, OSDPDUMP_INPUT *accumulated_packet);
 int osdpdump_parse(OSDPDUMP_CONTEXT *ctx);
 int osdpdump_print(OSDPDUMP_CONTEXT *ctx);
 int osdpdump_read_input(OSDPDUMP_CONTEXT *ctx, OSDPDUMP_INPUT *input_value);

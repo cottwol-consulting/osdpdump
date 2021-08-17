@@ -24,9 +24,6 @@ int verbosity=9;
 
 #include <osdpdump.h>
 FILE *f;
-int zzzmain(int argc, char *argv []);
-int osdpdump_accumulate_input(OSDPDUMP_CONTEXT *ctx, OSDPDUMP_INPUT *input_value);
-int osdpdump_packet_accumulate(OSDPDUMP_INPUT *raw, OSDPDUMP_INPUT *accumulated_packet);
 
 
 int
@@ -45,7 +42,6 @@ int
 
 
   status = ST_OK;
-  status = zzzmain (argc, argv);
   ctx = &osdp_dump_context;
   status = osdpdump_initialize(ctx, argc, argv);
 
@@ -100,6 +96,15 @@ fprintf(stderr, "DEBUG: need more data\n");
 } /* main for osdpdump */
 
 
+/*
+  osdpdump_accumulate_input - use data received to build up a packet
+
+  Input:
+    raw value
+
+  Output:
+    updates accumulated packet in context
+*/
 int
   osdpdump_accumulate_input
     (OSDPDUMP_CONTEXT *ctx,
@@ -124,13 +129,15 @@ int
   expected_length = 2; // SOM and address
   done = 1;
   idx = 0;
+
+  // if there's something there, try to use it.
+
   if (input_value->length > 0)
     done = 0;
-  if (!done)
   {
     while (!done)
     {
-      status = osdpdump_packet_accumulate(input_value, accumulated_message);
+      status = osdpdump_packet_accumulate(ctx, input_value, accumulated_message);
 
       if (status EQUALS ST_OSDPDUMP_PACKET)
         done = 1;
@@ -159,11 +166,15 @@ int
   int status;
 
 
+//??  status_io = fgets(line, sizeof(line), f);
+
   fprintf(stderr, "osdpdump %s is in startup.\n", OSDPDUMP_VERSION);
   status = ST_OK;
   memset(ctx, 0, sizeof(*ctx));
   ctx->input_source = OSDPDUMP_SOURCE_OSDPCAP;
   strcpy(ctx->input_path, "./current.osdpcap");
+  if (argc > 1)
+    strcpy(ctx->input_path, argv [1]);
   for (idx=0; idx<OSDPDUMP_PD_MAX; idx++)
   {
     ctx->pd_ctx [idx].state = OSDPDUMP_PD_ABSENT;
@@ -180,12 +191,12 @@ int
   ctx->output_analysis = 1;
 
 fprintf(stderr, "DEBUG: parse command line\n");
+  f = fopen(ctx->input_path, "r");
 
   switch(ctx->input_source)
   {
   case OSDPDUMP_SOURCE_OSDPCAP:
-    ctx->dump_file_handle = fopen("current.osdpcap", "r");
-//    ctx->dump_file_handle = fopen(ctx->input_path, "r");
+    ctx->dump_file_handle = fopen(ctx->input_path, "r");
     if (ctx->dump_file_handle EQUALS NULL)
       status = ST_OSDPDUMP_BAD_INPUT_FILE;
     break;
@@ -193,6 +204,64 @@ fprintf(stderr, "DEBUG: parse command line\n");
   return(status);
 
 } /* osdpdump_initialize */
+
+
+/*
+  osdpdump_packet_accumulate - actually put the input in the packet
+*/
+
+#if 0
+zzz review
+if not good packet start
+eat first octet
+drop
+          ctx->dropped_octets ++;
+status
+
+if good packet start and not done
+return need-more
+        ctx->osdp_pdu.som = OSDP_SOM;
+
+      ctx->osdp_pdu.command_response = 0x80 & input_value->raw_bytes [1];
+      ctx->osdp_pdu.address = 0x7F & input_value->raw_bytes [1];
+#endif
+
+int osdpdump_packet_accumulate
+  (OSDPDUMP_CONTEXT *ctx,
+  OSDPDUMP_INPUT *input_bytes,
+  OSDPDUMP_INPUT *pkt)
+
+{ /* osdpdump_packet_accumulate */
+
+  unsigned char current_byte;
+  OSDPDUMP_WORKING_PACKET *packet;
+  int status;
+
+
+status = -1;
+  packet = &(ctx->osdp_pdu);
+
+  if (input_bytes->length > 0)
+  {
+    // take first byte
+    input_bytes->length --;
+    current_byte = input_bytes->raw_bytes [0];
+
+    if (packet->octet_length < 1)
+    {
+      // we're looking for the SOM
+      if (current_byte EQUALS OSDPDUMP_PDU_SOM)
+      {
+        packet->octets [packet->octet_length] = current_byte;
+        packet->octet_length++;
+fprintf(stderr, "DEBUG: check packet length %d\n", packet->octet_length);
+        status = ST_OSDPDUMP_NEED_MORE_DATA;
+      };
+    };
+  };
+  return(status);
+
+} /* osdpdump_packet_accumulate */
 
 
 int osdpdump_parse(OSDPDUMP_CONTEXT *ctx){printf("DEBUG: stub\n");return(0);}
@@ -255,42 +324,5 @@ int
 
 } /* osdpdump_summary */
 
-
-int zzzmain (int argc, char *argv [])
-{
-  char line [1024];
-  char *status_io;
-
-  f = fopen("current.osdpcap", "r");
-  status_io = fgets(line, sizeof(line), f);
-  printf("line was %s\n", line);
-  return(0);
-}
-
  
-zzz review
-if not good packet start
-eat first octet
-drop
-          ctx->dropped_octets ++;
-status
-
-if good packet start and not done
-return need-more
-        ctx->osdp_pdu.som = OSDP_SOM;
-
-      ctx->osdp_pdu.command_response = 0x80 & input_value->raw_bytes [1];
-      ctx->osdp_pdu.address = 0x7F & input_value->raw_bytes [1];
-
-int osdpdump_packet_accumulate
-  (OSDP_INPUT *input_bytes,
-  OSDPDUMP_INPUT *pkt)
-{
-  unsigned char tmp_buffer [OSDPDUMP_BUFFER_MAX];
-
-  // take first byte
-          input_value->length --;
-  // if whole update status else status is needs-more
-
-  return(-1); }
 
