@@ -202,11 +202,6 @@ fprintf(stderr, "DEBUG: parse command line\n");
   osdpdump_packet_accumulate - actually put the input in the packet
 */
 
-#if 0
-      ctx->osdp_pdu.command_response = 0x80 & input_value->raw_bytes [1];
-      ctx->osdp_pdu.address = 0x7F & input_value->raw_bytes [1];
-#endif
-
 int osdpdump_packet_accumulate
   (OSDPDUMP_CONTEXT *ctx,
   OSDPDUMP_INPUT *input_bytes,
@@ -217,6 +212,7 @@ int osdpdump_packet_accumulate
   unsigned char current_byte;
   int drop_octets;
   OSDPDUMP_WORKING_PACKET *packet;
+  unsigned int pdu_length;
   int process_octets;
   int status;
   unsigned char temp_bytes [2048]; //max
@@ -228,6 +224,7 @@ int osdpdump_packet_accumulate
   drop_octets = 0;
   process_octets = 0;
   packet = &(ctx->osdp_pdu);
+  pdu_length = -1; // bogus so it doesn't match
 
   if (input_bytes->length > 0)
   {
@@ -240,6 +237,7 @@ fprintf(stderr,"DEBUG: octet is %02x\n", current_byte);
     memcpy(input_bytes->raw_bytes, temp_bytes, input_bytes->length);
     input_bytes->raw_bytes [input_bytes->length] = 0x00;
 
+    // depending on how much we have processing differs.
 
     switch(packet->octet_length)
     {
@@ -258,56 +256,79 @@ fprintf(stderr, "DEBUG: SOM found.  check packet length %d\n", packet->octet_len
       };
       break;
     case 1:
+      // looking for address/command-response marker
+      packet->octets [packet->octet_length] = current_byte;
+      packet->octet_length++;
+      status = ST_OSDPDUMP_NEED_MORE_DATA;
+      break;
+      break;
+    case 2:
       // looking for first byte of length
       packet->octets [packet->octet_length] = current_byte;
       packet->octet_length++;
       status = ST_OSDPDUMP_NEED_MORE_DATA;
       break;
-    case 2:
+    case 3:
       // looking for second byte of length
       packet->octets [packet->octet_length] = current_byte;
       packet->octet_length++;
       status = ST_OSDPDUMP_NEED_MORE_DATA;
-    };
-
-zzz
-
-zzz address is net then they two bytes
-
-      packet->octets [packet->octet_length] = current_byte;
-      packet->octet_length++;
-      status = ST_OSDPDUMP_NEED_MORE_DATA;
-    };
-
-    // we have the alleged length.  make sure it's sane or dump
-    // the whole thing.
-
-    if ((packet->octet_length > 2) && (packet->octet_length < 4))
-    {
-      unsigned int pdu_length;
-      pdu_length = (packet->octets [2] << 8) + packet->octets [1];
+      pdu_length = (packet->octets [3] << 8) + packet->octets [2];
       if (pdu_length <= OSDPDUMP_PDU_MAX)
       {
 fprintf(stderr, "DEBUG: have length (0x%x)\n", pdu_length);
         status = ST_OSDPDUMP_NEED_MORE_DATA;
+      }
+      else
+      {
+        ctx->dropped_octets = ctx->dropped_octets + packet->octet_length;
+        packet->octet_length = 0;
+        status = ST_OSDPDUMP_NEED_MORE_DATA;
       };
-    }
-    else
-    {
-      ctx->dropped_octets = ctx->dropped_octets + packet->octet_length;
-      packet->octet_length = 0;
-      status = ST_OSDPDUMP_NEED_MORE_DATA;
+      break;
+
+    // for all other lengths just accept it for now.
+
+    default:
+      pdu_length = (packet->octets [3] << 8) + packet->octets [2];
+      if (packet->octet_length < pdu_length)
+      {
+        packet->octets [packet->octet_length] = current_byte;
+        packet->octet_length++;
+        status = ST_OSDPDUMP_NEED_MORE_DATA;
+      }; 
+      break;
     };
+    if (drop_octets)
+      ctx->dropped_octets ++;
+    if (packet->octet_length EQUALS pdu_length)
+      status = ST_OSDPDUMP_PACKET;
   };
-  if (drop_this_octet)
-    ctx->dropped_octets ++;
   return(status);
 
 } /* osdpdump_packet_accumulate */
 
 
 int osdpdump_parse(OSDPDUMP_CONTEXT *ctx){printf("DEBUG: stub\n");return(0);}
-int osdpdump_print(OSDPDUMP_CONTEXT *ctx){printf("DEBUG: stub\n");return(0);}
+
+
+int
+  osdpdump_print
+    (OSDPDUMP_CONTEXT *ctx)
+
+{ /* osdpdump_print */
+
+  int i;
+  OSDPDUMP_WORKING_PACKET *packet;
+
+
+  packet = &(ctx->osdp_pdu);
+  for (i=0; i<packet->octet_length; i++)
+    fprintf(stdout, " %02x", packet->octets [i]);
+  fprintf(stdout, "\n");
+  return(0);
+
+} /* osdpdump_print */
 
 
 int
@@ -338,11 +359,18 @@ fprintf(stderr, "line %s\n", line);
     {
       strcpy(input_value->input_string, line);
       line_root = json_loads(input_value->input_string, 0, &status_json);
+    }
+    else
+    {
+status = -1;
     };
-    value = json_object_get(line_root, "data");
-    if (json_is_string(value))
-      strcpy(input_value->input_string, json_string_value(value));
-    status = osdpdump_hex_to_raw_bytes(ctx, input_value->input_string, input_value->raw_bytes, &(input_value->length));
+    if (status EQUALS ST_OK)
+    {
+      value = json_object_get(line_root, "data");
+      if (json_is_string(value))
+        strcpy(input_value->input_string, json_string_value(value));
+      status = osdpdump_hex_to_raw_bytes(ctx, input_value->input_string, input_value->raw_bytes, &(input_value->length));
+    };
     break;
   default:
     status = ST_OSDPDUMP_BAD_INPUT_FORMAT;
