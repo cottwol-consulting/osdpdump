@@ -1,4 +1,4 @@
-int verbosity=9;
+//zzz it's only showing the first line, repeatedly.
 /*
   osdpdump - read a byte stream and analyze/display the OSDP protocol contents
 
@@ -42,6 +42,8 @@ int
   status = ST_OK;
   ctx = &osdp_dump_context;
   status = osdpdump_initialize(ctx, argc, argv);
+  if (ctx->verbosity > 3)
+    fprintf(stderr, "DEBUG: source is osdpcap %s\n", ctx->input_path);
 
   done = 0;
   while (!done)
@@ -70,7 +72,6 @@ int
       };
       if (status EQUALS ST_OSDPDUMP_NEED_MORE_DATA)
       {
-fprintf(stderr, "DEBUG: need more data\n");
         status = ST_OK;
       };
     };
@@ -163,6 +164,7 @@ int
   fprintf(stderr, "osdpdump %s is in startup.\n", OSDPDUMP_VERSION);
   status = ST_OK;
   memset(ctx, 0, sizeof(*ctx));
+ctx->verbosity = 9;
   ctx->input_source = OSDPDUMP_SOURCE_OSDPCAP;
   strcpy(ctx->input_path, "./current.osdpcap");
   if (argc > 1)
@@ -182,7 +184,6 @@ int
   ctx->output_report = 1;
   ctx->output_analysis = 1;
 
-fprintf(stderr, "DEBUG: parse command line\n");
   f = fopen(ctx->input_path, "r");
 
   switch(ctx->input_source)
@@ -231,7 +232,6 @@ int osdpdump_packet_accumulate
     // take first byte
     input_bytes->length --;
     current_byte = input_bytes->raw_bytes [0];
-fprintf(stderr,"DEBUG: octet is %02x\n", current_byte);
     memset(temp_bytes, 0, sizeof(temp_bytes));
     memcpy(temp_bytes, input_bytes->raw_bytes+1, input_bytes->length);
     memcpy(input_bytes->raw_bytes, temp_bytes, input_bytes->length);
@@ -247,7 +247,6 @@ fprintf(stderr,"DEBUG: octet is %02x\n", current_byte);
       {
         packet->octets [packet->octet_length] = current_byte;
         packet->octet_length++;
-fprintf(stderr, "DEBUG: SOM found.  check packet length %d\n", packet->octet_length);
         status = ST_OSDPDUMP_NEED_MORE_DATA;
       }
       else
@@ -309,7 +308,27 @@ fprintf(stderr, "DEBUG: have length (0x%x)\n", pdu_length);
 } /* osdpdump_packet_accumulate */
 
 
-int osdpdump_parse(OSDPDUMP_CONTEXT *ctx){printf("DEBUG: stub\n");return(0);}
+int
+  osdpdump_parse
+    (OSDPDUMP_CONTEXT *ctx)
+
+{ /* osdpdump_parse */
+ 
+  OSDPDUMP_WORKING_PACKET *packet;
+  unsigned char pd_address;
+
+
+  printf("DEBUG: osdpdump_parse stub\n");
+  packet = &(ctx->osdp_pdu);
+  pd_address = 0x7F & (packet->octets [1]);
+  ctx->pd_ctx [pd_address].state = OSDPDUMP_PD_PRESENT;
+fprintf(stderr, "DEBUG: parse: addr %d last 2 of pkt are %02x%02x\n",
+  pd_address,
+  ctx->osdp_pdu.octets [ctx->osdp_pdu.octet_length-2],
+  ctx->osdp_pdu.octets [ctx->osdp_pdu.octet_length-1]);
+  packet = &(ctx->osdp_pdu);
+  return(0);
+}
 
 
 int
@@ -350,13 +369,11 @@ char line [2*1024];
   switch(ctx->input_source)
   {
   case OSDPDUMP_SOURCE_OSDPCAP:
-if (verbosity > 3)
-  fprintf(stderr, "DEBUG: source is osdpcap %s\n", ctx->input_path);
     input_value->input_string [0] = 0; // init string to empty
     status_io = fgets(line, sizeof(line), ctx->dump_file_handle);
-fprintf(stderr, "line %s\n", line);
     if (status_io != NULL)
     {
+fprintf(stderr, "line %s\n", line);
       strcpy(input_value->input_string, line);
       line_root = json_loads(input_value->input_string, 0, &status_json);
     }
@@ -381,7 +398,20 @@ status = -1;
 } /* osdpdump_read_input */
 
 
-int osdpdump_review_input(OSDPDUMP_CONTEXT *ctx){printf("DEBUG: stub\n");return(0);}
+/*
+  osdpdump_review_input - review the input so far and offer commentary
+*/
+int
+  osdpdump_review_input
+    (OSDPDUMP_CONTEXT *ctx)
+
+{ /* osdpdump_review_input */
+
+  if (ctx->verbosity > 9)
+    printf("DEBUG: osdpdump_review_input\n");
+  return(0);
+
+} /* osdpdump_review_input */
 
 
 int 

@@ -4,7 +4,7 @@
   (C)2021 Smithee Solutions LLC
 */
 
-#define OSDPDUMP_VERSION "0.0.0-2"
+#define OSDPDUMP_VERSION "0.0.2-2"
 
 #define EQUALS ==
 #define ST_OK (0)
@@ -24,7 +24,8 @@
 
 #define OSDPDUMP_PD_MAX (30)
 
-#define OSDPDUMP_PD_ABSENT (0)
+#define OSDPDUMP_PD_ABSENT  (0)
+#define OSDPDUMP_PD_PRESENT (1)
 
 #define OSDPDUMP_ANA_PD  (1)
 #define OSDPDUMP_ANA_ACU (2)
@@ -62,6 +63,7 @@ typedef struct osdpdump_working_packet
 
 typedef struct osdpdump_context
 {
+  int verbosity;
   int analysis; // loose=0 normal=1 strict=2 3-255 rfu
   int input_source; // 1=file, 2=serial device
   int analysis_view; // 0=PD, 1=ACU, 2-255 RFU
