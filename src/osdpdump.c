@@ -1,5 +1,3 @@
-//zzz keep an accumulator buffer as well as the input queue.  input queue adds not replaces input
-
 int verbosity=9;
 /*
   osdpdump - read a byte stream and analyze/display the OSDP protocol contents
@@ -48,12 +46,6 @@ int
   done = 0;
   while (!done)
   {
-#if 0
-  get input
-  add to working buffer
-  pull from working buffer until SOM, return MORE
-  pull from working buffer until whole packet, return MORE if not done
-#endif
     status = osdpdump_read_input(ctx, &input_value);
     if (status EQUALS ST_OK)
     {
@@ -211,17 +203,6 @@ fprintf(stderr, "DEBUG: parse command line\n");
 */
 
 #if 0
-zzz review
-if not good packet start
-eat first octet
-drop
-          ctx->dropped_octets ++;
-status
-
-if good packet start and not done
-return need-more
-        ctx->osdp_pdu.som = OSDP_SOM;
-
       ctx->osdp_pdu.command_response = 0x80 & input_value->raw_bytes [1];
       ctx->osdp_pdu.address = 0x7F & input_value->raw_bytes [1];
 #endif
@@ -234,11 +215,18 @@ int osdpdump_packet_accumulate
 { /* osdpdump_packet_accumulate */
 
   unsigned char current_byte;
+  int drop_octets;
   OSDPDUMP_WORKING_PACKET *packet;
+  int process_octets;
   int status;
+  unsigned char temp_bytes [2048]; //max
 
 
-status = -1;
+  // assume we used it or trashed it and need more.
+
+  status = ST_OSDPDUMP_NEED_MORE_DATA;
+  drop_octets = 0;
+  process_octets = 0;
   packet = &(ctx->osdp_pdu);
 
   if (input_bytes->length > 0)
@@ -246,19 +234,73 @@ status = -1;
     // take first byte
     input_bytes->length --;
     current_byte = input_bytes->raw_bytes [0];
+fprintf(stderr,"DEBUG: octet is %02x\n", current_byte);
+    memset(temp_bytes, 0, sizeof(temp_bytes));
+    memcpy(temp_bytes, input_bytes->raw_bytes+1, input_bytes->length);
+    memcpy(input_bytes->raw_bytes, temp_bytes, input_bytes->length);
+    input_bytes->raw_bytes [input_bytes->length] = 0x00;
 
-    if (packet->octet_length < 1)
+
+    switch(packet->octet_length)
     {
+    case 0:
       // we're looking for the SOM
       if (current_byte EQUALS OSDPDUMP_PDU_SOM)
       {
         packet->octets [packet->octet_length] = current_byte;
         packet->octet_length++;
-fprintf(stderr, "DEBUG: check packet length %d\n", packet->octet_length);
+fprintf(stderr, "DEBUG: SOM found.  check packet length %d\n", packet->octet_length);
+        status = ST_OSDPDUMP_NEED_MORE_DATA;
+      }
+      else
+      {
+        drop_octets = 1;
+      };
+      break;
+    case 1:
+      // looking for first byte of length
+      packet->octets [packet->octet_length] = current_byte;
+      packet->octet_length++;
+      status = ST_OSDPDUMP_NEED_MORE_DATA;
+      break;
+    case 2:
+      // looking for second byte of length
+      packet->octets [packet->octet_length] = current_byte;
+      packet->octet_length++;
+      status = ST_OSDPDUMP_NEED_MORE_DATA;
+    };
+
+zzz
+
+zzz address is net then they two bytes
+
+      packet->octets [packet->octet_length] = current_byte;
+      packet->octet_length++;
+      status = ST_OSDPDUMP_NEED_MORE_DATA;
+    };
+
+    // we have the alleged length.  make sure it's sane or dump
+    // the whole thing.
+
+    if ((packet->octet_length > 2) && (packet->octet_length < 4))
+    {
+      unsigned int pdu_length;
+      pdu_length = (packet->octets [2] << 8) + packet->octets [1];
+      if (pdu_length <= OSDPDUMP_PDU_MAX)
+      {
+fprintf(stderr, "DEBUG: have length (0x%x)\n", pdu_length);
         status = ST_OSDPDUMP_NEED_MORE_DATA;
       };
+    }
+    else
+    {
+      ctx->dropped_octets = ctx->dropped_octets + packet->octet_length;
+      packet->octet_length = 0;
+      status = ST_OSDPDUMP_NEED_MORE_DATA;
     };
   };
+  if (drop_this_octet)
+    ctx->dropped_octets ++;
   return(status);
 
 } /* osdpdump_packet_accumulate */
@@ -323,6 +365,4 @@ int
   return(0);
 
 } /* osdpdump_summary */
-
- 
 

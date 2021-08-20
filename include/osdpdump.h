@@ -29,6 +29,7 @@
 #define OSDPDUMP_ANA_PD  (1)
 #define OSDPDUMP_ANA_ACU (2)
 
+#define OSDPDUMP_PDU_MAX (1400) // tbd check
 #define OSDPDUMP_PDU_SOM (0x53)
 
 // values in the protocol
