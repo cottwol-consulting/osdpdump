@@ -48,7 +48,8 @@ int
   while (!done)
   {
     status = osdpdump_read_input(ctx, &input_value);
-fprintf(stderr, "DEBUG: osdpdump_read_input %d.\n", status);
+    if (ctx->verbosity > 9)
+      fprintf(stderr, "DEBUG: osdpdump_read_input %d.\n", status);
     if (status EQUALS ST_OK)
     {
       status = osdpdump_accumulate_input(ctx, &input_value);
@@ -73,10 +74,10 @@ fprintf(stderr, "DEBUG: osdpdump_read_input %d.\n", status);
     if (status != ST_OK)
       done = 1;
     fflush(stdout); fflush(stderr);
-fprintf(stderr, "DEBUG: bottom of read loop.\n");
   };
-  if (status EQUALS ST_OK)
-    status = osdpdump_summary(ctx);
+
+  // regardless of what happened print the summary
+  status = osdpdump_summary(ctx);
 
   if (status != ST_OK)
     fprintf(stderr, "osdpdump completed, status was %d. errno=%d.\n", status, errno);
@@ -141,6 +142,24 @@ int
   return(status);
 
 } /* osdpdump_accumulate_input */
+
+
+int
+  osdpdump_command_offset
+    (OSDPDUMP_CONTEXT *ctx,
+    OSDPDUMP_WORKING_PACKET *packet)
+{ /* osdpdump_command_offset */
+
+  int returned_offset;
+
+
+  // SOM, address, length, ctl
+
+  returned_offset = 1 + 1 + 2 + 1;
+
+  return(returned_offset);
+
+} /* osdpdump_command_offset */
 
 
 int
@@ -271,7 +290,8 @@ int osdpdump_packet_accumulate
       pdu_length = (packet->octets [3] << 8) + packet->octets [2];
       if (pdu_length <= OSDPDUMP_PDU_MAX)
       {
-fprintf(stderr, "DEBUG: have length (0x%x)\n", pdu_length);
+        if (ctx->verbosity > 9)
+          fprintf(stderr, "DEBUG: have length (0x%x)\n", pdu_length);
         status = ST_OSDPDUMP_NEED_MORE_DATA;
       }
       else
@@ -311,17 +331,14 @@ int
 { /* osdpdump_parse */
  
   OSDPDUMP_WORKING_PACKET *packet;
-  unsigned char pd_address;
 
 
-  printf("DEBUG: osdpdump_parse stub\n");
   packet = &(ctx->osdp_pdu);
-  pd_address = 0x7F & (packet->octets [1]);
-  ctx->pd_ctx [pd_address].state = OSDPDUMP_PD_PRESENT;
-fprintf(stderr, "DEBUG: parse: addr %d last 2 of pkt are %02x%02x\n",
-  pd_address,
-  ctx->osdp_pdu.octets [ctx->osdp_pdu.octet_length-2],
-  ctx->osdp_pdu.octets [ctx->osdp_pdu.octet_length-1]);
+  packet->address = 0x7F & (packet->octets [1]);
+  ctx->pd_ctx [packet->address].state = OSDPDUMP_PD_PRESENT;
+  packet->command_response = ctx->osdp_pdu.octets [osdpdump_command_offset(ctx, packet)];
+  packet->packet_check [0] = ctx->osdp_pdu.octets [ctx->osdp_pdu.octet_length-2];
+  packet->packet_check [1] = ctx->osdp_pdu.octets [ctx->osdp_pdu.octet_length-1];
   packet = &(ctx->osdp_pdu);
   return(0);
 
@@ -341,6 +358,9 @@ int
   packet = &(ctx->osdp_pdu);
   for (i=0; i<packet->octet_length; i++)
     fprintf(stdout, " %02x", packet->octets [i]);
+  fprintf(stdout, " A:%02x", packet->address);
+  fprintf(stdout, " C/R:%02x", packet->command_response);
+  fprintf(stdout, " Check: %02x%02x", packet->packet_check [0], packet->packet_check [1]);
   fprintf(stdout, "\n");
   return(0);
 
@@ -370,7 +390,8 @@ char line [2*1024];
     status_io = fgets(line, sizeof(line), ctx->dump_file_handle);
     if (status_io != NULL)
     {
-fprintf(stderr, "line %s\n", line);
+      if (ctx->verbosity > 9)
+        fprintf(stderr, "line %s\n", line);
       strcpy(input_value->input_string, line);
       line_root = json_loads(input_value->input_string, 0, &status_json);
     }
@@ -415,7 +436,17 @@ int
   osdpdump_summary
     (OSDPDUMP_CONTEXT *ctx)
 { /* osdpdump_summary */
-  printf("DEBUG: stub\n");
+
+  int idx;
+
+
+  printf("PD Activity:");
+  for (idx=0; idx<OSDPDUMP_PD_MAX; idx++)
+  {
+    if (ctx->pd_ctx [idx].state EQUALS OSDPDUMP_PD_PRESENT)
+      printf(" A=%3d.(0x%02x)", idx, idx);
+  };
+  printf("\n");
   printf("%6d. octets dropped.\n", ctx->dropped_octets);
   return(0);
 

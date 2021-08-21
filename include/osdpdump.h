@@ -4,7 +4,7 @@
   (C)2021 Smithee Solutions LLC
 */
 
-#define OSDPDUMP_VERSION "0.0.2-2"
+#define OSDPDUMP_VERSION "0.0.2-3"
 
 #define EQUALS ==
 #define ST_OK (0)
@@ -22,7 +22,7 @@
 
 #define OSDPDUMP_ANA_STRICT (2)
 
-#define OSDPDUMP_PD_MAX (30)
+#define OSDPDUMP_PD_MAX (31)
 
 #define OSDPDUMP_PD_ABSENT  (0)
 #define OSDPDUMP_PD_PRESENT (1)
@@ -58,6 +58,7 @@ typedef struct osdpdump_working_packet
   int completion_status;
   int command_response;
   unsigned char address;
+  unsigned char packet_check [2];
   unsigned char remainder [2048];
 } OSDPDUMP_WORKING_PACKET;
 
@@ -81,6 +82,7 @@ typedef struct osdpdump_context
 } OSDPDUMP_CONTEXT;
 
 int osdpdump_accumulate_input(OSDPDUMP_CONTEXT *ctx, OSDPDUMP_INPUT *input_value);
+int osdpdump_command_offset(OSDPDUMP_CONTEXT *ctx, OSDPDUMP_WORKING_PACKET *pkt);
 int osdpdump_hex_to_raw_bytes(OSDPDUMP_CONTEXT *ctx, char *hex_string, unsigned char *raw_bytes, int *returned_length);
 int osdpdump_initialize(OSDPDUMP_CONTEXT *ctx, int argc, char *argv []);
 int osdpdump_packet_accumulate(OSDPDUMP_CONTEXT *ctx, OSDPDUMP_INPUT *raw, OSDPDUMP_INPUT *accumulated_packet);
