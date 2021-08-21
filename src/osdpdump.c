@@ -1,4 +1,3 @@
-//zzz it's only showing the first line, repeatedly.
 /*
   osdpdump - read a byte stream and analyze/display the OSDP protocol contents
 
@@ -12,7 +11,6 @@
       --report
       --analysis
 */
-
 #include <string.h>
 #include <stdio.h>
 #include <errno.h>
@@ -35,6 +33,7 @@ int
   int done;
   int input_exhausted;
   OSDPDUMP_INPUT input_value;
+  OSDPDUMP_WORKING_PACKET *packet;
   int status;
   OSDPDUMP_CONTEXT osdp_dump_context;
 
@@ -49,35 +48,32 @@ int
   while (!done)
   {
     status = osdpdump_read_input(ctx, &input_value);
+fprintf(stderr, "DEBUG: osdpdump_read_input %d.\n", status);
     if (status EQUALS ST_OK)
     {
       status = osdpdump_accumulate_input(ctx, &input_value);
       if (status EQUALS ST_OSDPDUMP_PACKET)
       {
         input_exhausted = 0;
-        while (!input_exhausted)
+//        while (!input_exhausted)
         {
           status = osdpdump_parse(ctx);
           if (status EQUALS ST_OK)
             status = osdpdump_review_input(ctx);
           if (status EQUALS ST_OK)
             status = osdpdump_print(ctx);
-          if (status != ST_OK)
-            input_exhausted = 1;
-          if (status EQUALS ST_OK)
-            status = osdpdump_accumulate_input(ctx, &input_value);
-          if (status != ST_OSDPDUMP_PACKET)
-            input_exhausted = 1;
+//          if (status != ST_OK) input_exhausted = 1;
+//          if (status EQUALS ST_OK) status = osdpdump_accumulate_input(ctx, &input_value);
+//          if (status != ST_OSDPDUMP_PACKET) { input_exhausted = 1; };
         };
       };
-      if (status EQUALS ST_OSDPDUMP_NEED_MORE_DATA)
-      {
-        status = ST_OK;
-      };
+      packet = &(ctx->osdp_pdu);
+      memset(packet, 0, sizeof(*packet));
     };
     if (status != ST_OK)
       done = 1;
     fflush(stdout); fflush(stderr);
+fprintf(stderr, "DEBUG: bottom of read loop.\n");
   };
   if (status EQUALS ST_OK)
     status = osdpdump_summary(ctx);
@@ -328,7 +324,8 @@ fprintf(stderr, "DEBUG: parse: addr %d last 2 of pkt are %02x%02x\n",
   ctx->osdp_pdu.octets [ctx->osdp_pdu.octet_length-1]);
   packet = &(ctx->osdp_pdu);
   return(0);
-}
+
+} /* osdpdump_parse */
 
 
 int
