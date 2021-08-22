@@ -24,13 +24,13 @@ int
   printf("\nOSDPDUMP ACTIVITY SUMMARY\n");
   printf("=========================\n");
   sprintf(otmp, "%d. packets\n", ctx->detected_packets); strcat(ctx->output_text, otmp);
-  sprintf(otmp, "Detected:"); strcat(ctx->output_text, otmp);
+  sprintf(otmp, "Detected:\n"); strcat(ctx->output_text, otmp);
   for (idx=0; idx<255; idx++)
   {
     if (ctx->detected_commands [idx] > 0)
     {
-      sprintf(otmp, " %2x(%d.)", idx, ctx->detected_commands [idx]);
-zzz
+      sprintf(otmp,
+" %2x(%s) %d\n", idx, osdpdump_command_string(ctx, idx), ctx->detected_commands [idx]);
       strcat(ctx->output_text, otmp);
     };
   };
