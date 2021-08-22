@@ -371,9 +371,10 @@ int
   {
   case 2:
     fprintf(stdout, "%s ", osdpdump_command_string(ctx, packet->command_response));
-    fprintf(stdout, " A=%02x", packet->address);
+    fprintf(stdout, " A=%2d.", packet->address);
     fprintf(stdout, " CRC %02x%02x", packet->packet_check [0], packet->packet_check [1]);
     fprintf(stdout, "\n");
+    fprintf(stdout, " Dump:");
     for (i=0; i<packet->octet_length; i++)
       fprintf(stdout, " %02x", packet->octets [i]);
     fprintf(stdout, "\n");
