@@ -14,13 +14,26 @@
 #include <string.h>
 #include <stdio.h>
 #include <errno.h>
+#include <getopt.h>
 
 #include <jansson.h>
 
 
 #include <osdpdump.h>
+typedef struct osdpdump_command_line_context
+{
+  int option;
+} OSDPDUMP_COMMAND_LINE_CONTEXT;
 #include <osdpdump-decoding.h>
 FILE *f;
+OSDPDUMP_COMMAND_LINE_CONTEXT osdpdump_command_line;
+struct option longopts [] = {
+  {"analyze", optional_argument, &osdpdump_command_line.option, OSDPDUMP_OPT_ANALYZE},
+  {"help", 0, &osdpdump_command_line.option, OSDPDUMP_OPT_HELP},
+  {"format", required_argument, &osdpdump_command_line.option, OSDPDUMP_OPT_REPORT_FORMAT},
+  {"source", required_argument, &osdpdump_command_line.option, OSDPDUMP_OPT_SOURCE},
+  {"verbosity", required_argument, &osdpdump_command_line.option, OSDPDUMP_OPT_VERBOSITY},
+  {0, 0, 0, 0}};
 
 
 int
@@ -31,10 +44,6 @@ int
 { /* main for osdpdump */
 
   OSDPDUMP_CONTEXT *ctx;
-  int done;
-  int input_exhausted;
-  OSDPDUMP_INPUT input_value;
-  OSDPDUMP_WORKING_PACKET *packet;
   int status;
   OSDPDUMP_CONTEXT osdp_dump_context;
 
@@ -42,40 +51,43 @@ int
   status = ST_OK;
   ctx = &osdp_dump_context;
   status = osdpdump_initialize(ctx, argc, argv);
-  if (ctx->verbosity > 9)
-    fprintf(stderr, "DEBUG: source is osdpcap %s\n", ctx->input_path);
 
-  done = 0;
-  while (!done)
+  if (status EQUALS ST_OK)
   {
-    status = osdpdump_read_input(ctx, &input_value);
-    if (ctx->verbosity > 9)
-      fprintf(stderr, "DEBUG: osdpdump_read_input %d.\n", status);
-    if (status EQUALS ST_OK)
+    switch(ctx->command)
     {
-      status = osdpdump_accumulate_input(ctx, &input_value);
-      if (status EQUALS ST_OSDPDUMP_PACKET)
+    case OSDPDUMP_CMD_HELP:
+    default:
+      fprintf(stdout, "osdpdump help.\n");
+      fprintf(stdout,
+"--analyze [=n] - set analysis level to n (0-9,default 1)\n");
+      fprintf(stdout,
+"--format=<n> - set report format.  1=2-line with dump; 2=1-line, no dump\n");
+      fprintf(stdout,
+"--source=<file> - set dump filename to read.\n");
+      fprintf(stdout,
+"--verbosity=<n> - set message verbosity.  0=quiet, 3=normal, 9=debug.\n");
+      fprintf(stdout,
+"--help - this message\n");
+      break;
+
+    case OSDPDUMP_CMD_DUMP:
+      switch(ctx->input_source)
       {
-        ctx->detected_packets ++;
-        input_exhausted = 0;
-        {
-          status = osdpdump_parse(ctx);
-          if (status EQUALS ST_OK)
-            status = osdpdump_review_input(ctx);
-          if (status EQUALS ST_OK)
-            status = osdpdump_print(ctx);
-        };
+      case OSDPDUMP_SOURCE_OSDPCAP:
+        ctx->dump_file_handle = fopen(ctx->input_path, "r");
+        if (ctx->dump_file_handle EQUALS NULL)
+          status = ST_OSDPDUMP_BAD_INPUT_FILE;
       };
-      packet = &(ctx->osdp_pdu);
-      memset(packet, 0, sizeof(*packet));
+      status = osdpdump_digester(ctx);
+      if (ctx->verbosity > 9)
+        fprintf(stderr, "DEBUG: source is osdpcap %s\n", ctx->input_path);
+      // regardless of what happened print the summary
+      status = osdpdump_summary(ctx);
+      break;
     };
-    if ((status != ST_OK) && (status != ST_OSDPDUMP_NEED_MORE_DATA))
-      done = 1;
-    fflush(stdout); fflush(stderr);
   };
 
-  // regardless of what happened print the summary
-  status = osdpdump_summary(ctx);
   fprintf(stdout, "%s", ctx->output_text);
 
   if (status != ST_OK)
@@ -168,6 +180,55 @@ int
 
 
 int
+  osdpdump_digester
+    (OSDPDUMP_CONTEXT *ctx)
+
+{ /* osdpdump_digester */
+
+  int done;
+  int input_exhausted;
+  OSDPDUMP_INPUT input_value;
+  OSDPDUMP_WORKING_PACKET *packet;
+  int status;
+
+
+  if (ctx->verbosity > 0)
+    fprintf(stdout, "OSDP Dump of file %s\n", ctx->input_path);
+  done = 0;
+  while (!done)
+  {
+    status = osdpdump_read_input(ctx, &input_value);
+    if (ctx->verbosity > 9)
+      fprintf(stderr, "DEBUG: osdpdump_read_input %d.\n", status);
+    if (status EQUALS ST_OK)
+    {
+      status = osdpdump_accumulate_input(ctx, &input_value);
+      if (status EQUALS ST_OSDPDUMP_PACKET)
+      {
+        ctx->current_packet_number ++;
+        ctx->detected_packets ++;
+        input_exhausted = 0;
+        {
+          status = osdpdump_parse(ctx);
+          if (status EQUALS ST_OK)
+            status = osdpdump_review_input(ctx);
+          if (status EQUALS ST_OK)
+            status = osdpdump_print(ctx);
+        };
+      };
+      packet = &(ctx->osdp_pdu);
+      memset(packet, 0, sizeof(*packet));
+    };
+    if ((status != ST_OK) && (status != ST_OSDPDUMP_NEED_MORE_DATA))
+      done = 1;
+    fflush(stdout); fflush(stderr);
+  };
+  return(status);
+
+} /* osdpdump_digester */
+
+
+int
   osdpdump_initialize
     (OSDPDUMP_CONTEXT *ctx,
     int argc,
@@ -175,47 +236,78 @@ int
 
 { /* osdpdump_initialize */
 
+  int done;
+  int i;
   int idx;
+  char optstring [1024]; //maxstring
   int status;
+  int status_opt;
 
 
   status = ST_OK;
   memset(ctx, 0, sizeof(*ctx));
-ctx->verbosity = 9;
+  ctx->verbosity = 3;
+  ctx->print_format = OSDPDUMP_FMT_2LINE;
+  ctx->analysis = OSDPDUMP_ANA_STRICT;
+  ctx->input_source = OSDPDUMP_SOURCE_OSDPCAP;
+  strcpy(ctx->input_path, "./current.osdpcap");
+  osdpdump_command_line.option = OSDPDUMP_OPT_HELP;
+ctx->analysis_view = OSDPDUMP_ANA_PD;
+ctx->output_report = 1;
+ctx->output_analysis = 1;
+
+  // option switch processing
+
+  done = 0;
+  while (!done)
+  {
+    status_opt = getopt_long (argc, argv, optstring, longopts, NULL);
+    if (ctx->verbosity > 9)
+      fprintf(stderr, "getopt_long: %d\n", status_opt);
+    if (status_opt EQUALS -1)
+    {
+      done = 1;
+    };
+    if (!done)
+    {
+      switch (osdpdump_command_line.option)
+    {
+    case OSDPDUMP_OPT_ANALYZE:
+      sscanf(optarg, "%d", &i);
+      ctx->analysis = i;
+      ctx->command = OSDPDUMP_CMD_DUMP;
+      break;
+    case OSDPDUMP_OPT_HELP:
+      ctx->command = OSDPDUMP_CMD_HELP;
+      break;
+    case OSDPDUMP_OPT_REPORT_FORMAT:
+      sscanf(optarg, "%d", &i);
+      ctx->print_format = i;
+      ctx->command = OSDPDUMP_CMD_DUMP;
+      break;
+    case OSDPDUMP_OPT_SOURCE:
+      strcpy(ctx->input_path, optarg);
+      ctx->command = OSDPDUMP_CMD_DUMP;
+      break;
+    case OSDPDUMP_OPT_VERBOSITY:
+      sscanf(optarg, "%d", &i);
+      ctx->verbosity = i;
+      ctx->command = OSDPDUMP_CMD_DUMP;
+      break;
+    default:
+      ctx->command = OSDPDUMP_CMD_HELP;
+      break;
+    };
+    };
+  };
+
   if (ctx->verbosity > 3)
     fprintf(stderr, "osdpdump %s is in startup.\n", OSDPDUMP_VERSION);
   fprintf(stdout, "osdpdump %s \n", OSDPDUMP_VERSION);
-ctx->print_format = 2;
-  ctx->input_source = OSDPDUMP_SOURCE_OSDPCAP;
-  strcpy(ctx->input_path, "./current.osdpcap");
-  if (argc > 1)
-    strcpy(ctx->input_path, argv [1]);
 
-  fprintf(stdout, "OSDP Dump of file %s\n", ctx->input_path);
   for (idx=0; idx<OSDPDUMP_PD_MAX; idx++)
   {
     ctx->pd_ctx [idx].state = OSDPDUMP_PD_ABSENT;
-  };
-  ctx->analysis_view = OSDPDUMP_ANA_PD;
-
-//      --source=file <osdpcap file> (default is current.osdpcap)
-//      --source=serial <serial device name>
-//      --analyze=[,strict,loose]
-//      --report
-//      --analysis
-  ctx->analysis = OSDPDUMP_ANA_STRICT;
-  ctx->output_report = 1;
-  ctx->output_analysis = 1;
-
-  f = fopen(ctx->input_path, "r");
-
-  switch(ctx->input_source)
-  {
-  case OSDPDUMP_SOURCE_OSDPCAP:
-    ctx->dump_file_handle = fopen(ctx->input_path, "r");
-    if (ctx->dump_file_handle EQUALS NULL)
-      status = ST_OSDPDUMP_BAD_INPUT_FILE;
-    break;
   };
   return(status);
 
@@ -386,7 +478,7 @@ int
   packet = &(ctx->osdp_pdu);
   switch(ctx->print_format)
   {
-  case 2:
+  case OSDPDUMP_FMT_2LINE:
     fprintf(stdout, "%s ", osdpdump_command_string(ctx, packet->command_response));
     fprintf(stdout, " A=%2d.", packet->address);
     fprintf(stdout, " CRC %02x%02x", packet->packet_check [0], packet->packet_check [1]);
@@ -394,6 +486,13 @@ int
     fprintf(stdout, " Dump:");
     for (i=0; i<packet->octet_length; i++)
       fprintf(stdout, " %02x", packet->octets [i]);
+    fprintf(stdout, "\n");
+    break;
+  case OSDPDUMP_FMT_1LINE:
+    fprintf(stdout, "P:%06d ", ctx->current_packet_number);
+    fprintf(stdout, "%s ", osdpdump_command_string(ctx, packet->command_response));
+    fprintf(stdout, " A=%2d.", packet->address);
+    fprintf(stdout, " CRC %02x%02x", packet->packet_check [0], packet->packet_check [1]);
     fprintf(stdout, "\n");
     break;
   default:
@@ -498,6 +597,7 @@ int
     if (ctx->detected_commands [idx] > 0)
     {
       sprintf(otmp, " %2x(%d.)", idx, ctx->detected_commands [idx]);
+zzz
       strcat(ctx->output_text, otmp);
     };
   };
