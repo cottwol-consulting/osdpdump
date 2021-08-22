@@ -5,6 +5,7 @@
   (C)2021 Smithee Solutions LLC
 */
 #define OSDP_IEC_SOM   (0x53)
+#define OSDP_IEC_CTL_SCB (0x08) // bit in CTL
 
 #define OSDP_IEC_ACK          (0x40)
 #define OSDP_IEC_ACURXSIZE    (0x7b)

@@ -46,6 +46,7 @@ typedef struct osdpdump_pd_context
 } OSDPDUMP_PD_CONTEXT;
 
 #define OSDPDUMP_COMPLETION_SOM (0x0001)
+#define OSDPDUMP_COMPLETION_SCB (0x0002)
 #define OSDPDUMP_COMPLETION_CMD (0x8000)
 #define OSDPDUMP_COMPLETION_RSP (0x4000)
 typedef struct osdpdump_working_packet
@@ -73,6 +74,8 @@ typedef struct osdpdump_context
 
   // statistics
   int dropped_octets;
+  int detected_packets;
+  int detected_commands [256];
 
   OSDPDUMP_WORKING_PACKET osdp_pdu;
   char input_path [OSDPDUMP_STRING];

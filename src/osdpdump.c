@@ -56,23 +56,20 @@ int
       status = osdpdump_accumulate_input(ctx, &input_value);
       if (status EQUALS ST_OSDPDUMP_PACKET)
       {
+        ctx->detected_packets ++;
         input_exhausted = 0;
-//        while (!input_exhausted)
         {
           status = osdpdump_parse(ctx);
           if (status EQUALS ST_OK)
             status = osdpdump_review_input(ctx);
           if (status EQUALS ST_OK)
             status = osdpdump_print(ctx);
-//          if (status != ST_OK) input_exhausted = 1;
-//          if (status EQUALS ST_OK) status = osdpdump_accumulate_input(ctx, &input_value);
-//          if (status != ST_OSDPDUMP_PACKET) { input_exhausted = 1; };
         };
       };
       packet = &(ctx->osdp_pdu);
       memset(packet, 0, sizeof(*packet));
     };
-    if (status != ST_OK)
+    if ((status != ST_OK) && (status != ST_OSDPDUMP_NEED_MORE_DATA))
       done = 1;
     fflush(stdout); fflush(stderr);
   };
@@ -151,14 +148,21 @@ int
     OSDPDUMP_WORKING_PACKET *packet)
 { /* osdpdump_command_offset */
 
+  int extra_offset;
   int returned_offset;
 
+
+  extra_offset = 0;
 
   // SOM, address, length, ctl
 
   returned_offset = 1 + 1 + 2 + 1;
+  if (packet->completion_status & OSDPDUMP_COMPLETION_SCB)
+  {
+    extra_offset = packet->octets [5];
+  };
 
-  return(returned_offset);
+  return(returned_offset + extra_offset);
 
 } /* osdpdump_command_offset */
 
@@ -335,6 +339,7 @@ int
 
 { /* osdpdump_parse */
  
+  unsigned char control_octet;
   OSDPDUMP_WORKING_PACKET *packet;
 
 
@@ -347,7 +352,19 @@ int
     packet->completion_status = packet->completion_status | OSDPDUMP_COMPLETION_CMD;
 
   ctx->pd_ctx [packet->address].state = OSDPDUMP_PD_PRESENT;
+
+  // detect SCB
+
+  control_octet = packet->octets [4];
+  if (control_octet & OSDP_IEC_CTL_SCB)
+  {
+    packet->completion_status = packet->completion_status | OSDPDUMP_COMPLETION_SCB;
+  };
+
+  // extract the command/response field and collect statistics
+
   packet->command_response = ctx->osdp_pdu.octets [osdpdump_command_offset(ctx, packet)];
+
   packet->packet_check [0] = ctx->osdp_pdu.octets [ctx->osdp_pdu.octet_length-2];
   packet->packet_check [1] = ctx->osdp_pdu.octets [ctx->osdp_pdu.octet_length-1];
   packet = &(ctx->osdp_pdu);
@@ -449,6 +466,7 @@ int
 
 { /* osdpdump_review_input */
 
+  ctx->detected_commands [ctx->osdp_pdu.command_response] ++;
   if (ctx->verbosity > 9)
     printf("DEBUG: osdpdump_review_input\n");
   return(0);
@@ -473,7 +491,19 @@ int
 
   printf("\nOSDPDUMP ACTIVITY SUMMARY\n");
   printf("=========================\n");
-  printf("Active PD's:");
+  sprintf(otmp, "%d. packets\n", ctx->detected_packets); strcat(ctx->output_text, otmp);
+  sprintf(otmp, "Detected:"); strcat(ctx->output_text, otmp);
+  for (idx=0; idx<255; idx++)
+  {
+    if (ctx->detected_commands [idx] > 0)
+    {
+      sprintf(otmp, " %2x(%d.)", idx, ctx->detected_commands [idx]);
+      strcat(ctx->output_text, otmp);
+    };
+  };
+  strcat(ctx->output_text, "\n");
+
+  sprintf(otmp, "Active PD's:"); strcat(ctx->output_text, otmp);
   for (idx=0; idx<OSDPDUMP_PD_MAX; idx++)
   {
     if (ctx->pd_ctx [idx].state EQUALS OSDPDUMP_PD_PRESENT)
