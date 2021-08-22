@@ -19,6 +19,7 @@
 
 
 #include <osdpdump.h>
+#include <osdpdump-decoding.h>
 FILE *f;
 
 
@@ -41,7 +42,7 @@ int
   status = ST_OK;
   ctx = &osdp_dump_context;
   status = osdpdump_initialize(ctx, argc, argv);
-  if (ctx->verbosity > 3)
+  if (ctx->verbosity > 9)
     fprintf(stderr, "DEBUG: source is osdpcap %s\n", ctx->input_path);
 
   done = 0;
@@ -103,7 +104,6 @@ int
 { /* osdpdump_accumulate_input */
 
   OSDPDUMP_INPUT *accumulated_message;
-//  int completion_status;
   int done;
   int expected_length;
   int idx;
@@ -174,16 +174,19 @@ int
   int status;
 
 
-//??  status_io = fgets(line, sizeof(line), f);
-
-  fprintf(stderr, "osdpdump %s is in startup.\n", OSDPDUMP_VERSION);
   status = ST_OK;
   memset(ctx, 0, sizeof(*ctx));
 ctx->verbosity = 9;
+  if (ctx->verbosity > 3)
+    fprintf(stderr, "osdpdump %s is in startup.\n", OSDPDUMP_VERSION);
+  fprintf(stdout, "osdpdump %s \n", OSDPDUMP_VERSION);
+ctx->print_format = 2;
   ctx->input_source = OSDPDUMP_SOURCE_OSDPCAP;
   strcpy(ctx->input_path, "./current.osdpcap");
   if (argc > 1)
     strcpy(ctx->input_path, argv [1]);
+
+  fprintf(stdout, "OSDP Dump of file %s\n", ctx->input_path);
   for (idx=0; idx<OSDPDUMP_PD_MAX; idx++)
   {
     ctx->pd_ctx [idx].state = OSDPDUMP_PD_ABSENT;
@@ -258,10 +261,11 @@ int osdpdump_packet_accumulate
     {
     case 0:
       // we're looking for the SOM
-      if (current_byte EQUALS OSDPDUMP_PDU_SOM)
+      if (current_byte EQUALS OSDP_IEC_SOM)
       {
         packet->octets [packet->octet_length] = current_byte;
         packet->octet_length++;
+        packet->completion_status = packet->completion_status | OSDPDUMP_COMPLETION_SOM;
         status = ST_OSDPDUMP_NEED_MORE_DATA;
       }
       else
@@ -335,6 +339,12 @@ int
 
   packet = &(ctx->osdp_pdu);
   packet->address = 0x7F & (packet->octets [1]);
+
+  if (0x80 & packet->octets [1])
+    packet->completion_status = packet->completion_status | OSDPDUMP_COMPLETION_RSP;
+  else
+    packet->completion_status = packet->completion_status | OSDPDUMP_COMPLETION_CMD;
+
   ctx->pd_ctx [packet->address].state = OSDPDUMP_PD_PRESENT;
   packet->command_response = ctx->osdp_pdu.octets [osdpdump_command_offset(ctx, packet)];
   packet->packet_check [0] = ctx->osdp_pdu.octets [ctx->osdp_pdu.octet_length-2];
@@ -356,12 +366,24 @@ int
 
 
   packet = &(ctx->osdp_pdu);
-  for (i=0; i<packet->octet_length; i++)
-    fprintf(stdout, " %02x", packet->octets [i]);
-  fprintf(stdout, " A:%02x", packet->address);
-  fprintf(stdout, " C/R:%02x", packet->command_response);
-  fprintf(stdout, " Check: %02x%02x", packet->packet_check [0], packet->packet_check [1]);
-  fprintf(stdout, "\n");
+  switch(ctx->print_format)
+  {
+  case 2:
+    fprintf(stdout, "%s ", osdpdump_command_string(ctx, packet->command_response));
+    fprintf(stdout, " A=%02x", packet->address);
+    fprintf(stdout, " CRC %02x%02x", packet->packet_check [0], packet->packet_check [1]);
+    fprintf(stdout, "\n");
+    for (i=0; i<packet->octet_length; i++)
+      fprintf(stdout, " %02x", packet->octets [i]);
+    fprintf(stdout, "\n");
+    break;
+  default:
+    fprintf(stdout, " C/R:%02x(%s)", packet->command_response, osdpdump_command_string(ctx, packet->command_response));
+    fprintf(stdout, " A:%02x", packet->address);
+    fprintf(stdout, " Check: %02x%02x", packet->packet_check [0], packet->packet_check [1]);
+    fprintf(stdout, "\n");
+    break;
+  };
   return(0);
 
 } /* osdpdump_print */
@@ -440,11 +462,13 @@ int
   int idx;
 
 
-  printf("PD Activity:");
+  printf("\nOSDPDUMP ACTIVITY SUMMARY\n");
+  printf("=========================\n");
+  printf("Active PD's:");
   for (idx=0; idx<OSDPDUMP_PD_MAX; idx++)
   {
     if (ctx->pd_ctx [idx].state EQUALS OSDPDUMP_PD_PRESENT)
-      printf(" A=%3d.(0x%02x)", idx, idx);
+      printf(" %3d.(0x%02x)", idx, idx);
   };
   printf("\n");
   printf("%6d. octets dropped.\n", ctx->dropped_octets);

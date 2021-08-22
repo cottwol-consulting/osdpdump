@@ -1,6 +1,7 @@
 /*
   osdpdump.h - definitions for osdpdump
 
+  headerzzz
   (C)2021 Smithee Solutions LLC
 */
 
@@ -31,11 +32,6 @@
 #define OSDPDUMP_ANA_ACU (2)
 
 #define OSDPDUMP_PDU_MAX (1400) // tbd check
-#define OSDPDUMP_PDU_SOM (0x53)
-
-// values in the protocol
-
-#define OSDP_SOM (0x53)
 
 typedef struct osdpdump_input
 {
@@ -50,6 +46,8 @@ typedef struct osdpdump_pd_context
 } OSDPDUMP_PD_CONTEXT;
 
 #define OSDPDUMP_COMPLETION_SOM (0x0001)
+#define OSDPDUMP_COMPLETION_CMD (0x8000)
+#define OSDPDUMP_COMPLETION_RSP (0x4000)
 typedef struct osdpdump_working_packet
 {
   unsigned char octets [2048]; // max
@@ -70,6 +68,7 @@ typedef struct osdpdump_context
   int analysis_view; // 0=PD, 1=ACU, 2-255 RFU
   int output_report; // 1=yes
   int output_analysis; // 1=yes
+  int print_format; //1=oneline 2=oneline summary 3=twoline summary and hex
   FILE *dump_file_handle;
 
   // statistics
@@ -83,6 +82,7 @@ typedef struct osdpdump_context
 
 int osdpdump_accumulate_input(OSDPDUMP_CONTEXT *ctx, OSDPDUMP_INPUT *input_value);
 int osdpdump_command_offset(OSDPDUMP_CONTEXT *ctx, OSDPDUMP_WORKING_PACKET *pkt);
+char *osdpdump_command_string(OSDPDUMP_CONTEXT *ctx, unsigned char command_response);
 int osdpdump_hex_to_raw_bytes(OSDPDUMP_CONTEXT *ctx, char *hex_string, unsigned char *raw_bytes, int *returned_length);
 int osdpdump_initialize(OSDPDUMP_CONTEXT *ctx, int argc, char *argv []);
 int osdpdump_packet_accumulate(OSDPDUMP_CONTEXT *ctx, OSDPDUMP_INPUT *raw, OSDPDUMP_INPUT *accumulated_packet);

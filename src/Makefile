@@ -16,11 +16,14 @@ test:	all
 clean:
 	rm -f core *.o ${PROGS}
 
-osdpdump:	osdpdump.o osdpdump-prims.o Makefile
-	${LINK} -o osdpdump osdpdump.o osdpdump-prims.o ${LDFLAGS}
+osdpdump:	osdpdump.o osdpdump-decoding.o osdpdump-prims.o Makefile
+	${LINK} -o osdpdump osdpdump.o osdpdump-decoding.o osdpdump-prims.o ${LDFLAGS}
 
-osdpdump.o:	osdpdump.c ../include/osdpdump.h
+osdpdump.o:	osdpdump.c ../include/osdpdump.h ../include/osdpdump-decoding.h
 	${CC} ${CFLAGS} osdpdump.c
+
+osdpdump-decoding.o:	osdpdump-decoding.c ../include/osdpdump.h ../include/osdpdump-decoding.h
+	${CC} ${CFLAGS} osdpdump-decoding.c
 
 osdpdump-prims.o:	osdpdump-prims.c ../include/osdpdump.h
 	${CC} ${CFLAGS} osdpdump-prims.c

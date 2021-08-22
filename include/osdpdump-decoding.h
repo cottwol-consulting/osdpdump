@@ -1,0 +1,47 @@
+/*
+  osdpdump-decoding.h - values and strings for OSDP decoding
+
+  headerzzz
+  (C)2021 Smithee Solutions LLC
+*/
+#define OSDP_IEC_SOM   (0x53)
+
+#define OSDP_IEC_ACK          (0x40)
+#define OSDP_IEC_ACURXSIZE    (0x7b)
+#define OSDP_IEC_BUSY         (0x79)
+#define OSDP_IEC_BUZ          (0x6A)
+#define OSDP_IEC_CAP          (0x62)
+#define OSDP_IEC_COM          (0x54)
+#define OSDP_IEC_COMSET       (0x6E)
+#define OSDP_IEC_CHLNG        (0x76)
+#define OSDP_IEC_CCRYPT       (0x76)
+#define OSDP_IEC_GENAUTH      (0xA4)
+#define OSDP_IEC_CRAUTH       (0xA5)
+#define OSDP_IEC_FILETRANSFER (0x7C)
+#define OSDP_IEC_FTSTAT       (0x7A)
+#define OSDP_IEC_ID           (0x61)
+#define OSDP_IEC_ISTAT        (0x65)
+#define OSDP_IEC_ISTATR       (0x49)
+#define OSDP_IEC_KEEPACTIVE   (0xA7)
+#define OSDP_IEC_KEYPAD       (0x53)
+#define OSDP_IEC_KEYSET       (0x75)
+#define OSDP_IEC_LED          (0x69)
+#define OSDP_IEC_LSTAT        (0x64)
+#define OSDP_IEC_LSTATR       (0x48)
+#define OSDP_IEC_MFGERRR      (0x84)
+#define OSDP_IEC_NAK          (0x41)
+#define OSDP_IEC_OSTAT        (0x66)
+#define OSDP_IEC_OSTATR       (0x4A)
+#define OSDP_IEC_OUT          (0x68)
+#define OSDP_IEC_PDCAP        (0x46)
+#define OSDP_IEC_PDID         (0x45)
+#define OSDP_IEC_POLL         (0x60)
+#define OSDP_IEC_RAW          (0x50)
+#define OSDP_IEC_RMAC_I       (0x78)
+#define OSDP_IEC_RSTAT        (0x67)
+#define OSDP_IEC_RSTATR       (0x4b)
+#define OSDP_IEC_SCRYPT       (0x77)
+#define OSDP_IEC_TEXT         (0x6b)
+#define OSDP_IEC_GENAUTHR     (0x81)
+#define OSDP_IEC_CRAUTHR      (0x82)
+
