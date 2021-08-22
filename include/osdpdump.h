@@ -78,6 +78,7 @@ typedef struct osdpdump_context
   char input_path [OSDPDUMP_STRING];
   OSDPDUMP_PD_CONTEXT pd_ctx [OSDPDUMP_PD_MAX+1];
   OSDPDUMP_INPUT accumulated_message;
+  char output_text [16384]; //maxstring
 } OSDPDUMP_CONTEXT;
 
 int osdpdump_accumulate_input(OSDPDUMP_CONTEXT *ctx, OSDPDUMP_INPUT *input_value);

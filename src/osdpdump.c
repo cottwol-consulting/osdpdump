@@ -79,6 +79,7 @@ int
 
   // regardless of what happened print the summary
   status = osdpdump_summary(ctx);
+  fprintf(stdout, "%s", ctx->output_text);
 
   if (status != ST_OK)
     fprintf(stderr, "osdpdump completed, status was %d. errno=%d.\n", status, errno);
@@ -454,12 +455,19 @@ int
 } /* osdpdump_review_input */
 
 
+/*
+  osdpdump_summary - create the summary text
+
+  Output:
+    fills in ctx->output_text e.g. so caller can print it.
+*/
 int 
   osdpdump_summary
     (OSDPDUMP_CONTEXT *ctx)
 { /* osdpdump_summary */
 
   int idx;
+  char otmp [1024]; //maxstring
 
 
   printf("\nOSDPDUMP ACTIVITY SUMMARY\n");
@@ -468,10 +476,12 @@ int
   for (idx=0; idx<OSDPDUMP_PD_MAX; idx++)
   {
     if (ctx->pd_ctx [idx].state EQUALS OSDPDUMP_PD_PRESENT)
-      printf(" %3d.(0x%02x)", idx, idx);
+    {
+      sprintf(otmp, " %3d.(0x%02x)", idx, idx); strcat(ctx->output_text, otmp);
+    };
   };
-  printf("\n");
-  printf("%6d. octets dropped.\n", ctx->dropped_octets);
+  sprintf(otmp, "%s", "\n"); strcat(ctx->output_text, otmp);
+  sprintf(otmp, "%6d. octets dropped.\n", ctx->dropped_octets); strcat(ctx->output_text, otmp);
   return(0);
 
 } /* osdpdump_summary */
