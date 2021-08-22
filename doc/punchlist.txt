@@ -1,9 +1,9 @@
 checksums get a warning
 warning dump line in multiline or at end in 1line
-hex after summary in 1line
 clean up headers
 clean up source
 stubs
 crc checker
-scs header offset calculator
+
+update readme
 

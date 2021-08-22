@@ -1,3 +1,6 @@
+/*
+  (C)Copyright 2021 Smithee Solutions LLC
+*/
 #include <stdio.h>
 #include <string.h>
 

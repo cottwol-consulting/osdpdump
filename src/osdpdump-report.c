@@ -1,3 +1,8 @@
+/*
+  osdpdump-report.c - reporting functions for osdpdump
+
+  (C)2021 Smithee Solutions LLC
+*/
 #include <stdio.h>
 #include <string.h>
 

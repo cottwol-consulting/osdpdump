@@ -5,7 +5,7 @@
   (C)2021 Smithee Solutions LLC
 */
 
-#define OSDPDUMP_VERSION "0.0.3-1"
+#define OSDPDUMP_VERSION "0.0.3-2"
 
 #define EQUALS ==
 #define ST_OK (0)
