@@ -29,6 +29,7 @@
 #define OSDP_IEC_LED          (0x69)
 #define OSDP_IEC_LSTAT        (0x64)
 #define OSDP_IEC_LSTATR       (0x48)
+#define OSDP_IEC_MFG          (0x80)
 #define OSDP_IEC_MFGERRR      (0x84)
 #define OSDP_IEC_NAK          (0x41)
 #define OSDP_IEC_OSTAT        (0x66)
