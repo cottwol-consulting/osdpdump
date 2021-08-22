@@ -97,63 +97,6 @@ int
 } /* main for osdpdump */
 
 
-/*
-  osdpdump_accumulate_input - use data received to build up a packet
-
-  Input:
-    raw value
-
-  Output:
-    updates accumulated packet in context
-*/
-int
-  osdpdump_accumulate_input
-    (OSDPDUMP_CONTEXT *ctx,
-    OSDPDUMP_INPUT *input_value)
-
-{ /* osdpdump_accumulate_input */
-
-  OSDPDUMP_INPUT *accumulated_message;
-  int done;
-  int expected_length;
-  int idx;
-//  unsigned char som;
-//  int command_response;
-//  unsigned char address;
-//  unsigned char remainder [2048];
-  int status;
-
-
-  status = ST_OSDPDUMP_NEED_MORE_DATA;
-  accumulated_message = &(ctx->accumulated_message);
-  expected_length = 2; // SOM and address
-  done = 1;
-  idx = 0;
-
-  // if there's something there, try to use it.
-
-  if (input_value->length > 0)
-    done = 0;
-  {
-    while (!done)
-    {
-      status = osdpdump_packet_accumulate(ctx, input_value, accumulated_message);
-
-      if (status EQUALS ST_OSDPDUMP_PACKET)
-        done = 1;
-
-      if (!done)
-      {
-        if (input_value->length < 1)
-          done = 1;
-      };
-    };
-  };
-  return(status);
-
-} /* osdpdump_accumulate_input */
-
-
 int
   osdpdump_command_offset
     (OSDPDUMP_CONTEXT *ctx,
@@ -463,48 +406,6 @@ int
   return(0);
 
 } /* osdpdump_parse */
-
-
-int
-  osdpdump_print
-    (OSDPDUMP_CONTEXT *ctx)
-
-{ /* osdpdump_print */
-
-  int i;
-  OSDPDUMP_WORKING_PACKET *packet;
-
-
-  packet = &(ctx->osdp_pdu);
-  switch(ctx->print_format)
-  {
-  case OSDPDUMP_FMT_2LINE:
-    fprintf(stdout, "%s ", osdpdump_command_string(ctx, packet->command_response));
-    fprintf(stdout, " A=%2d.", packet->address);
-    fprintf(stdout, " CRC %02x%02x", packet->packet_check [0], packet->packet_check [1]);
-    fprintf(stdout, "\n");
-    fprintf(stdout, " Dump:");
-    for (i=0; i<packet->octet_length; i++)
-      fprintf(stdout, " %02x", packet->octets [i]);
-    fprintf(stdout, "\n");
-    break;
-  case OSDPDUMP_FMT_1LINE:
-    fprintf(stdout, "P:%06d ", ctx->current_packet_number);
-    fprintf(stdout, "%s ", osdpdump_command_string(ctx, packet->command_response));
-    fprintf(stdout, " A=%2d.", packet->address);
-    fprintf(stdout, " CRC %02x%02x", packet->packet_check [0], packet->packet_check [1]);
-    fprintf(stdout, "\n");
-    break;
-  default:
-    fprintf(stdout, " C/R:%02x(%s)", packet->command_response, osdpdump_command_string(ctx, packet->command_response));
-    fprintf(stdout, " A:%02x", packet->address);
-    fprintf(stdout, " Check: %02x%02x", packet->packet_check [0], packet->packet_check [1]);
-    fprintf(stdout, "\n");
-    break;
-  };
-  return(0);
-
-} /* osdpdump_print */
 
 
 int

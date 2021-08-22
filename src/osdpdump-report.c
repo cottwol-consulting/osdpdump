@@ -5,6 +5,57 @@
 #include <osdpdump-decoding.h>
 
 
+int
+  osdpdump_print
+    (OSDPDUMP_CONTEXT *ctx)
+
+{ /* osdpdump_print */
+
+  int i;
+  OSDPDUMP_WORKING_PACKET *packet;
+
+
+  packet = &(ctx->osdp_pdu);
+  switch(ctx->print_format)
+  {
+  case OSDPDUMP_FMT_2LINE:
+    osdpdump_print_one_line(ctx, packet);
+    fprintf(stdout, " Dump:");
+    for (i=0; i<packet->octet_length; i++)
+      fprintf(stdout, " %02x", packet->octets [i]);
+    fprintf(stdout, "\n");
+    break;
+  case OSDPDUMP_FMT_1LINE:
+    osdpdump_print_one_line(ctx, packet);
+    break;
+  default:
+    fprintf(stdout, " C/R:%02x(%s)", packet->command_response, osdpdump_command_string(ctx, packet->command_response));
+    fprintf(stdout, " A:%02x", packet->address);
+    fprintf(stdout, " Check: %02x%02x", packet->packet_check [0], packet->packet_check [1]);
+    fprintf(stdout, "\n");
+    break;
+  };
+  return(0);
+
+} /* osdpdump_print */
+
+
+void
+  osdpdump_print_one_line
+    (OSDPDUMP_CONTEXT *ctx,
+    OSDPDUMP_WORKING_PACKET *packet)
+
+{ /* osdpdump_print_one_line */
+
+  fprintf(stdout, "P:%06d ", ctx->current_packet_number);
+  fprintf(stdout, "%s ", osdpdump_command_string(ctx, packet->command_response));
+  fprintf(stdout, " A=%2d.", packet->address);
+  fprintf(stdout, " CRC %02x%02x", packet->packet_check [0], packet->packet_check [1]);
+  fprintf(stdout, "\n");
+
+} /* osdpdump_print_one_line */
+
+
 /*
   osdpdump_summary - create the summary text
 

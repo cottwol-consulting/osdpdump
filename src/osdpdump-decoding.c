@@ -95,6 +95,9 @@ char
   case OSDP_IEC_LSTATR:
     strcpy(decoded, "osdp_LSTATR      ");
     break;
+  case OSDP_IEC_MFG:
+    strcpy(decoded, "osdp_MFG         ");
+    break;
   case OSDP_IEC_MFGERRR:
     strcpy(decoded, "osdp_MFGERRR     ");
     break;
