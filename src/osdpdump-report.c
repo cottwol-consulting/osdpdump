@@ -54,7 +54,12 @@ void
 
   fprintf(stdout, "P:%06d ", ctx->current_packet_number);
   fprintf(stdout, "%s ", osdpdump_command_string(ctx, packet->command_response));
-  fprintf(stdout, " A=%2d.", packet->address);
+  fprintf(stdout, " A %2d.", packet->address);
+  if (packet->completion_status & OSDPDUMP_COMPLETION_SCB)
+    fprintf(stdout, " SCS %2x", ctx->osdp_pdu.octets [1+1+2+1+1]);
+  if (packet->completion_status & OSDPDUMP_COMPLETION_SCBK_D)
+    fprintf(stdout, " (D)");
+  packet->packet_check [0] = ctx->osdp_pdu.octets [ctx->osdp_pdu.octet_length-2];
   fprintf(stdout, " CRC %02x%02x", packet->packet_check [0], packet->packet_check [1]);
   fprintf(stdout, "\n");
 

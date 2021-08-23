@@ -7,3 +7,7 @@ crc checker
 
 update readme
 
+finish parse stuff for a secure channel being set up.
+timestamping
+salea conversion
+

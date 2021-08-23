@@ -5,7 +5,7 @@
   (C)2021 Smithee Solutions LLC
 */
 
-#define OSDPDUMP_VERSION "0.0.3-2"
+#define OSDPDUMP_VERSION "0.0.3-3"
 
 #define EQUALS ==
 #define ST_OK (0)
@@ -55,12 +55,14 @@ typedef struct osdpdump_input
 typedef struct osdpdump_pd_context
 {
   int state;
+  unsigned short int scs_status;
 } OSDPDUMP_PD_CONTEXT;
 
-#define OSDPDUMP_COMPLETION_SOM (0x0001)
-#define OSDPDUMP_COMPLETION_SCB (0x0002)
-#define OSDPDUMP_COMPLETION_CMD (0x8000)
-#define OSDPDUMP_COMPLETION_RSP (0x4000)
+#define OSDPDUMP_COMPLETION_SOM    (0x0001)
+#define OSDPDUMP_COMPLETION_SCB    (0x0002)
+#define OSDPDUMP_COMPLETION_CMD    (0x8000)
+#define OSDPDUMP_COMPLETION_RSP    (0x4000)
+#define OSDPDUMP_COMPLETION_SCBK_D (0x0004)
 typedef struct osdpdump_working_packet
 {
   unsigned char octets [2048]; // max

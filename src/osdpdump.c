@@ -380,6 +380,13 @@ int
 
   packet = &(ctx->osdp_pdu);
   packet->address = 0x7F & (packet->octets [1]);
+  control_octet = packet->octets [4];
+  if (control_octet & OSDP_IEC_CTL_SCB)
+    packet->completion_status = packet->completion_status | OSDPDUMP_COMPLETION_SCB;
+
+  // extract the command/response field and collect statistics
+
+  packet->command_response = ctx->osdp_pdu.octets [osdpdump_command_offset(ctx, packet)];
 
   if (0x80 & packet->octets [1])
     packet->completion_status = packet->completion_status | OSDPDUMP_COMPLETION_RSP;
@@ -390,15 +397,22 @@ int
 
   // detect SCB
 
-  control_octet = packet->octets [4];
   if (control_octet & OSDP_IEC_CTL_SCB)
   {
-    packet->completion_status = packet->completion_status | OSDPDUMP_COMPLETION_SCB;
+    // if this is a CHLNG note which SCBK it's for in the PD context.
+
+    if (packet->command_response EQUALS OSDP_IEC_CHLNG)
+    {
+#if 0
+zzz
+      assuming there are 3 octets in the scs header
+        use 3rd octet of scs header to identify SCBK or SCBK-D
+        note that in the pd context
+#endif
+      if (packet->octets [7] EQUALS 0) // 0 in 3rd octet means SCBK-D
+        packet->completion_status = packet->completion_status | OSDPDUMP_COMPLETION_SCBK_D;
+    }
   };
-
-  // extract the command/response field and collect statistics
-
-  packet->command_response = ctx->osdp_pdu.octets [osdpdump_command_offset(ctx, packet)];
 
   packet->packet_check [0] = ctx->osdp_pdu.octets [ctx->osdp_pdu.octet_length-2];
   packet->packet_check [1] = ctx->osdp_pdu.octets [ctx->osdp_pdu.octet_length-1];
