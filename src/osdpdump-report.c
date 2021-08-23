@@ -52,6 +52,12 @@ void
 
 { /* osdpdump_print_one_line */
 
+  char otmp [8*1024]; //maxstring large
+  int payload_offset;
+
+
+  payload_offset = 6; // before secure channel
+
   fprintf(stdout, "P:%06d ", ctx->current_packet_number);
   fprintf(stdout, "%s ", osdpdump_command_string(ctx, packet->command_response));
   fprintf(stdout, " A %2d.", packet->address);
@@ -59,7 +65,31 @@ void
     fprintf(stdout, " SCS %2x", ctx->osdp_pdu.octets [1+1+2+1+1]);
   if (packet->completion_status & OSDPDUMP_COMPLETION_SCBK_D)
     fprintf(stdout, " (D)");
-  packet->packet_check [0] = ctx->osdp_pdu.octets [ctx->osdp_pdu.octet_length-2];
+
+  // command-specific one-liners
+
+  otmp [0] = 0;
+  switch(packet->command_response)
+  {
+  case OSDP_IEC_FTSTAT:
+    if (!(packet->completion_status & OSDPDUMP_COMPLETION_SCB))
+    {
+      sprintf(otmp,
+"FtAction %x FtDelay-LSB %02x FtDelay-MSB %02x FtStatusDetail-LSB %02x FtStatusDetail-MSB %02x FtUpdateMsgMax-LSB %2x FtUpdateMsgMax-MSB %2x",
+        packet->octets [payload_offset + 0],
+        packet->octets [payload_offset + 1], packet->octets [payload_offset + 2],
+        packet->octets [payload_offset + 3], packet->octets [payload_offset + 4],
+        packet->octets [payload_offset + 5], packet->octets [payload_offset + 6]);
+    };
+    break;
+  default:
+    if (ctx->verbosity > 3)
+      fprintf(stdout, "Warning: unknown command (%x) in osdpdump_print_one_line\n", packet->command_response);
+    break;
+  };
+  if (strlen(otmp) > 0)
+    fprintf(stdout, "%s", otmp);
+
   fprintf(stdout, " CRC %02x%02x", packet->packet_check [0], packet->packet_check [1]);
   fprintf(stdout, "\n");
 

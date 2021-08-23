@@ -88,7 +88,7 @@ int
     };
   };
 
-  fprintf(stdout, "%s", ctx->output_text);
+  fprintf(stdout, "%s", ctx->output_text); ctx->output_text [0] = 0;
 
   if (status != ST_OK)
     fprintf(stderr, "osdpdump completed, status was %d. errno=%d.\n", status, errno);
@@ -156,7 +156,10 @@ int
           if (status EQUALS ST_OK)
             status = osdpdump_review_input(ctx);
           if (status EQUALS ST_OK)
+          {
             status = osdpdump_print(ctx);
+            fprintf(stdout, "%s", ctx->output_text); ctx->output_text [0] = 0;
+          };
         };
       };
       packet = &(ctx->osdp_pdu);
