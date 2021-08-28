@@ -386,6 +386,7 @@ int
   control_octet = packet->octets [4];
   if (control_octet & OSDP_IEC_CTL_SCB)
     packet->completion_status = packet->completion_status | OSDPDUMP_COMPLETION_SCB;
+  packet->sequence = control_octet & 0x03;
 
   // extract the command/response field and collect statistics
 

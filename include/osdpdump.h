@@ -70,6 +70,7 @@ typedef struct osdpdump_working_packet
   unsigned short int completion; // bitmask
   int completion_status;
   int command_response;
+  int sequence;
   unsigned char address;
   unsigned char packet_check [2];
   unsigned char remainder [2048];
