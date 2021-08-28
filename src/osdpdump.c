@@ -122,6 +122,9 @@ int
 } /* osdpdump_command_offset */
 
 
+/*
+  osdpdump_digester - reads the input (file) and runs the processing framework
+*/
 int
   osdpdump_digester
     (OSDPDUMP_CONTEXT *ctx)
@@ -151,6 +154,7 @@ int
         ctx->current_packet_number ++;
         ctx->detected_packets ++;
         input_exhausted = 0;
+        ctx->output_text [0] = 0;
         {
           status = osdpdump_parse(ctx);
           if (status EQUALS ST_OK)
@@ -162,6 +166,7 @@ int
           };
         };
       };
+      fflush(stdout);  fflush(stderr);
       packet = &(ctx->osdp_pdu);
       memset(packet, 0, sizeof(*packet));
     };
@@ -371,6 +376,9 @@ int osdpdump_packet_accumulate
 } /* osdpdump_packet_accumulate */
 
 
+/*
+  osdpdump_parse - given a OSDP packet decompose it into parts
+*/
 int
   osdpdump_parse
     (OSDPDUMP_CONTEXT *ctx)
@@ -379,14 +387,26 @@ int
  
   unsigned char control_octet;
   OSDPDUMP_WORKING_PACKET *packet;
+  int status;
 
 
+  status = ST_OK;
   packet = &(ctx->osdp_pdu);
+  packet->role = 0x80 & (packet->octets [1]);
   packet->address = 0x7F & (packet->octets [1]);
+// sanity check address
   control_octet = packet->octets [4];
   if (control_octet & OSDP_IEC_CTL_SCB)
     packet->completion_status = packet->completion_status | OSDPDUMP_COMPLETION_SCB;
   packet->sequence = control_octet & 0x03;
+  if ((status EQUALS ST_OK) && !(packet->role)) // do this for commands not responses
+  {
+    if (ctx->verbosity > 9)
+      fprintf(stderr, "updating last seq to %d from %d ctl 0x%02x\n",
+        packet->sequence, ctx->pd_ctx [packet->address].last_received_sequence,
+        control_octet);
+    ctx->pd_ctx [packet->address].last_received_sequence = packet->sequence;
+  };
 
   // extract the command/response field and collect statistics
 
@@ -421,7 +441,7 @@ zzz
   packet->packet_check [0] = ctx->osdp_pdu.octets [ctx->osdp_pdu.octet_length-2];
   packet->packet_check [1] = ctx->osdp_pdu.octets [ctx->osdp_pdu.octet_length-1];
   packet = &(ctx->osdp_pdu);
-  return(0);
+  return(status);
 
 } /* osdpdump_parse */
 
@@ -484,10 +504,41 @@ int
 
 { /* osdpdump_review_input */
 
-  ctx->detected_commands [ctx->osdp_pdu.command_response] ++;
+  int expected_seq;
+  int last_seq;
+  OSDPDUMP_WORKING_PACKET *packet;
+  int status;
+
+
+  status = ST_OK;
   if (ctx->verbosity > 9)
     printf("DEBUG: osdpdump_review_input\n");
-  return(0);
+  ctx->detected_commands [ctx->osdp_pdu.command_response] ++;
+#if 0
+  if it's a command
+    if the sequence isn't the expected next sequence
+      make a comment
+    update "last sequence sent to that PD"
+  if it's a response
+    if the sequence doesn't match the last sequence to that PD 
+      make a comment
+#endif
+  packet = &(ctx->osdp_pdu);
+  last_seq = ctx->pd_ctx [packet->address].last_received_sequence;
+  if (packet->role)
+  {
+    expected_seq = last_seq ++;
+    if (expected_seq == 4)
+      expected_seq = 1;
+    if (packet->sequence != expected_seq)
+      strcat(ctx->output_text, "  - sequence number not next in ACU sequence\n");
+  };
+  if (!(packet->role))
+  {
+    if (packet->sequence != last_seq)
+      strcat(ctx->output_text, "  - PD is responding on unexpected sequence number\n");
+  };
+  return(status);
 
 } /* osdpdump_review_input */
 

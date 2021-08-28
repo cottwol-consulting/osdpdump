@@ -5,7 +5,7 @@
   (C)2021 Smithee Solutions LLC
 */
 
-#define OSDPDUMP_VERSION "0.0.5-1"
+#define OSDPDUMP_VERSION "0.0.5-2"
 
 #define EQUALS ==
 #define ST_OK (0)
@@ -55,6 +55,7 @@ typedef struct osdpdump_input
 typedef struct osdpdump_pd_context
 {
   int state;
+  int last_received_sequence;
   unsigned short int scs_status;
 } OSDPDUMP_PD_CONTEXT;
 
@@ -69,6 +70,7 @@ typedef struct osdpdump_working_packet
   int octet_length;
   unsigned short int completion; // bitmask
   int completion_status;
+  int role; // 0x80 for PD or 0x00 for ACU
   int command_response;
   int sequence;
   unsigned char address;

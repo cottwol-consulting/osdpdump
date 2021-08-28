@@ -23,8 +23,14 @@ int
   packet = &(ctx->osdp_pdu);
   switch(ctx->print_format)
   {
+//comments are 3  case OSDPDUMP_FMT_2LINE:
   case OSDPDUMP_FMT_2LINE:
     osdpdump_print_one_line(ctx, packet);
+    if (strlen(ctx->output_text) > 0)
+    {
+      fprintf(stdout, "%s", ctx->output_text);
+      ctx->output_text [0] = 0;
+    };
     fprintf(stdout, " Dump:");
     for (i=0; i<packet->octet_length; i++)
       fprintf(stdout, " %02x", packet->octets [i]);
@@ -32,6 +38,12 @@ int
     break;
   case OSDPDUMP_FMT_1LINE:
     osdpdump_print_one_line(ctx, packet);
+// yeah shouldn't do this here make options richer
+    if (strlen(ctx->output_text) > 0)
+    {
+      fprintf(stdout, "%s", ctx->output_text);
+      ctx->output_text [0] = 0;
+    };
     break;
   default:
     fprintf(stdout, " C/R:%02x(%s)", packet->command_response, osdpdump_command_string(ctx, packet->command_response));
