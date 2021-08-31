@@ -29,8 +29,9 @@
   NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#define OSDP_IEC_SOM   (0x53)
-#define OSDP_IEC_CTL_SCB (0x08) // bit in CTL
+#define OSDP_IEC_SOM     (0x53)
+#define OSDP_IEC_CTL_SCB (0x08) // bit in CTL for security control block(scb)
+#define OSDP_IEC_CTL_CRC (0x04) // bit in CTL for crc/checksum
 
 #define OSDP_IEC_ACK          (0x40)
 #define OSDP_IEC_ACURXSIZE    (0x7b)
