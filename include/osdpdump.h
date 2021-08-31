@@ -5,7 +5,7 @@
   (C)2021 Smithee Solutions LLC
 */
 
-#define OSDPDUMP_VERSION "0.0.5-2"
+#define OSDPDUMP_VERSION "0.0.6-1"
 
 #define EQUALS ==
 #define ST_OK (0)
@@ -75,7 +75,8 @@ typedef struct osdpdump_working_packet
   int sequence;
   unsigned char address;
   unsigned char packet_check [2];
-  unsigned char remainder [2048];
+  int payload_length;
+//  unsigned char remainder [2048];
 } OSDPDUMP_WORKING_PACKET;
 
 typedef struct osdpdump_context

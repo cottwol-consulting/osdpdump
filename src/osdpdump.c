@@ -79,11 +79,14 @@ int
         if (ctx->dump_file_handle EQUALS NULL)
           status = ST_OSDPDUMP_BAD_INPUT_FILE;
       };
-      status = osdpdump_digester(ctx);
-      if (ctx->verbosity > 9)
-        fprintf(stderr, "DEBUG: source is osdpcap %s\n", ctx->input_path);
-      // regardless of what happened print the summary
-      status = osdpdump_summary(ctx);
+      if (status EQUALS ST_OK)
+      {
+        status = osdpdump_digester(ctx);
+        if (ctx->verbosity > 9)
+          fprintf(stderr, "DEBUG: source is osdpcap %s\n", ctx->input_path);
+        // regardless of what happened print the summary
+        status = osdpdump_summary(ctx);
+      };
       break;
     };
   };
@@ -394,10 +397,22 @@ int
   packet = &(ctx->osdp_pdu);
   packet->role = 0x80 & (packet->octets [1]);
   packet->address = 0x7F & (packet->octets [1]);
+  packet->payload_length = packet->octet_length - 6; // less SOM addr len(2) ctrl c/r
 // sanity check address
   control_octet = packet->octets [4];
+  if (control_octet & OSDP_IEC_CTL_CRC)
+  {
+    packet->payload_length = packet->payload_length - 2; // less CRC
+  }
+  else
+  {
+    packet->payload_length = packet->payload_length - 1; // less Checksum
+  };
   if (control_octet & OSDP_IEC_CTL_SCB)
+  {
     packet->completion_status = packet->completion_status | OSDPDUMP_COMPLETION_SCB;
+    packet->payload_length = packet->payload_length - packet->octets [6]; // less SCB header
+  };
   packet->sequence = control_octet & 0x03;
   if ((status EQUALS ST_OK) && !(packet->role)) // do this for commands not responses
   {

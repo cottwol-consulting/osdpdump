@@ -31,10 +31,6 @@ int
   int done;
   int expected_length;
   int idx;
-//  unsigned char som;
-//  int command_response;
-//  unsigned char address;
-//  unsigned char remainder [2048];
   int status;
 
 

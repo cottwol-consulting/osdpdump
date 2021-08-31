@@ -31,7 +31,7 @@ int
       fprintf(stdout, "%s", ctx->output_text);
       ctx->output_text [0] = 0;
     };
-    fprintf(stdout, " Dump:");
+    fprintf(stdout, "P:%06d Dump:", ctx->current_packet_number);
     for (i=0; i<packet->octet_length; i++)
       fprintf(stdout, " %02x", packet->octets [i]);
     fprintf(stdout, "\n");
@@ -46,16 +46,27 @@ int
     };
     break;
   default:
-    fprintf(stdout, " C/R:%02x(%s)", packet->command_response, osdpdump_command_string(ctx, packet->command_response));
-    fprintf(stdout, " A:%02x", packet->address);
-    fprintf(stdout, " Check: %02x%02x", packet->packet_check [0], packet->packet_check [1]);
-    fprintf(stdout, "\n");
+    osdpdump_print_one_line(ctx, packet);
     break;
   };
   return(0);
 
 } /* osdpdump_print */
 
+
+/*
+  osdpdump_print_one_line - print a one-line summary of an OSDP packet.  hopefully greppable.
+
+  Input:
+    context
+    the packet we're working on (assumed sane)
+
+  Output:
+    sends it's output to stdout
+
+  ToDo:
+    update to output to a buffer and handle the io elsewhere.
+*/
 
 void
   osdpdump_print_one_line
@@ -65,6 +76,7 @@ void
 { /* osdpdump_print_one_line */
 
   char otmp [8*1024]; //maxstring large
+  char otmp2 [1024]; //maxstring
   int payload_offset;
 
 
@@ -88,11 +100,19 @@ void
     if (!(packet->completion_status & OSDPDUMP_COMPLETION_SCB))
     {
       sprintf(otmp,
-"FtAction %x FtDelay-LSB %02x FtDelay-MSB %02x FtStatusDetail-LSB %02x FtStatusDetail-MSB %02x FtUpdateMsgMax-LSB %2x FtUpdateMsgMax-MSB %2x",
+" FtAction %x FtDelay-LSB %02x FtDelay-MSB %02x FtStatusDetail-LSB %02x FtStatusDetail-MSB %02x FtUpdateMsgMax-LSB %2x FtUpdateMsgMax-MSB %2x",
         packet->octets [payload_offset + 0],
         packet->octets [payload_offset + 1], packet->octets [payload_offset + 2],
         packet->octets [payload_offset + 3], packet->octets [payload_offset + 4],
         packet->octets [payload_offset + 5], packet->octets [payload_offset + 6]);
+    };
+    break;
+  case OSDP_IEC_NAK:
+    sprintf(otmp, " Reason %02x", packet->octets [payload_offset + 0]);
+    if (packet->payload_length > 1)
+    {
+      sprintf(otmp2, " Detail0 %02x", packet->octets [payload_offset + 1]);
+      strcat(otmp, otmp2);
     };
     break;
   default:
@@ -100,6 +120,9 @@ void
       fprintf(stdout, "Warning: unknown command (%x) in osdpdump_print_one_line\n", packet->command_response);
     break;
   };
+
+  // print what we've decoded
+
   if (strlen(otmp) > 0)
     fprintf(stdout, "%s", otmp);
 
