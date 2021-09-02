@@ -133,6 +133,15 @@ void
         packet->octets [payload_offset + 5], packet->octets [payload_offset + 6]);
     };
     break;
+  case OSDP_IEC_KEYPAD:
+    {
+      sprintf(otmp,
+" Rdr %2x %d. digits first digit %02x",
+        packet->octets [payload_offset + 0],
+        packet->octets [payload_offset + 1],
+        packet->octets [payload_offset + 2]);
+    };
+    break;
   case OSDP_IEC_NAK:
     sprintf(otmp, " Reason %02x", packet->octets [payload_offset + 0]);
     if (packet->payload_length > 1)
