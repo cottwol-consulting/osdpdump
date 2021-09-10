@@ -109,6 +109,7 @@ void
   payload_offset = 6; // before secure channel
 
   fprintf(stdout, "P:%06d ", ctx->current_packet_number);
+  fprintf(stdout, "t=%9s.%9s ", ctx->packet_seconds, ctx->packet_nanoseconds);
   fprintf(stdout, "%s ", osdpdump_command_string(ctx, packet->command_response));
   fprintf(stdout, " A %2d.", packet->address);
   fprintf(stdout, " S%d", packet->sequence);

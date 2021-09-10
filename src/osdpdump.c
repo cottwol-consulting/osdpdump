@@ -174,6 +174,8 @@ int
       status = osdpdump_accumulate_input(ctx, &input_value);
       if (status EQUALS ST_OSDPDUMP_PACKET)
       {
+        strcpy(ctx->packet_seconds, input_value.time_seconds);
+        strcpy(ctx->packet_nanoseconds, input_value.time_nanoseconds);
         ctx->current_packet_number ++;
         ctx->detected_packets ++;
         input_exhausted = 0;
@@ -515,6 +517,13 @@ status = -1;
     };
     if (status EQUALS ST_OK)
     {
+      value = json_object_get(line_root, "timeSec");
+      if (json_is_string(value))
+        strcpy(input_value->time_seconds, json_string_value(value));
+      value = json_object_get(line_root, "timeNano");
+      if (json_is_string(value))
+        strcpy(input_value->time_nanoseconds, json_string_value(value));
+
       value = json_object_get(line_root, "data");
       if (json_is_string(value))
         strcpy(input_value->input_string, json_string_value(value));

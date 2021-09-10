@@ -30,7 +30,7 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#define OSDPDUMP_VERSION "0.0.7-2"
+#define OSDPDUMP_VERSION "0.1.0-1"
 
 #define EQUALS ==
 #define ST_OK (0)
@@ -75,6 +75,8 @@ typedef struct osdpdump_input
   int length;
   unsigned char raw_bytes[OSDPDUMP_BUFFER_MAX];
   char input_string [OSDPDUMP_STRING*2];
+  char time_seconds [1024];
+  char time_nanoseconds [1024];
 } OSDPDUMP_INPUT;
 
 typedef struct osdpdump_pd_context
@@ -124,6 +126,8 @@ typedef struct osdpdump_context
   int detected_commands [256];
 
   OSDPDUMP_WORKING_PACKET osdp_pdu;
+  char packet_seconds [1024];
+  char packet_nanoseconds [1024];
   char input_path [OSDPDUMP_STRING];
   OSDPDUMP_PD_CONTEXT pd_ctx [OSDPDUMP_PD_MAX+1];
   OSDPDUMP_INPUT accumulated_message;
