@@ -32,11 +32,13 @@
 
 #include <stdio.h>
 #include <string.h>
+
+#include <osdpdump-version.h>
+
 #define EQUALS ==
 #define ST_OK (0)
 int verbosity;
 
-#define VERSION "0.0.0-4"
 
 int
   main
@@ -57,7 +59,7 @@ int
   char *token;
 
 
-  fprintf(stderr, "Convert Salea trace to OSDPCAP %s\n", VERSION);
+  fprintf(stderr, "Convert Salea trace to OSDPCAP %s\n", OSDPDUMP_VERSION);
   have_packet = 0;
   verbosity = 9;
   input_file = stdin;

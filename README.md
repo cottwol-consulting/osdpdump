@@ -1,25 +1,23 @@
 # README #
 
-Tool to decode dump and analyze a byte stream of OSDP (IEC 60839-11-5) traffic.
-
-This README would normally document whatever steps are necessary to get your application up and running.
+Tools to decode dump and analyze a byte stream of OSDP (IEC 60839-11-5) traffic.
+Includes a Saleae-to-osdpdump converter.
 
 ### What is this repository for? ###
 
 * Decode OSDP traces
-* Version 0.0.0-1
+* Version 0.1.0-2
 
 ### How do I get set up? ###
 
 * Summary of set up
 
-clone repo
-make
-make package
-install debian package
+* run make, copy 'osdpdump' and 'convert-salea' to /usr/local/share/bin.
+
+* package coming soon.
 
 * Configuration
-Assumes debian-class linux.  Assumes OSDPCAP format or serial stream.
+Assumes debian-class linux.  Assumes OSDPCAP format (for now) or serial stream (future.)
 
 * Dependencies
 Debian Linux

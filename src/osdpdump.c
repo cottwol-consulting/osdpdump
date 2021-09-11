@@ -40,6 +40,7 @@
 
 
 #include <osdpdump.h>
+#include <osdpdump-version.h>
 typedef struct osdpdump_command_line_context
 {
   int option;
