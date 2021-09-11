@@ -10,14 +10,11 @@ Includes a Saleae-to-osdpdump converter.
 
 ### How do I get set up? ###
 
-* Summary of set up
-
 * run make, copy 'osdpdump' and 'convert-salea' to /usr/local/share/bin.
-
 * package coming soon.
 
-* Configuration
-Assumes debian-class linux.  Assumes OSDPCAP format (for now) or serial stream (future.)
+### Configuration
+Assumes Debian-class Linux.  Assumes OSDPCAP format (for now) or serial stream (future.)
 
 * Dependencies
 Debian Linux
@@ -25,7 +22,9 @@ CLANG
 
 * How to run tests
 
-Build the tool, use it to decode sample.osdpcap in the test directory.
+Build the tool, use it to decode sample.osdpcap in the test directory.  Command line is:
+
+osdpdump --format 1 --source ../test/sample.osdpcap >sample_osdpdump.log
 
 * Deployment instructions
 
