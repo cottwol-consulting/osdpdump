@@ -1,6 +1,5 @@
 checksums get a warning
 warning dump line in multiline or at end in 1line
-clean up headers
 clean up source
 stubs
 crc checker
@@ -8,6 +7,4 @@ crc checker
 update readme
 
 finish parse stuff for a secure channel being set up.
-timestamping
-salea conversion
 
