@@ -10,6 +10,10 @@ LDFLAGS=-g -ljansson
 
 all:	${PROGS}
 
+build:	all
+	mkdir -p ../opt/tester/bin
+	cp ${PROGS} ../opt/tester/bin
+
 test:	all
 	echo run tests from the test directory
 

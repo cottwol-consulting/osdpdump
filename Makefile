@@ -33,4 +33,9 @@ all:
 
 clean:
 	(cd src; make clean)
+	rm -rf opt
+
+build:	all
+	(cd src; make build)
+	@echo cd to package and make arm64 or amd64
 

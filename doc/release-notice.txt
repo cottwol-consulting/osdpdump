@@ -1,4 +1,6 @@
-release notice for osdpdump 0.1.0-2
+release notice for osdpdump 0.1.1-1
+
+top level make builds more completely, add package build
 
 more or less proper git public repo headers
 
