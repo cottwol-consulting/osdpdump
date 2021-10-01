@@ -495,16 +495,12 @@ int
 
     if (packet->command_response EQUALS OSDP_IEC_CHLNG)
     {
-#if 0
-zzz
-      assuming there are 3 octets in the scs header
-        use 3rd octet of scs header to identify SCBK or SCBK-D
-        note that in the pd context
-#endif
-      if (packet->octets [7] EQUALS 0) // 0 in 3rd octet means SCBK-D
+      if (packet->octets [7] EQUALS 0) // 0 in 3rd octet of SCS header in osdp_CHLNG means SCBK-D
         packet->completion_status = packet->completion_status | OSDPDUMP_COMPLETION_SCBK_D;
     }
   };
+
+/// checksum vs. crc and offset glitches
 
   packet->packet_check [0] = ctx->osdp_pdu.octets [ctx->osdp_pdu.octet_length-2];
   packet->packet_check [1] = ctx->osdp_pdu.octets [ctx->osdp_pdu.octet_length-1];
