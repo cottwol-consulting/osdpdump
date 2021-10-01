@@ -286,8 +286,11 @@ ctx->output_analysis = 1;
       ctx->command = OSDPDUMP_CMD_HELP;
       break;
     case OSDPDUMP_OPT_REPORT_FORMAT:
+      // 1, 2 or 3 are allowed.  force it to 1 (1-liner) if out of range.
+      ctx->print_format = 1;
       sscanf(optarg, "%d", &i);
-      ctx->print_format = i;
+      if ((i >= 1) && (i <= 3))
+        ctx->print_format = i;
       ctx->command = OSDPDUMP_CMD_DUMP;
       break;
     case OSDPDUMP_OPT_SOURCE:
@@ -529,7 +532,7 @@ int
   int status;
   char *status_io;
   json_error_t status_json;
-char line [2*1024];
+  char line [2*1024];
 
 
   status = ST_OK;
@@ -547,7 +550,7 @@ char line [2*1024];
     }
     else
     {
-status = -1;
+      status = ST_OSDPDUMP_FILE_READ_ERROR;
     };
     if (status EQUALS ST_OK)
     {
@@ -592,16 +595,10 @@ int
   if (ctx->verbosity > 9)
     printf("DEBUG: osdpdump_review_input\n");
   ctx->detected_commands [ctx->osdp_pdu.command_response] ++;
-#if 0
-  if it's a command
-    if the sequence isn't the expected next sequence
-      make a comment
-    update "last sequence sent to that PD"
-  if it's a response
-    if the sequence doesn't match the last sequence to that PD 
-      make a comment
-#endif
   packet = &(ctx->osdp_pdu);
+
+  // make sure sequence numbers are consistent
+
   last_seq = ctx->pd_ctx [packet->address].last_received_sequence;
   if (packet->role)
   {

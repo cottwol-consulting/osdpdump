@@ -31,13 +31,14 @@
 */
 
 #define EQUALS ==
-#define ST_OK (0)
-#define ST_OSDPDUMP_BAD_INPUT_FORMAT (-1)
-#define ST_OSDPDUMP_BAD_INPUT_FILE   (-2)
-#define ST_OSDPDUMP_PACKET           (-3)
-#define ST_OSDPDUMP_MORE             (-4)
+#define ST_OK                            ( 0)
+#define ST_OSDPDUMP_BAD_INPUT_FORMAT     (-1)
+#define ST_OSDPDUMP_BAD_INPUT_FILE       (-2)
+#define ST_OSDPDUMP_PACKET               (-3)
+#define ST_OSDPDUMP_MORE                 (-4)
 #define ST_OSDPDUMP_NEED_MORE_DATA       (-5)
 #define ST_OSDPDUMP_SOURCE_NOT_SUPPORTED (-6)
+#define ST_OSDPDUMP_FILE_READ_ERROR      (-7)
 
 #define OSDPDUMP_STRING     (1024)
 #define OSDPDUMP_BUFFER_MAX (2048)
@@ -117,7 +118,7 @@ typedef struct osdpdump_context
   int analysis_view; // 0=PD, 1=ACU, 2-255 RFU
   int output_report; // 1=yes
   int output_analysis; // 1=yes
-  int print_format; //1=oneline 2=oneline summary 3=twoline summary and hex
+  int print_format;
   FILE *dump_file_handle;
 
   // statistics
@@ -143,6 +144,7 @@ int osdpdump_initialize(OSDPDUMP_CONTEXT *ctx, int argc, char *argv []);
 int osdpdump_packet_accumulate(OSDPDUMP_CONTEXT *ctx, OSDPDUMP_INPUT *raw, OSDPDUMP_INPUT *accumulated_packet);
 int osdpdump_parse(OSDPDUMP_CONTEXT *ctx);
 int osdpdump_print(OSDPDUMP_CONTEXT *ctx);
+int osdpdump_print_hex(OSDPDUMP_CONTEXT *ctx);
 void osdpdump_print_one_line(OSDPDUMP_CONTEXT *ctx, OSDPDUMP_WORKING_PACKET *packet);
 int osdpdump_read_input(OSDPDUMP_CONTEXT *ctx, OSDPDUMP_INPUT *input_value);
 int osdpdump_review_input(OSDPDUMP_CONTEXT *ctx);

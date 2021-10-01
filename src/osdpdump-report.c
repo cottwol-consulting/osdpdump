@@ -61,7 +61,13 @@ int
   switch(ctx->print_format)
   {
   case OSDPDUMP_FMT_ANNOTATED:
-//comments are 3  case OSDPDUMP_FMT_2LINE:
+    osdpdump_print_one_line(ctx, packet);
+    if (strlen(ctx->output_text) > 0)
+    {
+      fprintf(stdout, "%s", ctx->output_text);
+      ctx->output_text [0] = 0;
+    };
+    osdpdump_print_hex(ctx);
     break;
 
   case OSDPDUMP_FMT_2LINE:
@@ -78,12 +84,6 @@ int
     break;
   case OSDPDUMP_FMT_1LINE:
     osdpdump_print_one_line(ctx, packet);
-// yeah shouldn't do this here make options richer
-    if (strlen(ctx->output_text) > 0)
-    {
-      fprintf(stdout, "%s", ctx->output_text);
-      ctx->output_text [0] = 0;
-    };
     break;
   default:
     osdpdump_print_one_line(ctx, packet);
@@ -92,6 +92,25 @@ int
   return(0);
 
 } /* osdpdump_print */
+
+
+int osdpdump_print_hex
+    (OSDPDUMP_CONTEXT *ctx)
+
+{ /* osdpdump_print_hex */
+
+  int i;
+  OSDPDUMP_WORKING_PACKET *packet;
+
+
+  packet = &(ctx->osdp_pdu);
+  fprintf(stdout, "P:%06d Dump:", ctx->current_packet_number);
+  for (i=0; i<packet->octet_length; i++)
+    fprintf(stdout, " %02x", packet->octets [i]);
+  fprintf(stdout, "\n");
+  return(ST_OK);
+
+} /* osdpdump_print_hex */
 
 
 /*
