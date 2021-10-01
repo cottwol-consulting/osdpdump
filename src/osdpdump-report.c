@@ -36,6 +36,17 @@
 #include <osdpdump-decoding.h>
 
 
+/*
+  osdpdump_print - dump a PDU as text line(s)
+
+  Inputs:
+    context
+    context->print_format dictates text output
+
+  OSDPDUMP_FMT_1LINE
+  OSDPDUMP_FMT_2LINE
+  OSDPDUMP_FMT_ANNOTATED
+*/
 int
   osdpdump_print
     (OSDPDUMP_CONTEXT *ctx)
@@ -49,7 +60,10 @@ int
   packet = &(ctx->osdp_pdu);
   switch(ctx->print_format)
   {
+  case OSDPDUMP_FMT_ANNOTATED:
 //comments are 3  case OSDPDUMP_FMT_2LINE:
+    break;
+
   case OSDPDUMP_FMT_2LINE:
     osdpdump_print_one_line(ctx, packet);
     if (strlen(ctx->output_text) > 0)

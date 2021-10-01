@@ -36,7 +36,8 @@
 #define ST_OSDPDUMP_BAD_INPUT_FILE   (-2)
 #define ST_OSDPDUMP_PACKET           (-3)
 #define ST_OSDPDUMP_MORE             (-4)
-#define ST_OSDPDUMP_NEED_MORE_DATA   (-5)
+#define ST_OSDPDUMP_NEED_MORE_DATA       (-5)
+#define ST_OSDPDUMP_SOURCE_NOT_SUPPORTED (-6)
 
 #define OSDPDUMP_STRING     (1024)
 #define OSDPDUMP_BUFFER_MAX (2048)
@@ -46,8 +47,9 @@
 
 #define OSDPDUMP_ANA_STRICT (2)
 
-#define OSDPDUMP_FMT_2LINE (0x02) // 1-line, no hex
-#define OSDPDUMP_FMT_1LINE (0x01) // 1-line, no hex
+#define OSDPDUMP_FMT_1LINE (0x01) // 1-line, no hex, no comments
+#define OSDPDUMP_FMT_2LINE (0x02) // 1-line, hex
+#define OSDPDUMP_FMT_ANNOTATED (0x03)// 2 lines plus commentary
 
 #define OSDPDUMP_PD_MAX (31)
 
@@ -144,5 +146,6 @@ int osdpdump_print(OSDPDUMP_CONTEXT *ctx);
 void osdpdump_print_one_line(OSDPDUMP_CONTEXT *ctx, OSDPDUMP_WORKING_PACKET *packet);
 int osdpdump_read_input(OSDPDUMP_CONTEXT *ctx, OSDPDUMP_INPUT *input_value);
 int osdpdump_review_input(OSDPDUMP_CONTEXT *ctx);
+char *osdpdump_strip_to_hexits(char *hex_string);
 int osdpdump_summary(OSDPDUMP_CONTEXT *ctx);
 

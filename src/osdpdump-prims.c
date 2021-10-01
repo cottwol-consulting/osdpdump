@@ -35,7 +35,6 @@
 
 
 #include <osdpdump.h>
-char *osdp_strip_to_hexits(char *hex_string);
 
 
 int
@@ -59,7 +58,7 @@ int
   raw_bytes [0] = 0;
   *returned_length = 0;
 
-  stripped_hex = osdp_strip_to_hexits(hex_string);
+  stripped_hex = osdpdump_strip_to_hexits(hex_string);
   p = stripped_hex;
   done = 0;
   while (!done)
@@ -82,10 +81,14 @@ int
 } /* osdp_dump_to_raw_bytes */
 
 
-char *
-  osdp_strip_to_hexits(char *hex_string)
+/*
+  osdpdump_strip_to_hexits - groom a character string so it's just hexits (0-9,a-f,A-F)
+*/
 
-{ /* osdp_strip_to_hexits */
+char *
+  osdpdump_strip_to_hexits(char *hex_string)
+
+{ /* osdpdump_strip_to_hexits */
 
   char *c;
   int done;
@@ -111,5 +114,5 @@ char *
 
   return(temp_string);
 
-} /* osdp_strip_to_hexits */
+} /* osdpdump_strip_to_hexits */
 

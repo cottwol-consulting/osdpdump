@@ -33,6 +33,7 @@ all:
 
 clean:
 	(cd src; make clean)
+	(cd package; make clean)
 	rm -rf opt
 
 build:	all

@@ -93,12 +93,15 @@ int
       break;
 
     case OSDPDUMP_CMD_DUMP:
+      status = ST_OSDPDUMP_SOURCE_NOT_SUPPORTED;
       switch(ctx->input_source)
       {
       case OSDPDUMP_SOURCE_OSDPCAP:
         ctx->dump_file_handle = fopen(ctx->input_path, "r");
         if (ctx->dump_file_handle EQUALS NULL)
           status = ST_OSDPDUMP_BAD_INPUT_FILE;
+        else
+          status = ST_OK;
       };
       if (status EQUALS ST_OK)
       {
@@ -121,10 +124,24 @@ int
 } /* main for osdpdump */
 
 
+/*
+  osdpdump_command_offset - calculate where command starts
+
+  Understand secure channel headers.
+
+  Input:
+    context
+    packet we're decoding
+
+  Output:
+    integer offset
+*/
+
 int
   osdpdump_command_offset
     (OSDPDUMP_CONTEXT *ctx,
     OSDPDUMP_WORKING_PACKET *packet)
+
 { /* osdpdump_command_offset */
 
   int extra_offset;
@@ -204,6 +221,17 @@ int
 
 } /* osdpdump_digester */
 
+
+/*
+  osdspdump_initialize - initalize values, process command line
+
+  Inputs:
+    context
+    command line arguments
+
+  Outputs:
+    updated context
+*/
 
 int
   osdpdump_initialize
@@ -353,7 +381,6 @@ int osdpdump_packet_accumulate
       packet->octet_length++;
       status = ST_OSDPDUMP_NEED_MORE_DATA;
       break;
-      break;
     case 2:
       // looking for first byte of length
       packet->octets [packet->octet_length] = current_byte;
@@ -482,6 +509,12 @@ zzz
   return(status);
 
 } /* osdpdump_parse */
+
+/*
+  osdpdump_read_input - reads various input types
+
+  in principle.  for now, reads osdpcap.
+*/
 
 
 int

@@ -35,6 +35,13 @@
 #include <osdpdump.h>
 #include <osdpdump-decoding.h>
 
+/*
+  osdpdump_command_string - return text string for a command/response
+
+  Returns:
+    character string, fixed size with trailing spaces
+*/
+
 char
   *osdpdump_command_string
     (OSDPDUMP_CONTEXT *ctx,
