@@ -6,36 +6,30 @@ Includes a Saleae-to-osdpdump converter.
 ### What is this repository for? ###
 
 * Decode OSDP traces
-* Version 0.1.0-2
 
-### How do I get set up? ###
+### How to build ###
 
-* run make, copy 'osdpdump' and 'convert-salea' to /usr/local/share/bin.
-* package coming soon.
+  make 2>stderr build
+  cd package
+  make amd64 (or arm64 for Pi)
+  dpkg -i (the package)
 
 ### Configuration
 Assumes Debian-class Linux.  Assumes OSDPCAP format (for now) or serial stream (future.)
 
 * Dependencies
 Debian Linux
-CLANG
+clang
 
-* How to run tests
+* How to run
 
-Build the tool, use it to decode sample.osdpcap in the test directory.  Command line is:
+  osdpdump --help
 
-osdpdump --format 1 --source ../test/sample.osdpcap >sample_osdpdump.log
+  osdpdump --format 1 --source ../test/sample.osdpcap >sample_osdpdump.log
+
 
 * Deployment instructions
 
-Capture traces from your EAC, save them in OSDPCAP.
-Use the tool to process the file.
+Capture traces from your EAC, save them in OSDPCAP format.
+Use the tool to process the file.  Or, save from a Salea trace and convert it.
 
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact

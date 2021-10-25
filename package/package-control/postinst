@@ -1,4 +1,4 @@
 #!/bin/bash
 
-# nothing to do
-
+ln -s /opt/tester/bin/osdpdump /usr/local/bin/osdpdump
+ln -s /opt/tester/bin/convert-saleae /usr/local/bin/convert-saleae
