@@ -64,7 +64,8 @@ int
     osdpdump_print_one_line(ctx, packet);
     if (strlen(ctx->output_text) > 0)
     {
-      fprintf(stdout, "%s", ctx->output_text);
+      ctx->note_count ++;
+      fprintf(stdout, "NOTE: %s", ctx->output_text);
       ctx->output_text [0] = 0;
     };
     osdpdump_print_hex(ctx);
@@ -137,6 +138,7 @@ void
   char otmp [8*1024]; //maxstring large
   char otmp2 [1024]; //maxstring
   int payload_offset;
+  int speed_returned;
 
 
   payload_offset = 6; // before secure channel
@@ -156,6 +158,20 @@ void
   otmp [0] = 0;
   switch(packet->command_response)
   {
+  case OSDP_IEC_ACK:
+    break;
+  case OSDP_IEC_COM:
+      speed_returned = 0;
+      speed_returned = speed_returned + packet->octets [payload_offset + 1];
+      speed_returned = speed_returned + 0x100 * (packet->octets [payload_offset + 2]);
+      speed_returned = speed_returned + 0x10000 * (packet->octets [payload_offset + 3]);
+      speed_returned = speed_returned + 0x1000000 * (packet->octets [payload_offset + 4]);
+      sprintf(otmp,
+" NewAddr %02x NewSpeed %02x-%02x-%02x-%02x (%d.)",
+        packet->octets [payload_offset + 0],
+        packet->octets [payload_offset + 1], packet->octets [payload_offset + 2], packet->octets [payload_offset + 3], packet->octets [payload_offset + 4],
+        speed_returned);
+    break;
   case OSDP_IEC_FTSTAT:
     if (!(packet->completion_status & OSDPDUMP_COMPLETION_SCB))
     {
@@ -183,6 +199,8 @@ void
       sprintf(otmp2, " Detail0 %02x", packet->octets [payload_offset + 1]);
       strcat(otmp, otmp2);
     };
+    break;
+  case OSDP_IEC_POLL:
     break;
   default:
     if (ctx->verbosity > 3)
@@ -219,6 +237,7 @@ int
 
   printf("\nOSDPDUMP ACTIVITY SUMMARY\n");
   printf("=========================\n");
+  sprintf(otmp, "Notes: %d\n", ctx->note_count); strcat(ctx->output_text, otmp);
   sprintf(otmp, "%d. packets\n", ctx->detected_packets); strcat(ctx->output_text, otmp);
   sprintf(otmp, "Detected:\n"); strcat(ctx->output_text, otmp);
   for (idx=0; idx<255; idx++)

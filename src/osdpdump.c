@@ -205,7 +205,11 @@ int
           if (status EQUALS ST_OK)
           {
             status = osdpdump_print(ctx);
-            fprintf(stdout, "%s", ctx->output_text); ctx->output_text [0] = 0;
+            if (strlen(ctx->output_text) > 0)
+            {
+              fprintf(stdout, "NOTES: %s", ctx->output_text); ctx->output_text [0] = 0;
+              ctx->note_count ++;
+            };
           };
         };
       };
@@ -491,6 +495,10 @@ int
 
   if (control_octet & OSDP_IEC_CTL_SCB)
   {
+    // record SCS value
+
+    packet->scs_type = ctx->osdp_pdu.octets [1+1+2+1+1];
+
     // if this is a CHLNG note which SCBK it's for in the PD context.
 
     if (packet->command_response EQUALS OSDP_IEC_CHLNG)
@@ -608,6 +616,16 @@ int
   {
     if (packet->sequence != last_seq)
       strcat(ctx->output_text, "  - PD is responding on unexpected sequence number\n");
+  };
+
+  // make sure POLL uses SCS 15 if in secure channel
+  // (should be extended of course)
+
+  if ((packet->scs_type != 0) &&
+    (packet->command_response EQUALS OSDP_IEC_POLL))
+  {
+    if (packet->scs_type != 0x15)
+      strcat(ctx->output_text, "  - wrong SCS (should be 15)\n");
   };
   return(status);
 

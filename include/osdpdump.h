@@ -100,6 +100,7 @@ typedef struct osdpdump_working_packet
   int completion_status;
   int role; // 0x80 for PD or 0x00 for ACU
   int command_response;
+  int scs_type;
   int sequence;
   unsigned char address;
   unsigned char packet_check [2];
@@ -113,6 +114,7 @@ typedef struct osdpdump_context
   int current_packet_number;
   int command; // command to the osdpdump program
 //TODO sync these with command line switches and document
+  int note_count;
   int analysis; // loose=0 normal=1 strict=2 3-255 rfu
   int input_source; // 1=file, 2=serial device
   int analysis_view; // 0=PD, 1=ACU, 2-255 RFU
