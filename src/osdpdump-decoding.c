@@ -34,6 +34,7 @@
 
 #include <osdpdump.h>
 #include <osdpdump-decoding.h>
+OSDPDUMP_TRACKING osdpdump_message_tracking [256];
 
 /*
   osdpdump_command_string - return text string for a command/response
@@ -52,27 +53,16 @@ char
   static char decoded [1024]; //maxstring
 
 
-  switch(command_response)
+  if (osdpdump_message_tracking [command_response].tag)
   {
-  default:
+    strcpy(decoded, osdpdump_message_tracking [command_response].tag);
+  }
+  else
+  {
     strcpy(decoded, "Unknown          ");
-    break;
-  case OSDP_IEC_ACK:
-    strcpy(decoded, "osdp_ACK         ");
-    break;
-  case OSDP_IEC_ACURXSIZE:
-    strcpy(decoded, "osdp_ACURXSIZE   ");
-    break;
-  case OSDP_IEC_BUSY:
-    strcpy(decoded, "osdp_BUSY        ");
-    break;
-  case OSDP_IEC_BUZ:
-    strcpy(decoded, "osdp_BUZ         ");
-    break;
-  case OSDP_IEC_CAP:
-    strcpy(decoded, "osdp_CAP         ");
-    break;
-  case OSDP_IEC_CCRYPT: // note CHLNG and CCRYPT are the same number
+  };
+  if (command_response EQUALS OSDP_IEC_CCRYPT)
+  {
     if (ctx->osdp_pdu.completion_status & OSDPDUMP_COMPLETION_RSP)
     {
       strcpy(decoded, "osdp_CCRYPT      ");
@@ -81,105 +71,74 @@ char
     {
       strcpy(decoded, "osdp_CHLNG       ");
     };
-    break;
-  case OSDP_IEC_COM:
-    strcpy(decoded, "osdp_COM         ");
-    break;
-  case OSDP_IEC_COMSET:
-    strcpy(decoded, "osdp_COMSET      ");
-    break;
-  case OSDP_IEC_CRAUTH:
-    strcpy(decoded, "osdp_CRAUTH      ");
-    break;
-  case OSDP_IEC_CRAUTHR:
-    strcpy(decoded, "osdp_CRAUTHR     ");
-    break;
-  case OSDP_IEC_FILETRANSFER:
-    strcpy(decoded, "osdp_FILETRANSFER");
-    break;
-  case OSDP_IEC_FTSTAT:
-    strcpy(decoded, "osdp_FTSTAT      ");
-    break;
-  case OSDP_IEC_GENAUTH:
-    strcpy(decoded, "osdp_GENAUTH     ");
-    break;
-  case OSDP_IEC_GENAUTHR:
-    strcpy(decoded, "osdp_GENAUTHR    ");
-    break;
-  case OSDP_IEC_ID:
-    strcpy(decoded, "osdp_ID          ");
-    break;
-  case OSDP_IEC_ISTAT:
-    strcpy(decoded, "osdp_ISTAT       ");
-    break;
-  case OSDP_IEC_ISTATR:
-    strcpy(decoded, "osdp_ISTATR      ");
-    break;
-  case OSDP_IEC_KEEPACTIVE:
-    strcpy(decoded, "osdp_KEEPACTIVE  ");
-    break;
-  case OSDP_IEC_KEYPAD:
-    strcpy(decoded, "osdp_KEYPAD      ");
-    break;
-  case OSDP_IEC_KEYSET:
-    strcpy(decoded, "osdp_KEYSET      ");
-    break;
-  case OSDP_IEC_LED:
-    strcpy(decoded, "osdp_LED         ");
-    break;
-  case OSDP_IEC_LSTAT:
-    strcpy(decoded, "osdp_LSTAT       ");
-    break;
-  case OSDP_IEC_LSTATR:
-    strcpy(decoded, "osdp_LSTATR      ");
-    break;
-  case OSDP_IEC_MFG:
-    strcpy(decoded, "osdp_MFG         ");
-    break;
-  case OSDP_IEC_MFGERRR:
-    strcpy(decoded, "osdp_MFGERRR     ");
-    break;
-  case OSDP_IEC_NAK:
-    strcpy(decoded, "osdp_NAK         ");
-    break;
-  case OSDP_IEC_OSTAT:
-    strcpy(decoded, "osdp_OSTAT       ");
-    break;
-  case OSDP_IEC_OSTATR:
-    strcpy(decoded, "osdp_OSTATR      ");
-    break;
-  case OSDP_IEC_OUT:
-    strcpy(decoded, "osdp_OUT         ");
-    break;
-  case OSDP_IEC_PDCAP:
-    strcpy(decoded, "osdp_PDCAP       ");
-    break;
-  case OSDP_IEC_PDID:
-    strcpy(decoded, "osdp_PDID        ");
-    break;
-  case OSDP_IEC_POLL:
-    strcpy(decoded, "osdp_POLL        ");
-    break;
-  case OSDP_IEC_RAW:
-    strcpy(decoded, "osdp_RAW         ");
-    break;
-  case OSDP_IEC_RMAC_I:
-    strcpy(decoded, "osdp_RMAC_I      ");
-    break;
-  case OSDP_IEC_RSTAT:
-    strcpy(decoded, "osdp_RSTAT       ");
-    break;
-  case OSDP_IEC_RSTATR:
-    strcpy(decoded, "osdp_RSTATR      ");
-    break;
-  case OSDP_IEC_SCRYPT:
-    strcpy(decoded, "osdp_SCRYPT      ");
-    break;
-  case OSDP_IEC_TEXT:
-    strcpy(decoded, "osdp_TEXT        ");
-    break;
   };
   return(decoded);
 
 } /* osdpdump_command_string */
+
+
+void
+  osdpdump_init_tracking
+    (OSDPDUMP_CONTEXT *ctx,
+    OSDPDUMP_TRACKING osdpdump_message_tracking [256])
+
+{ /* osdpdump_init_tracking */
+
+  memset(&(osdpdump_message_tracking [0]), 0, 256*sizeof(OSDPDUMP_TRACKING));
+
+#define TRACK(cr,tagstring,scb,clear) \
+  osdpdump_message_tracking [cr].tag = tagstring; \
+  osdpdump_message_tracking [cr].valid_SCB = scb; \
+  osdpdump_message_tracking [cr].valid_clear_always = clear;
+
+  TRACK(OSDP_IEC_ACK, "osdp_ACK         ", OSDP_SCS_16, OSDPDUMP_INVALID);
+  osdpdump_message_tracking [OSDP_IEC_ACURXSIZE].tag = "osdp_ACURXSIZE   ";
+  osdpdump_message_tracking [OSDP_IEC_ACURXSIZE].valid_SCB = OSDP_SCS_17;
+  osdpdump_message_tracking [OSDP_IEC_ACURXSIZE].valid_clear_always = OSDPDUMP_INVALID;
+  osdpdump_message_tracking [OSDP_IEC_BUSY].tag = "osdp_BUSY        ";
+  osdpdump_message_tracking [OSDP_IEC_BUSY].valid_SCB = OSDP_SCS_15;
+  osdpdump_message_tracking [OSDP_IEC_BUSY].valid_clear_always = OSDPDUMP_INVALID;
+  osdpdump_message_tracking [OSDP_IEC_BUZ].tag = "osdp_BUZ         ";
+  osdpdump_message_tracking [OSDP_IEC_BUZ].valid_SCB = OSDP_SCS_17;
+  osdpdump_message_tracking [OSDP_IEC_BUZ].valid_clear_always = OSDPDUMP_INVALID;
+  TRACK(OSDP_IEC_CAP, "osdp_CAP         ", OSDP_SCS_17, OSDPDUMP_VALID);
+  osdpdump_message_tracking [OSDP_IEC_CCRYPT].tag = "osdp_CHLNG       ";
+  osdpdump_message_tracking [OSDP_IEC_CCRYPT].valid_SCB = OSDP_SCS_11;
+  osdpdump_message_tracking [OSDP_IEC_CCRYPT].r_tag = "osdp_CCRYPT      ";
+  osdpdump_message_tracking [OSDP_IEC_CCRYPT].valid_r_SCB = OSDP_SCS_12;
+  osdpdump_message_tracking [OSDP_IEC_CCRYPT].valid_clear_always = OSDPDUMP_VALID;
+  TRACK(OSDP_IEC_COM, "osdp_COM         ", OSDP_SCS_18, OSDPDUMP_VALID);
+  TRACK(OSDP_IEC_COMSET, "osdp_COMSET      ", OSDP_SCS_17, OSDPDUMP_VALID);
+  TRACK(OSDP_IEC_CRAUTH, "osdp_CRAUTH      ", OSDP_SCS_17, OSDPDUMP_INVALID);
+  TRACK(OSDP_IEC_CRAUTHR, "osdp_CRAUTHR     ", OSDP_SCS_18, OSDPDUMP_INVALID);
+  TRACK(OSDP_IEC_FILETRANSFER, "osdp_FILETRANSFER", OSDP_SCS_17, OSDPDUMP_VALID);
+  TRACK(OSDP_IEC_FTSTAT, "osdp_FTSTAT      ", OSDP_SCS_18, OSDPDUMP_VALID);
+  TRACK(OSDP_IEC_GENAUTH, "osdp_GENAUTH     ", OSDP_SCS_17, OSDPDUMP_INVALID);
+  TRACK(OSDP_IEC_GENAUTHR, "osdp_GENAUTHR    ", OSDP_SCS_18, OSDPDUMP_INVALID);
+  TRACK(OSDP_IEC_ID, "osdp_ID          ", OSDP_SCS_17, OSDPDUMP_VALID);
+  TRACK(OSDP_IEC_ISTAT, "osdp_ISTAT       ", OSDP_SCS_15, OSDPDUMP_INVALID);
+  TRACK(OSDP_IEC_ISTATR, "osdp_ISTATR      ", OSDP_SCS_18, OSDPDUMP_INVALID);
+  TRACK(OSDP_IEC_KEEPACTIVE, "osdp_KEEPACTIVE  ", OSDP_SCS_17, OSDPDUMP_INVALID);
+  TRACK(OSDP_IEC_KEYPAD, "osdp_KEYPAD      ", OSDP_SCS_18, OSDPDUMP_INVALID);
+  TRACK(OSDP_IEC_KEYSET, "osdp_KEYSET      ", OSDP_SCS_17, OSDPDUMP_INVALID);
+  TRACK(OSDP_IEC_LED, "osdp_LED         ", OSDP_SCS_17, OSDPDUMP_INVALID);
+  TRACK(OSDP_IEC_LSTAT, "osdp_LSTAT       ", OSDP_SCS_15, OSDPDUMP_INVALID);
+  TRACK(OSDP_IEC_LSTATR, "osdp_LSTATR      ", OSDP_SCS_18, OSDPDUMP_INVALID);
+  TRACK(OSDP_IEC_MFG, "osdp_MFG         ", OSDP_SCS_17, OSDPDUMP_INVALID);
+  TRACK(OSDP_IEC_MFGERRR, "osdp_MFGERRR     ", OSDP_SCS_18, OSDPDUMP_INVALID);
+  TRACK(OSDP_IEC_NAK, "osdp_NAK         ", OSDP_SCS_18, OSDPDUMP_INVALID);
+  TRACK(OSDP_IEC_OSTAT, "osdp_OSTAT       ", OSDP_SCS_15, OSDPDUMP_INVALID);
+  TRACK(OSDP_IEC_OSTATR, "osdp_OSTATR      ", OSDP_SCS_18, OSDPDUMP_INVALID);
+  TRACK(OSDP_IEC_OUT, "osdp_OUT         ", OSDP_SCS_17, OSDPDUMP_INVALID);
+  TRACK(OSDP_IEC_PDCAP, "osdp_PDCAP       ", OSDP_SCS_18, OSDPDUMP_VALID);
+  TRACK(OSDP_IEC_PDID, "osdp_PDID        ", OSDP_SCS_18, OSDPDUMP_VALID);
+  TRACK(OSDP_IEC_POLL, "osdp_POLL        ", OSDP_SCS_15, OSDPDUMP_INVALID);
+  TRACK(OSDP_IEC_RAW, "osdp_RAW         ", OSDP_SCS_18, OSDPDUMP_INVALID);
+  TRACK(OSDP_IEC_RMAC_I, "osdp_RMAC_I      ", OSDP_SCS_14, OSDPDUMP_VALID);
+  TRACK(OSDP_IEC_RSTAT, "osdp_RSTAT       ", OSDP_SCS_15, OSDPDUMP_INVALID);
+  TRACK(OSDP_IEC_RSTATR, "osdp_RSTATR      ", OSDP_SCS_18, OSDPDUMP_INVALID);
+  TRACK(OSDP_IEC_SCRYPT, "osdp_SCRYPT      ", OSDP_SCS_13, OSDPDUMP_VALID);
+  TRACK(OSDP_IEC_TEXT, "osdp_TEXT        ", OSDP_SCS_17, OSDPDUMP_INVALID);
+
+} /* osdpdump_init_tracking */
 

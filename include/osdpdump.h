@@ -87,6 +87,19 @@ typedef struct osdpdump_pd_context
   unsigned short int scs_status;
 } OSDPDUMP_PD_CONTEXT;
 
+#define OSDPDUMP_VALID (1)
+#define OSDPDUMP_INVALID (0)
+
+typedef struct opsdpdump_tracking
+{
+  int count;
+  char *tag; // command and response
+  char *r_tag; // response if different
+  unsigned char valid_SCB;
+  unsigned char valid_r_SCB;
+  unsigned char valid_clear_always;
+} OSDPDUMP_TRACKING;
+
 #define OSDPDUMP_COMPLETION_SOM    (0x0001)
 #define OSDPDUMP_COMPLETION_SCB    (0x0002)
 #define OSDPDUMP_COMPLETION_CMD    (0x8000)
@@ -126,7 +139,6 @@ typedef struct osdpdump_context
   // statistics
   int dropped_octets;
   int detected_packets;
-  int detected_commands [256];
 
   OSDPDUMP_WORKING_PACKET osdp_pdu;
   char packet_seconds [1024];
@@ -143,6 +155,7 @@ char *osdpdump_command_string(OSDPDUMP_CONTEXT *ctx, unsigned char command_respo
 int osdpdump_digester(OSDPDUMP_CONTEXT *ctx);
 int osdpdump_hex_to_raw_bytes(OSDPDUMP_CONTEXT *ctx, char *hex_string, unsigned char *raw_bytes, int *returned_length);
 int osdpdump_initialize(OSDPDUMP_CONTEXT *ctx, int argc, char *argv []);
+void osdpdump_init_tracking(OSDPDUMP_CONTEXT *ctx, OSDPDUMP_TRACKING osdpdump_message_tracking [256]);
 int osdpdump_packet_accumulate(OSDPDUMP_CONTEXT *ctx, OSDPDUMP_INPUT *raw, OSDPDUMP_INPUT *accumulated_packet);
 int osdpdump_parse(OSDPDUMP_CONTEXT *ctx);
 int osdpdump_print(OSDPDUMP_CONTEXT *ctx);

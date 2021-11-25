@@ -34,6 +34,7 @@
 
 #include <osdpdump.h>
 #include <osdpdump-decoding.h>
+extern OSDPDUMP_TRACKING osdpdump_message_tracking [256];
 
 
 /*
@@ -242,10 +243,10 @@ int
   sprintf(otmp, "Detected:\n"); strcat(ctx->output_text, otmp);
   for (idx=0; idx<255; idx++)
   {
-    if (ctx->detected_commands [idx] > 0)
+    if (osdpdump_message_tracking [ctx->osdp_pdu.command_response].count > 0)
     {
       sprintf(otmp,
-" %2x(%s) %d\n", idx, osdpdump_command_string(ctx, idx), ctx->detected_commands [idx]);
+" %2x(%s) %d\n", idx, osdpdump_command_string(ctx, idx), osdpdump_message_tracking [ctx->osdp_pdu.command_response].count);
       strcat(ctx->output_text, otmp);
     };
   };

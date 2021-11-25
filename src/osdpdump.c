@@ -41,6 +41,7 @@
 
 #include <osdpdump.h>
 #include <osdpdump-version.h>
+extern OSDPDUMP_TRACKING osdpdump_message_tracking [256];
 typedef struct osdpdump_command_line_context
 {
   int option;
@@ -321,6 +322,9 @@ ctx->output_analysis = 1;
   {
     ctx->pd_ctx [idx].state = OSDPDUMP_PD_ABSENT;
   };
+
+  osdpdump_init_tracking(ctx, osdpdump_message_tracking);
+
   return(status);
 
 } /* osdpdump_initialize */
@@ -593,12 +597,13 @@ int
   int last_seq;
   OSDPDUMP_WORKING_PACKET *packet;
   int status;
+  char tstring [1024];
 
 
   status = ST_OK;
   if (ctx->verbosity > 9)
     printf("DEBUG: osdpdump_review_input\n");
-  ctx->detected_commands [ctx->osdp_pdu.command_response] ++;
+  osdpdump_message_tracking [ctx->osdp_pdu.command_response].count ++;
   packet = &(ctx->osdp_pdu);
 
   // make sure sequence numbers are consistent
@@ -618,15 +623,18 @@ int
       strcat(ctx->output_text, "  - PD is responding on unexpected sequence number\n");
   };
 
-  // make sure POLL uses SCS 15 if in secure channel
-  // (should be extended of course)
+  // make sure SCS value in header is correct
 
-  if ((packet->scs_type != 0) &&
-    (packet->command_response EQUALS OSDP_IEC_POLL))
+  if (packet->scs_type != 0)
   {
-    if (packet->scs_type != 0x15)
-      strcat(ctx->output_text, "  - wrong SCS (should be 15)\n");
+    if ((osdpdump_message_tracking [packet->command_response].valid_SCB != packet->scs_type)
+      && (osdpdump_message_tracking [packet->command_response].valid_r_SCB != packet->scs_type))
+    {
+      sprintf(tstring, "  - wrong SCS (should be %02x)\n", osdpdump_message_tracking [packet->command_response].valid_SCB);
+      strcat(ctx->output_text, tstring);
+    };
   };
+
   return(status);
 
 } /* osdpdump_review_input */

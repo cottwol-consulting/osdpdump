@@ -32,6 +32,14 @@
 #define OSDP_IEC_SOM     (0x53)
 #define OSDP_IEC_CTL_SCB (0x08) // bit in CTL for security control block(scb)
 #define OSDP_IEC_CTL_CRC (0x04) // bit in CTL for crc/checksum
+#define OSDP_SCS_11 (0x11)
+#define OSDP_SCS_12 (0x12)
+#define OSDP_SCS_13 (0x13)
+#define OSDP_SCS_14 (0x14)
+#define OSDP_SCS_15 (0x15)
+#define OSDP_SCS_16 (0x16)
+#define OSDP_SCS_17 (0x17)
+#define OSDP_SCS_18 (0x18)
 
 #define OSDP_IEC_ACK          (0x40)
 #define OSDP_IEC_ACURXSIZE    (0x7b)
