@@ -600,11 +600,13 @@ int
 
 { /* osdpdump_review_input */
 
+  unsigned short int calculated_crc;
   int expected_seq;
   int last_seq;
   OSDPDUMP_WORKING_PACKET *packet;
   int status;
   char tstring [1024];
+  unsigned short int wire_crc;
 
 
   status = ST_OK;
@@ -612,6 +614,18 @@ int
     printf("DEBUG: osdpdump_review_input\n");
   osdpdump_message_tracking [ctx->osdp_pdu.command_response].count ++;
   packet = &(ctx->osdp_pdu);
+
+  // check the CRC
+
+  wire_crc = (packet->octets [packet->octet_length-1] << 8) + packet->octets [packet->octet_length-2];
+  calculated_crc = fCrcBlk(packet->octets, packet->octet_length - 2);
+  if (calculated_crc != wire_crc)
+  {
+    sprintf(tstring, "  - CRC is wrong (wire %04X, calc %04X.)\n", wire_crc, calculated_crc);
+    strcat(ctx->output_text, tstring);
+    ctx->note_count ++;
+  };
+
 
   // make sure sequence numbers are consistent
 
@@ -622,12 +636,18 @@ int
     if (expected_seq == 4)
       expected_seq = 1;
     if (packet->sequence != expected_seq)
+    {
       strcat(ctx->output_text, "  - sequence number not next in ACU sequence\n");
+      ctx->note_count ++;
+    };
   };
   if (!(packet->role))
   {
     if (packet->sequence != last_seq)
+    {
       strcat(ctx->output_text, "  - PD is responding on unexpected sequence number\n");
+      ctx->note_count ++;
+    };
   };
 
   // make sure SCS value in header is correct
@@ -639,6 +659,7 @@ int
     {
       sprintf(tstring, "  - wrong SCS (should be %02x)\n", osdpdump_message_tracking [packet->command_response].valid_SCB);
       strcat(ctx->output_text, tstring);
+      ctx->note_count ++;
     };
   };
 

@@ -259,10 +259,10 @@ int
   sprintf(otmp, "Detected:\n"); strcat(ctx->output_text, otmp);
   for (idx=0; idx<255; idx++)
   {
-    if (osdpdump_message_tracking [ctx->osdp_pdu.command_response].count > 0)
+    if (osdpdump_message_tracking [idx].count > 0)
     {
       sprintf(otmp,
-" %2x(%s) %d\n", idx, osdpdump_command_string(ctx, idx), osdpdump_message_tracking [ctx->osdp_pdu.command_response].count);
+" %2x(%s) %d\n", idx, osdpdump_command_string(ctx, idx), osdpdump_message_tracking [idx].count);
       strcat(ctx->output_text, otmp);
     };
   };
