@@ -540,7 +540,7 @@ int
   int status;
   char *status_io;
   json_error_t status_json;
-  char line [2*1024];
+  char line [4*1024]; // big enough for 1500 bytes as 2-digit octets with a space
 
 
   status = ST_OK;
@@ -552,7 +552,7 @@ int
     if (status_io != NULL)
     {
       if (ctx->verbosity > 9)
-        fprintf(stderr, "line %s\n", line);
+        fprintf(stderr, "line (%d chars) %s\n", (int)strlen(line), line);
       strcpy(input_value->input_string, line);
       line_root = json_loads(input_value->input_string, 0, &status_json);
     }
@@ -565,14 +565,21 @@ int
       value = json_object_get(line_root, "timeSec");
       if (json_is_string(value))
         strcpy(input_value->time_seconds, json_string_value(value));
+      else
+        status = ST_OSDPDUMP_INPUT_ERROR_1;
       value = json_object_get(line_root, "timeNano");
       if (json_is_string(value))
         strcpy(input_value->time_nanoseconds, json_string_value(value));
+      else
+        status = ST_OSDPDUMP_INPUT_ERROR_2;
 
       value = json_object_get(line_root, "data");
       if (json_is_string(value))
         strcpy(input_value->input_string, json_string_value(value));
-      status = osdpdump_hex_to_raw_bytes(ctx, input_value->input_string, input_value->raw_bytes, &(input_value->length));
+      else
+        status = ST_OSDPDUMP_INPUT_ERROR_3;
+      if (status EQUALS ST_OK)
+        status = osdpdump_hex_to_raw_bytes(ctx, input_value->input_string, input_value->raw_bytes, &(input_value->length));
     };
     break;
   default:
