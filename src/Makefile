@@ -23,8 +23,8 @@ clean:
 convert-saleae:	convert-saleae.o Makefile
 	${LINK} -o convert-saleae convert-saleae.o ${LDFLAGS}
 
-osdpdump:	osdpdump.o osdpdump-decoding.o osdpdump-input.o osdpdump-prims.o osdpdump-report.o Makefile
-	${LINK} -o osdpdump osdpdump.o osdpdump-decoding.o osdpdump-input.o osdpdump-prims.o osdpdump-report.o ${LDFLAGS}
+osdpdump:	osdpdump.o osdpdump-decoding.o osdpdump-input.o osdpdump-prims.o osdpdump-report.o osdp-crc.o Makefile
+	${LINK} -o osdpdump osdpdump.o osdpdump-decoding.o osdpdump-input.o osdpdump-prims.o osdpdump-report.o osdp-crc.o ${LDFLAGS}
 
 convert-saleae.o:	convert-saleae.c
 	${CC} ${CFLAGS} convert-saleae.c
@@ -43,4 +43,7 @@ osdpdump-prims.o:	osdpdump-prims.c ../include/osdpdump.h
 
 osdpdump-report.o:	osdpdump-report.c ../include/osdpdump.h ../include/osdpdump-decoding.h
 	${CC} ${CFLAGS} osdpdump-report.c
+
+osdp-crc.o:	osdp-crc.c
+	${CC} ${CFLAGS} osdp-crc.c
 

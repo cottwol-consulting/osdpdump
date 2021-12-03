@@ -39,6 +39,9 @@
 #define ST_OSDPDUMP_NEED_MORE_DATA       (-5)
 #define ST_OSDPDUMP_SOURCE_NOT_SUPPORTED (-6)
 #define ST_OSDPDUMP_FILE_READ_ERROR      (-7)
+#define ST_OSDPDUMP_INPUT_ERROR_1        (-8)
+#define ST_OSDPDUMP_INPUT_ERROR_2        (-9)
+#define ST_OSDPDUMP_INPUT_ERROR_3        (-10)
 
 #define OSDPDUMP_STRING     (1024)
 #define OSDPDUMP_BUFFER_MAX (2048)
@@ -75,7 +78,7 @@ typedef struct osdpdump_input
 {
   int length;
   unsigned char raw_bytes[OSDPDUMP_BUFFER_MAX];
-  char input_string [OSDPDUMP_STRING*2];
+  char input_string [OSDPDUMP_STRING*3];
   char time_seconds [1024];
   char time_nanoseconds [1024];
 } OSDPDUMP_INPUT;
@@ -166,4 +169,5 @@ int osdpdump_read_input(OSDPDUMP_CONTEXT *ctx, OSDPDUMP_INPUT *input_value);
 int osdpdump_review_input(OSDPDUMP_CONTEXT *ctx);
 char *osdpdump_strip_to_hexits(char *hex_string);
 int osdpdump_summary(OSDPDUMP_CONTEXT *ctx);
+unsigned short int fCrcBlk(unsigned char *pData, unsigned short int nLength);
 

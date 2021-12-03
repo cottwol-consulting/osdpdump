@@ -203,6 +203,22 @@ void
         packet->octets [payload_offset + 1], packet->octets [payload_offset + 2], packet->octets [payload_offset + 3], packet->octets [payload_offset + 4],
         speed_returned);
     break;
+  case OSDP_IEC_FILETRANSFER:
+    if (!(packet->completion_status & OSDPDUMP_COMPLETION_SCB))
+    {
+      sprintf(otmp,
+" FtType %02X FtSizeTotal %02X %02X %02X %02X FtOffset %02X %02X %02X %02x FtFragment %02X %02X Data[0] %02X",
+        packet->octets [payload_offset + 0],
+        packet->octets [payload_offset + 1], packet->octets [payload_offset + 2],
+        packet->octets [payload_offset + 3], packet->octets [payload_offset + 4],
+
+        packet->octets [payload_offset + 5], packet->octets [payload_offset + 6],
+        packet->octets [payload_offset + 7], packet->octets [payload_offset + 8],
+
+        packet->octets [payload_offset + 9], packet->octets [payload_offset + 10],
+        packet->octets [payload_offset + 11]);
+    };
+    break;
   case OSDP_IEC_FTSTAT:
     if (!(packet->completion_status & OSDPDUMP_COMPLETION_SCB))
     {
@@ -289,10 +305,10 @@ int
   sprintf(otmp, "Detected:\n"); strcat(ctx->output_text, otmp);
   for (idx=0; idx<255; idx++)
   {
-    if (osdpdump_message_tracking [ctx->osdp_pdu.command_response].count > 0)
+    if (osdpdump_message_tracking [idx].count > 0)
     {
       sprintf(otmp,
-" %2x(%s) %d\n", idx, osdpdump_command_string(ctx, idx), osdpdump_message_tracking [ctx->osdp_pdu.command_response].count);
+" %2x(%s) %d\n", idx, osdpdump_command_string(ctx, idx), osdpdump_message_tracking [idx].count);
       strcat(ctx->output_text, otmp);
     };
   };

@@ -540,7 +540,7 @@ int
   int status;
   char *status_io;
   json_error_t status_json;
-  char line [2*1024];
+  char line [4*1024]; // big enough for 1500 bytes as 2-digit octets with a space
 
 
   status = ST_OK;
@@ -552,7 +552,7 @@ int
     if (status_io != NULL)
     {
       if (ctx->verbosity > 9)
-        fprintf(stderr, "line %s\n", line);
+        fprintf(stderr, "line (%d chars) %s\n", (int)strlen(line), line);
       strcpy(input_value->input_string, line);
       line_root = json_loads(input_value->input_string, 0, &status_json);
     }
@@ -565,14 +565,21 @@ int
       value = json_object_get(line_root, "timeSec");
       if (json_is_string(value))
         strcpy(input_value->time_seconds, json_string_value(value));
+      else
+        status = ST_OSDPDUMP_INPUT_ERROR_1;
       value = json_object_get(line_root, "timeNano");
       if (json_is_string(value))
         strcpy(input_value->time_nanoseconds, json_string_value(value));
+      else
+        status = ST_OSDPDUMP_INPUT_ERROR_2;
 
       value = json_object_get(line_root, "data");
       if (json_is_string(value))
         strcpy(input_value->input_string, json_string_value(value));
-      status = osdpdump_hex_to_raw_bytes(ctx, input_value->input_string, input_value->raw_bytes, &(input_value->length));
+      else
+        status = ST_OSDPDUMP_INPUT_ERROR_3;
+      if (status EQUALS ST_OK)
+        status = osdpdump_hex_to_raw_bytes(ctx, input_value->input_string, input_value->raw_bytes, &(input_value->length));
     };
     break;
   default:
@@ -593,11 +600,13 @@ int
 
 { /* osdpdump_review_input */
 
+  unsigned short int calculated_crc;
   int expected_seq;
   int last_seq;
   OSDPDUMP_WORKING_PACKET *packet;
   int status;
   char tstring [1024];
+  unsigned short int wire_crc;
 
 
   status = ST_OK;
@@ -605,6 +614,18 @@ int
     printf("DEBUG: osdpdump_review_input\n");
   osdpdump_message_tracking [ctx->osdp_pdu.command_response].count ++;
   packet = &(ctx->osdp_pdu);
+
+  // check the CRC
+
+  wire_crc = (packet->octets [packet->octet_length-1] << 8) + packet->octets [packet->octet_length-2];
+  calculated_crc = fCrcBlk(packet->octets, packet->octet_length - 2);
+  if (calculated_crc != wire_crc)
+  {
+    sprintf(tstring, "  - CRC is wrong (wire %04X, calc %04X.)\n", wire_crc, calculated_crc);
+    strcat(ctx->output_text, tstring);
+    ctx->note_count ++;
+  };
+
 
   // make sure sequence numbers are consistent
 
@@ -615,12 +636,18 @@ int
     if (expected_seq == 4)
       expected_seq = 1;
     if (packet->sequence != expected_seq)
+    {
       strcat(ctx->output_text, "  - sequence number not next in ACU sequence\n");
+      ctx->note_count ++;
+    };
   };
   if (!(packet->role))
   {
     if (packet->sequence != last_seq)
+    {
       strcat(ctx->output_text, "  - PD is responding on unexpected sequence number\n");
+      ctx->note_count ++;
+    };
   };
 
   // make sure SCS value in header is correct
@@ -632,6 +659,7 @@ int
     {
       sprintf(tstring, "  - wrong SCS (should be %02x)\n", osdpdump_message_tracking [packet->command_response].valid_SCB);
       strcat(ctx->output_text, tstring);
+      ctx->note_count ++;
     };
   };
 
