@@ -159,6 +159,7 @@ void osdpdump_init_tracking(OSDPDUMP_CONTEXT *ctx, OSDPDUMP_TRACKING osdpdump_me
 int osdpdump_packet_accumulate(OSDPDUMP_CONTEXT *ctx, OSDPDUMP_INPUT *raw, OSDPDUMP_INPUT *accumulated_packet);
 int osdpdump_parse(OSDPDUMP_CONTEXT *ctx);
 int osdpdump_print(OSDPDUMP_CONTEXT *ctx);
+void osdpdump_print_annotation(OSDPDUMP_CONTEXT *ctx, OSDPDUMP_WORKING_PACKET *packet);
 int osdpdump_print_hex(OSDPDUMP_CONTEXT *ctx);
 void osdpdump_print_one_line(OSDPDUMP_CONTEXT *ctx, OSDPDUMP_WORKING_PACKET *packet);
 int osdpdump_read_input(OSDPDUMP_CONTEXT *ctx, OSDPDUMP_INPUT *input_value);

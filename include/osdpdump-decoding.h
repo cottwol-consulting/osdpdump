@@ -43,6 +43,8 @@
 
 #define OSDP_IEC_ACK          (0x40)
 #define OSDP_IEC_ACURXSIZE    (0x7b)
+#define OSDP_IEC_BIOREAD      (0x73)
+#define OSDP_IEC_BIOREADR     (0x57)
 #define OSDP_IEC_BUSY         (0x79)
 #define OSDP_IEC_BUZ          (0x6A)
 #define OSDP_IEC_CAP          (0x62)

@@ -70,6 +70,7 @@ int
       ctx->output_text [0] = 0;
     };
     osdpdump_print_hex(ctx);
+    osdpdump_print_annotation(ctx, packet);
     break;
 
   case OSDPDUMP_FMT_2LINE:
@@ -94,6 +95,34 @@ int
   return(0);
 
 } /* osdpdump_print */
+
+
+void osdpdump_print_annotation
+  (OSDPDUMP_CONTEXT *ctx,
+  OSDPDUMP_WORKING_PACKET *packet)
+{
+  int count;
+  int payload_offset = 6;
+
+
+  switch(packet->command_response)
+  {
+  case OSDP_IEC_BIOREADR:
+    {
+      int i;
+
+      fprintf(stdout, "BIOREAD Response-Octets are:");
+      count = packet->octets [payload_offset + 4];
+      count = count + (256 * packet->octets [payload_offset + 5]);
+      for (i=0; i<count; i++)
+      {
+        fprintf(stdout, " %02x", packet->octets [6 + i + payload_offset]);
+      };
+      fprintf(stdout, "\n");
+    };
+    break;
+  };
+}
 
 
 int osdpdump_print_hex
@@ -139,6 +168,7 @@ void
   char otmp [8*1024]; //maxstring large
   char otmp2 [1024]; //maxstring
   int payload_offset;
+  unsigned int serial_number;
   int speed_returned;
 
 
@@ -200,6 +230,22 @@ void
       sprintf(otmp2, " Detail0 %02x", packet->octets [payload_offset + 1]);
       strcat(otmp, otmp2);
     };
+    break;
+  case OSDP_IEC_PDID:
+    serial_number = 
+      packet->octets [payload_offset + 5] +
+      (packet->octets [payload_offset + 6] <<  8) +
+      (packet->octets [payload_offset + 7] << 16) +
+      (packet->octets [payload_offset + 8] << 24);
+
+    sprintf(otmp, " OUI %02X-%02X-%02X Model %d. Version %d. Serial %d. FW %d.%d-%d",
+      packet->octets [payload_offset + 0], packet->octets [payload_offset + 1],
+      packet->octets [payload_offset + 2],
+      packet->octets [payload_offset + 3], packet->octets [payload_offset + 4],
+      serial_number,
+      packet->octets [payload_offset + 9],
+      packet->octets [payload_offset + 10],
+      packet->octets [payload_offset + 11]);
     break;
   case OSDP_IEC_POLL:
     break;
