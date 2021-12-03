@@ -67,6 +67,7 @@
 #define OSDP_IEC_LSTATR       (0x48)
 #define OSDP_IEC_MFG          (0x80)
 #define OSDP_IEC_MFGERRR      (0x84)
+#define OSDP_IEC_MFGREP       (0x90)
 #define OSDP_IEC_NAK          (0x41)
 #define OSDP_IEC_OSTAT        (0x66)
 #define OSDP_IEC_OSTATR       (0x4A)
