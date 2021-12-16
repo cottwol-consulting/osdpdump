@@ -505,7 +505,9 @@ int
 
     // if this is a CHLNG note which SCBK it's for in the PD context.
 
-    if (packet->command_response EQUALS OSDP_IEC_CHLNG)
+    if ((packet->command_response EQUALS OSDP_IEC_CHLNG) ||
+      (packet->command_response EQUALS OSDP_IEC_CCRYPT) ||
+      (packet->command_response EQUALS OSDP_IEC_SCRYPT))
     {
       if (packet->octets [7] EQUALS 0) // 0 in 3rd octet of SCS header in osdp_CHLNG means SCBK-D
         packet->completion_status = packet->completion_status | OSDPDUMP_COMPLETION_SCBK_D;
