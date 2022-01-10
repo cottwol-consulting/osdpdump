@@ -1,7 +1,7 @@
 /*
   osdpdump-report.c - reporting functions for osdpdump
 
-  (C)2021 Smithee Solutions LLC
+  (C)2021-2022 Smithee Solutions LLC
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are met:
@@ -314,7 +314,7 @@ int
   };
   strcat(ctx->output_text, "\n");
 
-  sprintf(otmp, "Active PD's:"); strcat(ctx->output_text, otmp);
+  sprintf(otmp, "Active PD's (by address):"); strcat(ctx->output_text, otmp);
   for (idx=0; idx<OSDPDUMP_PD_MAX; idx++)
   {
     if (ctx->pd_ctx [idx].state EQUALS OSDPDUMP_PD_PRESENT)

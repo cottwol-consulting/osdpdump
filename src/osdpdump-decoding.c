@@ -1,7 +1,7 @@
 /*
   osdpdump-decoding - decoding osdp packet into text
 
-  (C)2021 Smithee Solutions LLC
+  (C)2021-2022 Smithee Solutions LLC
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are met:
@@ -101,6 +101,11 @@ void
   osdpdump_message_tracking [OSDP_IEC_BUZ].tag = "osdp_BUZ         ";
   osdpdump_message_tracking [OSDP_IEC_BUZ].valid_SCB = OSDP_SCS_17;
   osdpdump_message_tracking [OSDP_IEC_BUZ].valid_clear_always = OSDPDUMP_INVALID;
+  TRACK(OSDP_IEC_FILETRANSFER, "osdp_FILETRANSFER", OSDP_SCS_17, OSDPDUMP_VALID);
+  TRACK(OSDP_IEC_BIOMATCH,     "osdp_BIOMATCH    ", OSDP_SCS_17, OSDPDUMP_INVALID);
+  TRACK(OSDP_IEC_BIOMATCHR,    "osdp_BIOMATCHR   ", OSDP_SCS_18, OSDPDUMP_INVALID);
+  TRACK(OSDP_IEC_BIOREAD,      "osdp_BIOREAD     ", OSDP_SCS_17, OSDPDUMP_INVALID);
+  TRACK(OSDP_IEC_BIOREADR,     "osdp_BIOREADR    ", OSDP_SCS_18, OSDPDUMP_INVALID);
   TRACK(OSDP_IEC_CAP, "osdp_CAP         ", OSDP_SCS_17, OSDPDUMP_VALID);
   osdpdump_message_tracking [OSDP_IEC_CCRYPT].tag = "osdp_CHLNG       ";
   osdpdump_message_tracking [OSDP_IEC_CCRYPT].valid_SCB = OSDP_SCS_11;
