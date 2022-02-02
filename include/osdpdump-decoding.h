@@ -1,7 +1,7 @@
 /*
   osdpdump-decoding.h - values and strings for OSDP decoding
 
-  (C)2021 Smithee Solutions LLC
+  (C)2021-2022 Smithee Solutions LLC
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are met:
@@ -43,6 +43,8 @@
 
 #define OSDP_IEC_ACK          (0x40)
 #define OSDP_IEC_ACURXSIZE    (0x7b)
+#define OSDP_IEC_BIOMATCH     (0x74)
+#define OSDP_IEC_BIOMATCHR    (0x58)
 #define OSDP_IEC_BIOREAD      (0x73)
 #define OSDP_IEC_BIOREADR     (0x57)
 #define OSDP_IEC_BUSY         (0x79)
