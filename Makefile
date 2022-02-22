@@ -1,6 +1,6 @@
 # Make file for osdpdump
 
-# (C)Copyright 2021 Smithee Solutions LLC
+# (C)Copyright 2021-2022 Smithee Solutions LLC
 
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -39,4 +39,7 @@ clean:
 build:	all
 	(cd src; make build)
 	@echo cd to package and make arm64 or amd64
+
+package:	build
+	(cd package; make package)
 

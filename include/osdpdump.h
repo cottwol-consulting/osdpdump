@@ -1,7 +1,7 @@
 /*
   osdpdump.h - definitions for osdpdump
 
-  (C)2021 Smithee Solutions LLC
+  (C)2021-2022 Smithee Solutions LLC
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are met:
@@ -117,6 +117,7 @@ typedef struct osdpdump_working_packet
   int role; // 0x80 for PD or 0x00 for ACU
   int command_response;
   int scs_type;
+  int scs_length;
   int sequence;
   unsigned char address;
   unsigned char packet_check [2];
