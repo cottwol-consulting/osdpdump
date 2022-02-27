@@ -1,0 +1,11 @@
+Package: osdpdump
+Version: 0.4.0
+Section: custom
+Priority: optional
+Architecture: arm64
+Essential: no
+Installed-Size: 1024
+Maintainer: github@smithee.solutions
+Description: OSDP trace dump tools
+
+

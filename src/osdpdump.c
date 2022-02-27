@@ -3,7 +3,7 @@
 
   "osdpdump --help" for instructions.
 
-  (C)2021 Smithee Solutions LLC
+  (C)2021-2022 Smithee Solutions LLC
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are met:
@@ -499,8 +499,9 @@ int
 
   if (control_octet & OSDP_IEC_CTL_SCB)
   {
-    // record SCS value
+    // record SCS length and value
 
+    packet->scs_length = ctx->osdp_pdu.octets [1+1+2+1];
     packet->scs_type = ctx->osdp_pdu.octets [1+1+2+1+1];
 
     // if this is a CHLNG note which SCBK it's for in the PD context.
@@ -662,6 +663,27 @@ int
       sprintf(tstring, "  - wrong SCS (should be %02x)\n", osdpdump_message_tracking [packet->command_response].valid_SCB);
       strcat(ctx->output_text, tstring);
       ctx->note_count ++;
+    };
+    if ((packet->command_response EQUALS OSDP_IEC_CHLNG) ||
+      (packet->command_response EQUALS OSDP_IEC_CCRYPT) ||
+      (packet->command_response EQUALS OSDP_IEC_SCRYPT) ||
+      (packet->command_response EQUALS OSDP_IEC_RMAC_I))
+    {
+      if (packet->scs_length != 3)
+      {
+        sprintf(tstring, "  - SCS sub-header wrong length (%d not %d)\n", packet->scs_length, 3);
+        strcat(ctx->output_text, tstring);
+        ctx->note_count ++;
+      };
+    }
+    else
+    {
+      if (packet->scs_length != 2)
+      {
+        sprintf(tstring, "  - SCS sub-header wrong length (%d not %d)\n", packet->scs_length, 2);
+        strcat(ctx->output_text, tstring);
+        ctx->note_count ++;
+      };
     };
   };
 
