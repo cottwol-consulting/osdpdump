@@ -629,7 +629,6 @@ int
     ctx->note_count ++;
   };
 
-
   // make sure sequence numbers are consistent
 
   last_seq = ctx->pd_ctx [packet->address].last_received_sequence;
@@ -685,6 +684,16 @@ int
         ctx->note_count ++;
       };
     };
+  };
+
+  // make sure it has an appropriate payload
+
+  if ((osdpdump_message_tracking [ctx->osdp_pdu.command_response].payload EQUALS OSDPDUMP_TRACKING_NO_PAYLOAD) &&
+    (packet->payload_length > 0))
+  {
+    sprintf(tstring, "  - Unexpected payload (%d. bytes) detected.\n", packet->payload_length);
+    strcat(ctx->output_text, tstring);
+    ctx->note_count ++;
   };
 
   return(status);

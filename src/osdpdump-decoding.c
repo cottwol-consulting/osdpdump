@@ -90,6 +90,11 @@ void
   osdpdump_message_tracking [cr].tag = tagstring; \
   osdpdump_message_tracking [cr].valid_SCB = scb; \
   osdpdump_message_tracking [cr].valid_clear_always = clear;
+#define TRACK_EX(cr,tagstring,scb,clear,available_payload) \
+  osdpdump_message_tracking [cr].tag = tagstring; \
+  osdpdump_message_tracking [cr].valid_SCB = scb; \
+  osdpdump_message_tracking [cr].valid_clear_always = clear; \
+  osdpdump_message_tracking [cr].payload = available_payload;
 
   TRACK(OSDP_IEC_ACK, "osdp_ACK         ", OSDP_SCS_16, OSDPDUMP_INVALID);
   osdpdump_message_tracking [OSDP_IEC_ACURXSIZE].tag = "osdp_ACURXSIZE   ";
@@ -138,7 +143,7 @@ void
   TRACK(OSDP_IEC_OUT,     "osdp_OUT         ", OSDP_SCS_17, OSDPDUMP_INVALID);
   TRACK(OSDP_IEC_PDCAP,   "osdp_PDCAP       ", OSDP_SCS_18, OSDPDUMP_VALID);
   TRACK(OSDP_IEC_PDID,    "osdp_PDID        ", OSDP_SCS_18, OSDPDUMP_VALID);
-  TRACK(OSDP_IEC_POLL, "osdp_POLL        ", OSDP_SCS_15, OSDPDUMP_INVALID);
+  TRACK_EX(OSDP_IEC_POLL, "osdp_POLL        ", OSDP_SCS_15, OSDPDUMP_INVALID, OSDPDUMP_TRACKING_NO_PAYLOAD);
   TRACK(OSDP_IEC_RAW, "osdp_RAW         ", OSDP_SCS_18, OSDPDUMP_INVALID);
   TRACK(OSDP_IEC_RMAC_I, "osdp_RMAC_I      ", OSDP_SCS_14, OSDPDUMP_VALID);
   TRACK(OSDP_IEC_RSTAT, "osdp_RSTAT       ", OSDP_SCS_15, OSDPDUMP_INVALID);

@@ -93,6 +93,8 @@ typedef struct osdpdump_pd_context
 #define OSDPDUMP_VALID (1)
 #define OSDPDUMP_INVALID (0)
 
+#define OSDPDUMP_TRACKING_NO_PAYLOAD (-1)
+
 typedef struct opsdpdump_tracking
 {
   int count;
@@ -101,6 +103,7 @@ typedef struct opsdpdump_tracking
   unsigned char valid_SCB;
   unsigned char valid_r_SCB;
   unsigned char valid_clear_always;
+  int payload; // -1 prohibited, 0=unchecked, 1-14xx
 } OSDPDUMP_TRACKING;
 
 #define OSDPDUMP_COMPLETION_SOM    (0x0001)
