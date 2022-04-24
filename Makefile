@@ -34,7 +34,7 @@ all:
 clean:
 	(cd src; make clean)
 	(cd package; make clean)
-	rm -rf opt *.deb
+	rm -rvf opt *.deb
 
 build:	all
 	(cd src; make build)
