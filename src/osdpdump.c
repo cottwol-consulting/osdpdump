@@ -464,10 +464,12 @@ int
   if (control_octet & OSDP_IEC_CTL_CRC)
   {
     packet->payload_length = packet->payload_length - 2; // less CRC
+    packet->check_type = 0;
   }
   else
   {
     packet->payload_length = packet->payload_length - 1; // less Checksum
+    packet->check_type = 1;
   };
   if (control_octet & OSDP_IEC_CTL_SCB)
   {
@@ -604,11 +606,13 @@ int
 { /* osdpdump_review_input */
 
   unsigned short int calculated_crc;
+  unsigned short int calculated_checksum;
   int expected_seq;
   int last_seq;
   OSDPDUMP_WORKING_PACKET *packet;
   int status;
   char tstring [1024];
+  unsigned short int wire_checksum;
   unsigned short int wire_crc;
 
 
@@ -618,15 +622,30 @@ int
   osdpdump_message_tracking [ctx->osdp_pdu.command_response].count ++;
   packet = &(ctx->osdp_pdu);
 
-  // check the CRC
-
-  wire_crc = (packet->octets [packet->octet_length-1] << 8) + packet->octets [packet->octet_length-2];
-  calculated_crc = fCrcBlk(packet->octets, packet->octet_length - 2);
-  if (calculated_crc != wire_crc)
+  if (!packet->check_type)
   {
-    sprintf(tstring, "  - CRC is wrong (wire %04X, calc %04X.)\n", wire_crc, calculated_crc);
-    strcat(ctx->output_text, tstring);
-    ctx->note_count ++;
+    // check the CRC
+
+    wire_crc = (packet->octets [packet->octet_length-1] << 8) + packet->octets [packet->octet_length-2];
+    calculated_crc = fCrcBlk(packet->octets, packet->octet_length - 2);
+    if (calculated_crc != wire_crc)
+    {
+      sprintf(tstring, "  - CRC is wrong (wire %04X, calc %04X.)\n", wire_crc, calculated_crc);
+      strcat(ctx->output_text, tstring);
+      ctx->note_count ++;
+    };
+  }
+  else
+  {
+    // Checksum
+    wire_checksum = packet->octets [packet->octet_length-1];
+    calculated_checksum = checksum(packet->octets, packet->octet_length - 1);
+    if (calculated_checksum != wire_checksum)
+    {
+      sprintf(tstring, "  - Checksum is wrong (wire %02X, calc %02X.)\n", wire_checksum, calculated_checksum);
+      strcat(ctx->output_text, tstring);
+      ctx->note_count ++;
+    };
   };
 
   // make sure sequence numbers are consistent

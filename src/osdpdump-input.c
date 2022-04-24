@@ -37,6 +37,29 @@
 #include <osdpdump.h>
 
 
+unsigned char
+  checksum
+    (unsigned char *msg,
+    int length)
+
+{ /* checksum */
+
+  unsigned char checksum;
+  int i;
+  int whole_checksum;
+
+
+  whole_checksum = 0;
+  for (i=0; i<length; i++)
+  {
+    whole_checksum = whole_checksum + msg [i];
+    checksum = ~(0xff & whole_checksum)+1;
+  };
+  return (checksum);
+
+} /* checksum */
+
+
 /*
   osdpdump_accumulate_input - use data received to build up a packet
 

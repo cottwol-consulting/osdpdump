@@ -124,6 +124,7 @@ typedef struct osdpdump_working_packet
   int sequence;
   unsigned char address;
   unsigned char packet_check [2];
+  int check_type; // 0=CRC 1=Checksum
   int payload_length;
 //  unsigned char remainder [2048];
 } OSDPDUMP_WORKING_PACKET;
@@ -156,6 +157,7 @@ typedef struct osdpdump_context
   char output_text [16384]; //maxstring
 } OSDPDUMP_CONTEXT;
 
+unsigned char checksum(unsigned char *msg, int length);
 int osdpdump_accumulate_input(OSDPDUMP_CONTEXT *ctx, OSDPDUMP_INPUT *input_value);
 int osdpdump_command_offset(OSDPDUMP_CONTEXT *ctx, OSDPDUMP_WORKING_PACKET *pkt);
 char *osdpdump_command_string(OSDPDUMP_CONTEXT *ctx, unsigned char command_response);
