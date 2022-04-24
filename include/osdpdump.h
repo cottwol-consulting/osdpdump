@@ -51,9 +51,10 @@
 
 #define OSDPDUMP_ANA_STRICT (2)
 
-#define OSDPDUMP_FMT_1LINE (0x01) // 1-line, no hex, no comments
-#define OSDPDUMP_FMT_2LINE (0x02) // 1-line, hex
-#define OSDPDUMP_FMT_ANNOTATED (0x03)// 2 lines plus commentary
+#define OSDPDUMP_FMT_1LINE (0x01)     // 1-line, no hex, no comments
+#define OSDPDUMP_FMT_2LINE (0x02)     // 1-line, hex
+#define OSDPDUMP_FMT_ANNOTATED (0x03) // 2 lines plus commentary
+#define OSDPDUMP_FMT_SUMMARY   (0x04) // just the summary
 
 #define OSDPDUMP_PD_MAX (31)
 

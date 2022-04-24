@@ -47,6 +47,7 @@ extern OSDPDUMP_TRACKING osdpdump_message_tracking [256];
   OSDPDUMP_FMT_1LINE
   OSDPDUMP_FMT_2LINE
   OSDPDUMP_FMT_ANNOTATED
+  OSDPDUMP_FMT_SUMMARY
 */
 int
   osdpdump_print
@@ -73,6 +74,13 @@ int
     osdpdump_print_annotation(ctx, packet);
     break;
 
+  case OSDPDUMP_FMT_SUMMARY:
+    break;
+
+  case OSDPDUMP_FMT_1LINE:
+    osdpdump_print_one_line(ctx, packet);
+    break;
+
   case OSDPDUMP_FMT_2LINE:
     osdpdump_print_one_line(ctx, packet);
     if (strlen(ctx->output_text) > 0)
@@ -84,9 +92,6 @@ int
     for (i=0; i<packet->octet_length; i++)
       fprintf(stdout, " %02x", packet->octets [i]);
     fprintf(stdout, "\n");
-    break;
-  case OSDPDUMP_FMT_1LINE:
-    osdpdump_print_one_line(ctx, packet);
     break;
   default:
     osdpdump_print_one_line(ctx, packet);
@@ -276,7 +281,10 @@ void
   if (strlen(otmp) > 0)
     fprintf(stdout, "%s", otmp);
 
-  fprintf(stdout, " CRC %02x%02x", packet->packet_check [0], packet->packet_check [1]);
+  if (packet->check_type != 0)
+    fprintf(stdout, " CK  %02x", packet->packet_check [1]);
+  else
+    fprintf(stdout, " CRC %02x%02x", packet->packet_check [0], packet->packet_check [1]);
   fprintf(stdout, "\n");
 
 } /* osdpdump_print_one_line */

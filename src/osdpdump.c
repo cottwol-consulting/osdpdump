@@ -84,7 +84,7 @@ int
       fprintf(stdout,
 "--analyze [=n] - set analysis level to n (0-9,default 1)\n");
       fprintf(stdout,
-"--format=<n> - set report format.  1=2-line with dump; 2=1-line, no dump\n");
+"--format=<n> - set report format.  1=2-line with dump; 2=1-line, no dump, 3=, 4=summary only\n");
       fprintf(stdout,
 "--source=<file> - set dump filename to read.\n");
       fprintf(stdout,
@@ -291,10 +291,10 @@ ctx->output_analysis = 1;
       ctx->command = OSDPDUMP_CMD_HELP;
       break;
     case OSDPDUMP_OPT_REPORT_FORMAT:
-      // 1, 2 or 3 are allowed.  force it to 1 (1-liner) if out of range.
+      // 1,2,3,4 are allowed.  force it to 1 (1-liner) if out of range.
       ctx->print_format = 1;
       sscanf(optarg, "%d", &i);
-      if ((i >= 1) && (i <= 3))
+      if ((i >= 1) && (i <= 4))
         ctx->print_format = i;
       ctx->command = OSDPDUMP_CMD_DUMP;
       break;
