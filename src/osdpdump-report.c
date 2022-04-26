@@ -268,6 +268,14 @@ void
       packet->octets [payload_offset + 10],
       packet->octets [payload_offset + 11]);
     break;
+  case OSDP_IEC_PIVDATAR:
+    if (packet->completion_status EQUALS OSDPDUMP_COMPLETION_CMD)
+      sprintf(otmp, " MFG...");
+    else
+    {
+      sprintf(otmp, " PIVDATAR...");
+    };
+    break;
   case OSDP_IEC_POLL:
     break;
   default:

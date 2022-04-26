@@ -74,6 +74,8 @@
 #define OSDP_IEC_OSTAT        (0x66)
 #define OSDP_IEC_OSTATR       (0x4A)
 #define OSDP_IEC_OUT          (0x68)
+#define OSDP_IEC_PIVDATA      (0xA3)
+#define OSDP_IEC_PIVDATAR     (0x80)
 #define OSDP_IEC_PDCAP        (0x46)
 #define OSDP_IEC_PDID         (0x45)
 #define OSDP_IEC_POLL         (0x60)

@@ -72,6 +72,17 @@ char
       strcpy(decoded, "osdp_CHLNG       ");
     };
   };
+  if (command_response EQUALS OSDP_IEC_PIVDATAR)
+  {
+    if (ctx->osdp_pdu.completion_status & OSDPDUMP_COMPLETION_CMD)
+    {
+      strcpy(decoded, "osdp_MFG         ");
+    }
+    else
+    {
+      strcpy(decoded, "osdp_PIVDATAR    ");
+    };
+  };
   return(decoded);
 
 } /* osdpdump_command_string */
@@ -142,6 +153,8 @@ void
   TRACK(OSDP_IEC_OSTATR,  "osdp_OSTATR      ", OSDP_SCS_18, OSDPDUMP_INVALID);
   TRACK(OSDP_IEC_OUT,     "osdp_OUT         ", OSDP_SCS_17, OSDPDUMP_INVALID);
   TRACK(OSDP_IEC_PDCAP,   "osdp_PDCAP       ", OSDP_SCS_18, OSDPDUMP_VALID);
+  TRACK(OSDP_IEC_PIVDATA, "osdp_PIVDATA     ", OSDP_SCS_17, OSDPDUMP_INVALID);
+  TRACK(OSDP_IEC_PIVDATAR,"osdp_PIVDATAR    ", OSDP_SCS_18, OSDPDUMP_INVALID);
   TRACK(OSDP_IEC_PDID,    "osdp_PDID        ", OSDP_SCS_18, OSDPDUMP_VALID);
   TRACK_EX(OSDP_IEC_POLL, "osdp_POLL        ", OSDP_SCS_15, OSDPDUMP_INVALID, OSDPDUMP_TRACKING_NO_PAYLOAD);
   TRACK(OSDP_IEC_RAW, "osdp_RAW         ", OSDP_SCS_18, OSDPDUMP_INVALID);
