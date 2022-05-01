@@ -49,7 +49,6 @@ int
 
   char buffer [1024];
   int done;
-  int have_packet;
   FILE *input_file;
   char my_buffer [1024];
   char octet_buffer [1024];
@@ -60,7 +59,6 @@ int
 
 
   fprintf(stderr, "Convert Salea trace to OSDPCAP %s\n", OSDPDUMP_VERSION);
-  have_packet = 0;
   verbosity = 9;
   input_file = stdin;
 
@@ -111,7 +109,6 @@ if (verbosity > 9)
         char nano_digits [1024];
         int i;
         int time_sec;
-//        if (have_packet)
           printf("\"}\n");
 
         // convert timestamp to timeSec/timeNano
@@ -129,7 +126,6 @@ if (verbosity > 9)
         printf("{ \"timeSec\":\"%d\",\"timeNano\":\"%s\",\"io\":\"trace\",\"data\":\"", time_sec, nano_digits);
 //{ "timeSec" : "1623638395", "timeNano" : "020800268", "io" : "trace", "data" : " 00 00 56 ef ff f7 3f 29 aa fe", "osdpTraceVersion":"1", "osdpSource":"libosdp-conformance 0.92-1" }
         fflush(stdout);
-        have_packet = 1;
       };
       printf(" %s", octet_buffer);
     }

@@ -174,7 +174,6 @@ int
 { /* osdpdump_digester */
 
   int done;
-  int input_exhausted;
   OSDPDUMP_INPUT input_value;
   OSDPDUMP_WORKING_PACKET *packet;
   int status;
@@ -197,7 +196,6 @@ int
         strcpy(ctx->packet_nanoseconds, input_value.time_nanoseconds);
         ctx->current_packet_number ++;
         ctx->detected_packets ++;
-        input_exhausted = 0;
         ctx->output_text [0] = 0;
         {
           status = osdpdump_parse(ctx);
@@ -345,7 +343,6 @@ int osdpdump_packet_accumulate
   int drop_octets;
   OSDPDUMP_WORKING_PACKET *packet;
   unsigned int pdu_length;
-  int process_octets;
   int status;
   unsigned char temp_bytes [2048]; //max
 
@@ -354,7 +351,6 @@ int osdpdump_packet_accumulate
 
   status = ST_OSDPDUMP_NEED_MORE_DATA;
   drop_octets = 0;
-  process_octets = 0;
   packet = &(ctx->osdp_pdu);
   pdu_length = -1; // bogus so it doesn't match
 

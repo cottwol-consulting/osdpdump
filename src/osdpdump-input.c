@@ -78,16 +78,12 @@ int
 
   OSDPDUMP_INPUT *accumulated_message;
   int done;
-  int expected_length;
-  int idx;
   int status;
 
 
   status = ST_OSDPDUMP_NEED_MORE_DATA;
   accumulated_message = &(ctx->accumulated_message);
-  expected_length = 2; // SOM and address
   done = 1;
-  idx = 0;
 
   // if there's something there, try to use it.
 

@@ -1,11 +1,11 @@
 # Make file for osdpdump
 
-# (C)Copyright 2021 Smithee Solutions LLC
+# (C)Copyright 2021-2022 Smithee Solutions LLC
 
 PROGS=osdpdump convert-saleae
 CC=clang
 CFLAGS=-c -g -I../include -Wall -Werror
-LINK=clang
+LINK=${CC}
 LDFLAGS=-g -ljansson
 
 all:	${PROGS}
