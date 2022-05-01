@@ -173,6 +173,8 @@ void
 
   Returns:
     character string, fixed size with trailing spaces
+
+  Note that if it is unknown this text string includes the hex value.
 */
 
 char
@@ -186,12 +188,20 @@ char
   switch(nak_reason)
   {
   default:
-    strcpy(answer, "NAK Unknown  ");
+    sprintf(answer, "Unknown(%02x) ", nak_reason);
     break;
   case OSDP_IEC_NAK_SECURITY_UNAVAILABLE:
-    strcpy(answer, "NAK no secure");
+    strcpy(answer, "No SC Mode    ");
+    break;
+  case OSDP_IEC_NAK_SEQUENCE_ERROR:
+    strcpy(answer, "Sequence Error");
+    break;
+  case OSDP_IEC_NAK_UNABLE_TO_PROCESS:
+    strcpy(answer, "Cannot process");
     break;
   };
   return(&(answer [0]));
 }
+//#define OSDP_IEC_NAK_MESSAGE_CHECK        (0x01)
+//#define OSDP_IEC_NAK_UNKNOWN_COMMAND      (0x03)
 
