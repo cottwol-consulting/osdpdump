@@ -166,6 +166,7 @@ int osdpdump_digester(OSDPDUMP_CONTEXT *ctx);
 int osdpdump_hex_to_raw_bytes(OSDPDUMP_CONTEXT *ctx, char *hex_string, unsigned char *raw_bytes, int *returned_length);
 int osdpdump_initialize(OSDPDUMP_CONTEXT *ctx, int argc, char *argv []);
 void osdpdump_init_tracking(OSDPDUMP_CONTEXT *ctx, OSDPDUMP_TRACKING osdpdump_message_tracking [256]);
+char *osdpdump_nak_reason(OSDPDUMP_CONTEXT *ctx, unsigned char nak_reason);
 int osdpdump_packet_accumulate(OSDPDUMP_CONTEXT *ctx, OSDPDUMP_INPUT *raw, OSDPDUMP_INPUT *accumulated_packet);
 int osdpdump_parse(OSDPDUMP_CONTEXT *ctx);
 int osdpdump_print(OSDPDUMP_CONTEXT *ctx);

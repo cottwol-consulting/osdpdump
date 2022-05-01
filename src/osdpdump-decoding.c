@@ -36,6 +36,7 @@
 #include <osdpdump-decoding.h>
 OSDPDUMP_TRACKING osdpdump_message_tracking [256];
 
+
 /*
   osdpdump_command_string - return text string for a command/response
 
@@ -165,4 +166,32 @@ void
   TRACK(OSDP_IEC_TEXT, "osdp_TEXT        ", OSDP_SCS_17, OSDPDUMP_INVALID);
 
 } /* osdpdump_init_tracking */
+
+
+/*
+  osdpdump_nak_reason - return text string for NAK reason code
+
+  Returns:
+    character string, fixed size with trailing spaces
+*/
+
+char
+  *osdpdump_nak_reason
+    (OSDPDUMP_CONTEXT *ctx,
+    unsigned char nak_reason)
+
+{
+  static char answer [1024];
+
+  switch(nak_reason)
+  {
+  default:
+    strcpy(answer, "NAK Unknown  ");
+    break;
+  case OSDP_IEC_NAK_SECURITY_UNAVAILABLE:
+    strcpy(answer, "NAK no secure");
+    break;
+  };
+  return(&(answer [0]));
+}
 
