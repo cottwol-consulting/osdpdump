@@ -181,9 +181,14 @@ void
 
   fprintf(stdout, "P:%06d ", ctx->current_packet_number);
   fprintf(stdout, "t=%9s.%9s ", ctx->packet_seconds, ctx->packet_nanoseconds);
+  if (!(ctx->osdp_pdu.completion_status & OSDPDUMP_COMPLETION_RSP)) // Command
+    fprintf(stdout, "C:");
+  else
+    fprintf(stdout, "R:");
   fprintf(stdout, "%s ", osdpdump_command_string(ctx, packet->command_response));
   fprintf(stdout, " A %2d.", packet->address);
   fprintf(stdout, " S%d", packet->sequence);
+  fprintf(stdout, " L%04d", packet->octet_length);
   if (packet->completion_status & OSDPDUMP_COMPLETION_SCB)
     fprintf(stdout, " SCS %2x", ctx->osdp_pdu.octets [1+1+2+1+1]);
   if (packet->completion_status & OSDPDUMP_COMPLETION_SCBK_D)
