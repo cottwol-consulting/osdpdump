@@ -190,18 +190,19 @@ char
   default:
     sprintf(answer, "Unknown(%02x) ", nak_reason);
     break;
+  case OSDP_IEC_NAK_ENCRYPTION_REQUIRED:
+    strcpy(answer, "Encryption Required");
+    break;
   case OSDP_IEC_NAK_SECURITY_UNAVAILABLE:
-    strcpy(answer, "No SC Mode    ");
+    strcpy(answer, "No SC Mode         ");
     break;
   case OSDP_IEC_NAK_SEQUENCE_ERROR:
-    strcpy(answer, "Sequence Error");
+    strcpy(answer, "Sequence Error     ");
     break;
   case OSDP_IEC_NAK_UNABLE_TO_PROCESS:
-    strcpy(answer, "Cannot process");
+    strcpy(answer, "Cannot process     ");
     break;
   };
   return(&(answer [0]));
 }
-//#define OSDP_IEC_NAK_MESSAGE_CHECK        (0x01)
-//#define OSDP_IEC_NAK_UNKNOWN_COMMAND      (0x03)
 

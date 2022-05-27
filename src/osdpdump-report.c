@@ -196,6 +196,22 @@ void
   {
   case OSDP_IEC_ACK:
     break;
+  case OSDP_IEC_CHLNG:
+    if (!(ctx->osdp_pdu.completion_status & OSDPDUMP_COMPLETION_RSP)) // CHLNG
+    {
+      sprintf(otmp,
+" RND: %02x%02x%02x%02x %02x%02x%02x%02x",
+        packet->octets [payload_offset + 0], packet->octets [payload_offset + 1], packet->octets [payload_offset + 2], packet->octets [payload_offset + 3],
+        packet->octets [payload_offset + 4], packet->octets [payload_offset + 5], packet->octets [payload_offset + 6], packet->octets [payload_offset + 7]);
+    };
+    if (ctx->osdp_pdu.completion_status & OSDPDUMP_COMPLETION_RSP) // CCRYPT
+    {
+      sprintf(otmp,
+" RND: %02x%02x%02x%02x %02x%02x%02x%02x",
+        packet->octets [payload_offset +  8], packet->octets [payload_offset +  9], packet->octets [payload_offset + 10], packet->octets [payload_offset + 11],
+        packet->octets [payload_offset + 12], packet->octets [payload_offset + 13], packet->octets [payload_offset + 14], packet->octets [payload_offset + 15]);
+    };
+    break;
   case OSDP_IEC_COM:
       speed_returned = 0;
       speed_returned = speed_returned + packet->octets [payload_offset + 1];
@@ -245,7 +261,7 @@ void
     };
     break;
   case OSDP_IEC_NAK:
-    sprintf(otmp, " Reason %s", osdpdump_nak_reason(ctx, packet->octets [payload_offset + 0]));
+    sprintf(otmp, " Reason:%s", osdpdump_nak_reason(ctx, packet->octets [payload_offset + 0]));
     if (packet->payload_length > 1)
     {
       sprintf(otmp2, " Detail %02x", packet->octets [payload_offset + 1]);
