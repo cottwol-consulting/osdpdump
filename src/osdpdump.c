@@ -186,6 +186,7 @@ int
 
   if (ctx->verbosity > 0)
     fprintf(stdout, "OSDP Dump of file %s\n", ctx->input_path);
+  packet = &(ctx->osdp_pdu);
   done = 0;
   while (!done)
   {
@@ -214,11 +215,12 @@ int
               fprintf(stdout, "NOTES: %s", ctx->output_text); ctx->output_text [0] = 0;
               ctx->note_count ++;
             };
+
+            ctx->pd_ctx [packet->address].last_command_response = ctx->osdp_pdu.command_response;
           };
         };
       };
       fflush(stdout);  fflush(stderr);
-      packet = &(ctx->osdp_pdu);
       memset(packet, 0, sizeof(*packet));
     };
     if ((status != ST_OK) && (status != ST_OSDPDUMP_NEED_MORE_DATA))
@@ -625,6 +627,13 @@ int
     printf("DEBUG: osdpdump_review_input\n");
   osdpdump_message_tracking [ctx->osdp_pdu.command_response].count ++;
   packet = &(ctx->osdp_pdu);
+
+  if (ctx->osdp_pdu.command_response EQUALS ctx->pd_ctx [packet->address].last_command_response)
+  {
+    sprintf(tstring, "  - Retry or skip\n");
+    strcat(ctx->output_text, tstring);
+    ctx->note_count ++;
+  };
 
   if (!packet->check_type)
   {
