@@ -71,9 +71,11 @@
 #define OSDPDUMP_OPT_REPORT_FORMAT (0x0002)
 #define OSDPDUMP_OPT_SOURCE        (0x0003)
 #define OSDPDUMP_OPT_VERBOSITY     (0x0004)
+#define OSDPDUMP_OPT_VERSION       (0x0005)
 
 #define OSDPDUMP_CMD_DUMP (0x01)
 #define OSDPDUMP_CMD_HELP (0x00)
+#define OSDPDUMP_CMD_VERSION (0x02)
 
 typedef struct osdpdump_input
 {

@@ -55,6 +55,7 @@ struct option longopts [] = {
   {"format", required_argument, &osdpdump_command_line.option, OSDPDUMP_OPT_REPORT_FORMAT},
   {"source", required_argument, &osdpdump_command_line.option, OSDPDUMP_OPT_SOURCE},
   {"verbosity", required_argument, &osdpdump_command_line.option, OSDPDUMP_OPT_VERBOSITY},
+  {"version", optional_argument, &osdpdump_command_line.option, OSDPDUMP_OPT_VERSION},
   {0, 0, 0, 0}};
 
 
@@ -112,6 +113,10 @@ int
         // regardless of what happened print the summary
         status = osdpdump_summary(ctx);
       };
+      break;
+
+    case OSDPDUMP_CMD_VERSION:
+      printf("osdpdump %s\n", OSDPDUMP_VERSION);
       break;
     };
   };
@@ -304,6 +309,9 @@ ctx->output_analysis = 1;
       sscanf(optarg, "%d", &i);
       ctx->verbosity = i;
       ctx->command = OSDPDUMP_CMD_DUMP;
+      break;
+    case OSDPDUMP_OPT_VERSION:
+      ctx->command = OSDPDUMP_CMD_VERSION;
       break;
     default:
       ctx->command = OSDPDUMP_CMD_HELP;
