@@ -324,7 +324,6 @@ ctx->output_analysis = 1;
 
   if (ctx->verbosity > 3)
     fprintf(stderr, "osdpdump %s is in startup.\n", OSDPDUMP_VERSION);
-  fprintf(stdout, "osdpdump %s \n", OSDPDUMP_VERSION);
 
   for (idx=0; idx<OSDPDUMP_PD_MAX; idx++)
   {
