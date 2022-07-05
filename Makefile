@@ -43,3 +43,6 @@ build:	all
 package:	build
 	(cd package; make package)
 
+setup:
+	apt-get install libjansson-dev
+

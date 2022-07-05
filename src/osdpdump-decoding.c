@@ -202,6 +202,9 @@ char
   case OSDP_IEC_NAK_UNABLE_TO_PROCESS:
     strcpy(answer, "Cannot process     ");
     break;
+  case OSDP_IEC_NAK_UNKNOWN_COMMAND:
+    strcpy(answer, "Unknown command    ");
+    break;
   };
   return(&(answer [0]));
 }
