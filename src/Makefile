@@ -2,7 +2,7 @@
 
 # (C)Copyright 2021-2022 Smithee Solutions LLC
 
-PROGS=osdpdump convert-saleae
+PROGS=osdpdump
 CC=clang
 CFLAGS=-c -g -I../include -Wall -Werror
 LINK=${CC}
@@ -20,14 +20,8 @@ test:	all
 clean:
 	rm -f core *.o ${PROGS}
 
-convert-saleae:	convert-saleae.o Makefile
-	${LINK} -o convert-saleae convert-saleae.o ${LDFLAGS}
-
 osdpdump:	osdpdump.o osdpdump-decoding.o osdpdump-input.o osdpdump-prims.o osdpdump-report.o osdp-crc.o Makefile
 	${LINK} -o osdpdump osdpdump.o osdpdump-decoding.o osdpdump-input.o osdpdump-prims.o osdpdump-report.o osdp-crc.o ${LDFLAGS}
-
-convert-saleae.o:	convert-saleae.c
-	${CC} ${CFLAGS} convert-saleae.c
 
 osdpdump.o:	osdpdump.c ../include/osdpdump.h ../include/osdpdump-decoding.h
 	${CC} ${CFLAGS} osdpdump.c
