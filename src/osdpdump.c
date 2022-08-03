@@ -184,18 +184,22 @@ int
   int status;
 
 
+  status = ST_OK;
   if (ctx->verbosity > 0)
     fprintf(stdout, "OSDP Dump of file %s\n", ctx->input_path);
+  memset(&input_value, 0, sizeof(input_value));
   packet = &(ctx->osdp_pdu);
   done = 0;
   while (!done)
   {
-    status = osdpdump_read_input(ctx, &input_value);
+    if (input_value.length EQUALS 0)
+      status = osdpdump_read_input(ctx, &input_value);
     if (ctx->verbosity > 9)
       fprintf(stderr, "DEBUG: osdpdump_read_input %d.\n", status);
     if (status EQUALS ST_OK)
     {
       status = osdpdump_accumulate_input(ctx, &input_value);
+fprintf(stderr, "osdpdump_accumulate_input status was %d. r0 %02X s0 %c\n", status, input_value.raw_bytes [0], input_value.input_string [0]);
       if (status EQUALS ST_OSDPDUMP_PACKET)
       {
         strcpy(ctx->packet_seconds, input_value.time_seconds);
@@ -353,7 +357,7 @@ int osdpdump_packet_accumulate
   OSDPDUMP_WORKING_PACKET *packet;
   unsigned int pdu_length;
   int status;
-  unsigned char temp_bytes [2048]; //max
+  unsigned char temp_bytes [8*2048]; //max
 
 
   // assume we used it or trashed it and need more.
@@ -363,6 +367,8 @@ int osdpdump_packet_accumulate
   packet = &(ctx->osdp_pdu);
   pdu_length = -1; // bogus so it doesn't match
 
+fprintf(stderr, "DEBUG: osdpdump_packet_accumulate: input length %d. pkt lth %d.\n", input_bytes->length, packet->octet_length);
+fprintf(stderr, "DEBUG: accumulate entry drop %d\n", ctx->dropped_octets);
   if (input_bytes->length > 0)
   {
     // take first byte
@@ -417,6 +423,14 @@ int osdpdump_packet_accumulate
       }
       else
       {
+        char tstring [1024];
+
+        // input was bigger than a packet.  drop it and note it.
+
+        sprintf(tstring, "  - Header Length %d. too large (>%d) - %d. bytes dropped.\n", pdu_length, OSDPDUMP_PDU_MAX, packet->octet_length);
+        strcat(ctx->output_text, tstring);
+        ctx->note_count ++;
+
         ctx->dropped_octets = ctx->dropped_octets + packet->octet_length;
         packet->octet_length = 0;
         status = ST_OSDPDUMP_NEED_MORE_DATA;
@@ -437,6 +451,7 @@ int osdpdump_packet_accumulate
     };
     if (drop_octets)
       ctx->dropped_octets ++;
+fprintf(stderr, "DEBUG: accumulate exit drop %d lth %d\n", ctx->dropped_octets, packet->octet_length);
     if (packet->octet_length EQUALS pdu_length)
       status = ST_OSDPDUMP_PACKET;
   };
@@ -530,75 +545,6 @@ int
   return(status);
 
 } /* osdpdump_parse */
-
-/*
-  osdpdump_read_input - reads various input types
-
-  in principle.  for now, reads osdpcap.
-*/
-
-
-int
-  osdpdump_read_input
-    (OSDPDUMP_CONTEXT *ctx,
-    OSDPDUMP_INPUT *input_value)
-
-{ /* osdpdump_read_input */
-
-  json_t *line_root;
-  json_t *value;
-  int status;
-  char *status_io;
-  json_error_t status_json;
-  char line [4*1024]; // big enough for 1500 bytes as 2-digit octets with a space
-
-
-  status = ST_OK;
-  switch(ctx->input_source)
-  {
-  case OSDPDUMP_SOURCE_OSDPCAP:
-    input_value->input_string [0] = 0; // init string to empty
-    status_io = fgets(line, sizeof(line), ctx->dump_file_handle);
-    if (status_io != NULL)
-    {
-      if (ctx->verbosity > 9)
-        fprintf(stderr, "line (%d chars) %s\n", (int)strlen(line), line);
-      strcpy(input_value->input_string, line);
-      line_root = json_loads(input_value->input_string, 0, &status_json);
-    }
-    else
-    {
-      status = ST_OSDPDUMP_FILE_READ_ERROR;
-    };
-    if (status EQUALS ST_OK)
-    {
-      value = json_object_get(line_root, "timeSec");
-      if (json_is_string(value))
-        strcpy(input_value->time_seconds, json_string_value(value));
-      else
-        status = ST_OSDPDUMP_INPUT_ERROR_1;
-      value = json_object_get(line_root, "timeNano");
-      if (json_is_string(value))
-        strcpy(input_value->time_nanoseconds, json_string_value(value));
-      else
-        status = ST_OSDPDUMP_INPUT_ERROR_2;
-
-      value = json_object_get(line_root, "data");
-      if (json_is_string(value))
-        strcpy(input_value->input_string, json_string_value(value));
-      else
-        status = ST_OSDPDUMP_INPUT_ERROR_3;
-      if (status EQUALS ST_OK)
-        status = osdpdump_hex_to_raw_bytes(ctx, input_value->input_string, input_value->raw_bytes, &(input_value->length));
-    };
-    break;
-  default:
-    status = ST_OSDPDUMP_BAD_INPUT_FORMAT;
-    break;
-  };
-  return(status);
-
-} /* osdpdump_read_input */
 
 
 /*

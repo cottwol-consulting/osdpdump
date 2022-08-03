@@ -1,7 +1,7 @@
 /*
   osdpdump-prims - primitives for dump processing
 
-  (C)2021 Smithee Solutions LLC
+  (C)2021-2022 Smithee Solutions LLC
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are met:
@@ -93,7 +93,7 @@ char *
   char *c;
   int done;
   int idx;
-  static char temp_string [3*1024];
+  static char temp_string [8*1024];
 
 
   idx =  0;

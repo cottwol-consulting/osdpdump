@@ -33,11 +33,13 @@ all:
 
 clean:
 	(cd src; make clean)
+	(cd src-converters; make clean)
 	(cd package; make clean)
 	rm -rvf opt *.deb
 
 build:	all
 	(cd src; make build)
+	(cd src-converters; make build)
 	@echo cd to package and make arm64 or amd64
 
 package:	build

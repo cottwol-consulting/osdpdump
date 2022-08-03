@@ -64,7 +64,7 @@
 #define OSDPDUMP_ANA_PD  (1)
 #define OSDPDUMP_ANA_ACU (2)
 
-#define OSDPDUMP_PDU_MAX (1400) // tbd check
+#define OSDPDUMP_PDU_MAX (1440) // per SIA OSDP 2.2
 
 #define OSDPDUMP_OPT_ANALYZE       (0x0000)
 #define OSDPDUMP_OPT_HELP          (0x0001)
@@ -81,7 +81,7 @@ typedef struct osdpdump_input
 {
   int length;
   unsigned char raw_bytes[OSDPDUMP_BUFFER_MAX];
-  char input_string [OSDPDUMP_STRING*3];
+  char input_string [8*OSDPDUMP_STRING];
   char time_seconds [1024];
   char time_nanoseconds [1024];
 } OSDPDUMP_INPUT;
