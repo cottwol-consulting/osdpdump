@@ -66,7 +66,6 @@ int
     osdpdump_print_one_line(ctx, packet);
     if (strlen(ctx->output_text) > 0)
     {
-      ctx->note_count ++;
       fprintf(stdout, "NOTE: %s", ctx->output_text);
       ctx->output_text [0] = 0;
     };

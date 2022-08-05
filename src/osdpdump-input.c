@@ -95,9 +95,7 @@ int
   {
     while (!done)
     {
-fprintf(stderr, "DEBUG: osdpdump_accumulate_input: while in-lth %d\n", input_value->length);
       status = osdpdump_packet_accumulate(ctx, input_value, accumulated_message);
-fprintf(stderr, "osdpdump_packet_accumulate status was %d. r0 %02X s0 %c\n", status, input_value->raw_bytes [0], input_value->input_string [0]);
 
       if (status EQUALS ST_OSDPDUMP_PACKET)
         done = 1;
@@ -107,7 +105,6 @@ fprintf(stderr, "osdpdump_packet_accumulate status was %d. r0 %02X s0 %c\n", sta
         if (input_value->length < 1)
           done = 1;
       };
-fprintf(stderr, "DEBUG: exit while\n");
     };
   };
   return(status);
@@ -129,12 +126,13 @@ int
 
 { /* osdpdump_read_input */
 
+  char line [OSDPDUMP_STRING]; // big enough for 1500 bytes as 2-digit octets with a space
   json_t *line_root;
   json_t *value;
   int status;
   char *status_io;
   json_error_t status_json;
-  char line [8*1024]; // big enough for 1500 bytes as 2-digit octets with a space
+  char tstring [1024];
 
 
   status = ST_OK;
@@ -147,8 +145,19 @@ int
     {
       if (ctx->verbosity > 8)
         fprintf(stderr, "line (%d chars) %s\n", (int)strlen(line), line);
-      strcpy(input_value->input_string, line);
-      line_root = json_loads(input_value->input_string, 0, &status_json);
+      if (strlen(line) > OSDPDUMP_PDU_MAX*3)
+      {
+        // this is too long.  bail.
+        sprintf(tstring, "Line too long (%d. characters) - aborting.\n", strlen(line));
+        strcat(ctx->output_text, tstring);
+        ctx->note_count ++;
+        status = ST_OSDPDUMP_LINE_TOO_LONG;
+      };
+      if (status EQUALS ST_OK)
+      {
+        strcpy(input_value->input_string, line);
+        line_root = json_loads(input_value->input_string, 0, &status_json);
+      };
     }
     else
     {

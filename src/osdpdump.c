@@ -199,7 +199,6 @@ int
     if (status EQUALS ST_OK)
     {
       status = osdpdump_accumulate_input(ctx, &input_value);
-fprintf(stderr, "osdpdump_accumulate_input status was %d. r0 %02X s0 %c\n", status, input_value.raw_bytes [0], input_value.input_string [0]);
       if (status EQUALS ST_OSDPDUMP_PACKET)
       {
         strcpy(ctx->packet_seconds, input_value.time_seconds);
@@ -217,7 +216,6 @@ fprintf(stderr, "osdpdump_accumulate_input status was %d. r0 %02X s0 %c\n", stat
             if (strlen(ctx->output_text) > 0)
             {
               fprintf(stdout, "NOTES: %s", ctx->output_text); ctx->output_text [0] = 0;
-              ctx->note_count ++;
             };
 
             ctx->pd_ctx [packet->address].last_command_response = ctx->osdp_pdu.command_response;
@@ -367,8 +365,6 @@ int osdpdump_packet_accumulate
   packet = &(ctx->osdp_pdu);
   pdu_length = -1; // bogus so it doesn't match
 
-fprintf(stderr, "DEBUG: osdpdump_packet_accumulate: input length %d. pkt lth %d.\n", input_bytes->length, packet->octet_length);
-fprintf(stderr, "DEBUG: accumulate entry drop %d\n", ctx->dropped_octets);
   if (input_bytes->length > 0)
   {
     // take first byte
@@ -430,6 +426,7 @@ fprintf(stderr, "DEBUG: accumulate entry drop %d\n", ctx->dropped_octets);
         sprintf(tstring, "  - Header Length %d. too large (>%d) - %d. bytes dropped.\n", pdu_length, OSDPDUMP_PDU_MAX, packet->octet_length);
         strcat(ctx->output_text, tstring);
         ctx->note_count ++;
+fprintf(stderr, "DEBUG: note count at 429 now %d\n", ctx->note_count);
 
         ctx->dropped_octets = ctx->dropped_octets + packet->octet_length;
         packet->octet_length = 0;
@@ -451,7 +448,6 @@ fprintf(stderr, "DEBUG: accumulate entry drop %d\n", ctx->dropped_octets);
     };
     if (drop_octets)
       ctx->dropped_octets ++;
-fprintf(stderr, "DEBUG: accumulate exit drop %d lth %d\n", ctx->dropped_octets, packet->octet_length);
     if (packet->octet_length EQUALS pdu_length)
       status = ST_OSDPDUMP_PACKET;
   };
@@ -578,6 +574,7 @@ int
     sprintf(tstring, "  - Retry or skip\n");
     strcat(ctx->output_text, tstring);
     ctx->note_count ++;
+fprintf(stderr, "DEBUG: note count at 577 now %d\n", ctx->note_count);
   };
 
   if (!packet->check_type)
@@ -591,6 +588,7 @@ int
       sprintf(tstring, "  - CRC is wrong (wire %04X, calc %04X.)\n", wire_crc, calculated_crc);
       strcat(ctx->output_text, tstring);
       ctx->note_count ++;
+fprintf(stderr, "DEBUG: note count at 591 now %d\n", ctx->note_count);
     };
   }
   else
@@ -603,6 +601,7 @@ int
       sprintf(tstring, "  - Checksum is wrong (wire %02X, calc %02X.)\n", wire_checksum, calculated_checksum);
       strcat(ctx->output_text, tstring);
       ctx->note_count ++;
+fprintf(stderr, "DEBUG: note count at 604 now %d\n", ctx->note_count);
     };
   };
 
@@ -618,6 +617,7 @@ int
     {
       strcat(ctx->output_text, "  - sequence number not next in ACU sequence\n");
       ctx->note_count ++;
+fprintf(stderr, "DEBUG: note count at 619 now %d\n", ctx->note_count);
     };
   };
   if (!(packet->role))
@@ -626,6 +626,7 @@ int
     {
       strcat(ctx->output_text, "  - PD is responding on unexpected sequence number\n");
       ctx->note_count ++;
+fprintf(stderr, "DEBUG: note count at 629 now %d\n", ctx->note_count);
     };
   };
 
