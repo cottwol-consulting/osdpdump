@@ -148,7 +148,7 @@ int
       if (strlen(line) > OSDPDUMP_PDU_MAX*3)
       {
         // this is too long.  bail.
-        sprintf(tstring, "Line too long (%d. characters) - aborting.\n", strlen(line));
+        sprintf(tstring, "Line too long (%d. characters) - aborting.\n", (int)strlen(line));
         strcat(ctx->output_text, tstring);
         ctx->note_count ++;
         status = ST_OSDPDUMP_LINE_TOO_LONG;
