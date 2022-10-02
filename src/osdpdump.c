@@ -574,7 +574,8 @@ int
     sprintf(tstring, "  - Retry or skip\n");
     strcat(ctx->output_text, tstring);
     ctx->note_count ++;
-fprintf(stderr, "DEBUG: note count at 577 now %d\n", ctx->note_count);
+    if (ctx->verbosity > 3)
+      fprintf(stderr, "retry detector activated, now %d. notes.\n", ctx->note_count);
   };
 
   if (!packet->check_type)
