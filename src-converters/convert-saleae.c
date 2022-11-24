@@ -1,7 +1,7 @@
 /*
   convert-salea - convert from Salea 485 trace to osdpcap
 
-  (C)2021 Smithee Solutions LLC
+  (C)2021-2022 Smithee Solutions LLC
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are met:
@@ -73,9 +73,13 @@ int
   done = 0;
   while (!done)
   {
+    // get a data line
+
     status_gets = fgets(buffer, sizeof(buffer), input_file);
     if (status_gets != NULL)
     {
+      // eat the cr/lf at the end
+
       if (buffer [strlen(buffer)-1] EQUALS 0x0a)
         buffer [strlen(buffer)-1] = 0;
       if (buffer [strlen(buffer)-1] EQUALS 0x0d)
@@ -88,15 +92,9 @@ if (verbosity > 9)
       strcpy(my_buffer, buffer);
       token = strtok(my_buffer, ",");
 fprintf(stderr, "DEBUG: token 1 %s\n", token);
-      token = strtok(NULL, ",");
-fprintf(stderr, "DEBUG: token 2 %s\n", token);
-      token = strtok(NULL, ",");
-fprintf(stderr, "DEBUG: token 3 %s\n", token);
       strcpy(timestamp_string, token);
       token = strtok(NULL, ",");
-fprintf(stderr, "DEBUG: token 4 %s\n", token);
-      token = strtok(NULL, ",");
-fprintf(stderr, "DEBUG: token 5 %s\n", token);
+fprintf(stderr, "DEBUG: token 2 %s\n", token);
       strcpy(octet_buffer, token);
 fprintf(stderr, "DEBUG: octet buffer %s\n", octet_buffer);
       if (strncmp(octet_buffer, "0x", 2) EQUALS 0)

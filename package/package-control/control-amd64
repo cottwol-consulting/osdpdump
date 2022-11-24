@@ -1,5 +1,5 @@
 Package: osdpdump
-Version: 0.7.5
+Version: 0.8.0
 Section: custom
 Priority: optional
 Architecture: amd64

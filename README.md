@@ -9,9 +9,10 @@ Includes a Saleae-to-osdpdump converter.
 
 ### How to build ###
 
-  make 2>stderr build
-  cd package
-  make amd64 (or arm64 for Pi)
+  make 2>stderr package
+
+Then, install the package with dpkg:
+
   dpkg -i (the package)
 
 ### Configuration
@@ -20,13 +21,25 @@ Assumes Debian-class Linux.  Assumes OSDPCAP format (for now) or serial stream (
 * Dependencies
 Debian Linux
 clang
+salea export format
 
 * How to run
 
+for osdpdump help:
+
   osdpdump --help
+
+to convert an osdpcap file to a log:
 
   osdpdump --format 1 --source ../test/sample.osdpcap >sample_osdpdump.log
 
+to convert a saleae trace:
+
+1. from the digital channel do an export to csv format
+2. use the converter (and then decode it.)
+
+  convert-saleae <saleae-data-export.csv >saleae.osdpcap
+  osdpdump --format 1 --source saleae.osdpcap
 
 * Deployment instructions
 
