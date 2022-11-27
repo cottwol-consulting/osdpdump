@@ -290,10 +290,10 @@ void
     break;
   case OSDP_IEC_PIVDATAR:
     if (packet->completion_status EQUALS OSDPDUMP_COMPLETION_CMD)
-      sprintf(otmp, " MFG...");
+      sprintf(otmp, " PIVDATAR...");
     else
     {
-      sprintf(otmp, " PIVDATAR...");
+      sprintf(otmp, " MFG...");
     };
     break;
   case OSDP_IEC_POLL:
