@@ -1,0 +1,8 @@
+#!/bin/bash
+set -x
+KICK="/opt/osdp-conformance/bin/open-osdp-kick ACU"
+${KICK} < /opt/osdp-conformance/etc/cmds/oo_o00_perm-off-abort
+${KICK} < /opt/osdp-conformance/etc/cmds/oo_o00_temp-on-3000
+sleep 1
+${KICK} < /opt/osdp-conformance/etc/cmds/oo_o00_perm-off-abort
+
