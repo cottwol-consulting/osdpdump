@@ -143,16 +143,9 @@ int
     status_io = fgets(line, sizeof(line), ctx->dump_file_handle);
     if (status_io != NULL)
     {
+fprintf(stderr, "DEBUG: l1 %d l2 %d l3 %ld\n", OSDPDUMP_STRING, OSDPDUMP_PDU_MAX*3, strlen(line));
       if (ctx->verbosity > 8)
         fprintf(stderr, "line (%d chars) %s\n", (int)strlen(line), line);
-      if (strlen(line) > OSDPDUMP_PDU_MAX*3)
-      {
-        // this is too long.  bail.
-        sprintf(tstring, "Line too long (%d. characters) - aborting.\n", (int)strlen(line));
-        strcat(ctx->output_text, tstring);
-        ctx->note_count ++;
-        status = ST_OSDPDUMP_LINE_TOO_LONG;
-      };
       if (status EQUALS ST_OK)
       {
         strcpy(input_value->input_string, line);
@@ -178,7 +171,18 @@ int
 
       value = json_object_get(line_root, "data");
       if (json_is_string(value))
-        strcpy(input_value->input_string, json_string_value(value));
+      {
+        if (strlen(json_string_value(value)) > OSDPDUMP_PDU_MAX*3)
+        {
+          // this is too long.  bail.
+          sprintf(tstring, "Data too long (%d. char, expected %d) - aborting.\n", (int)strlen(line), OSDPDUMP_PDU_MAX*3);
+          strcat(ctx->output_text, tstring);
+          ctx->note_count ++;
+          status = ST_OSDPDUMP_LINE_TOO_LONG;
+        };
+        if (status EQUALS ST_OK)
+          strcpy(input_value->input_string, json_string_value(value));
+      }
       else
         status = ST_OSDPDUMP_INPUT_ERROR_3;
       if (status EQUALS ST_OK)
