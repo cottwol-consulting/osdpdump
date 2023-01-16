@@ -1,7 +1,7 @@
 /*
   osdp-input - input low level processing
 
-  (C)2021-2022 Smithee Solutions LLC
+  (C)2021-2023 Smithee Solutions LLC
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are met:
@@ -143,7 +143,8 @@ int
     status_io = fgets(line, sizeof(line), ctx->dump_file_handle);
     if (status_io != NULL)
     {
-fprintf(stderr, "DEBUG: l1 %d l2 %d l3 %ld\n", OSDPDUMP_STRING, OSDPDUMP_PDU_MAX*3, strlen(line));
+      if (ctx->verbosity > 3)
+        fprintf(stderr, "DEBUG: l1 %d l2 %d l3 %ld\n", OSDPDUMP_STRING, OSDPDUMP_PDU_MAX*3, strlen(line));
       if (ctx->verbosity > 8)
         fprintf(stderr, "line (%d chars) %s\n", (int)strlen(line), line);
       if (status EQUALS ST_OK)
