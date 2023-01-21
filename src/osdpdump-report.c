@@ -279,11 +279,12 @@ void
       (packet->octets [payload_offset + 7] << 16) +
       (packet->octets [payload_offset + 8] << 24);
 
-    sprintf(otmp, " OUI %02X-%02X-%02X Model %d. Version %d. Serial %d. FW %d.%d-%d",
+    sprintf(otmp, " OUI %02X-%02X-%02X Model %d. Version %d. Serial %d.(%02X%02X%02X%02X) FW %d.%d-%d",
       packet->octets [payload_offset + 0], packet->octets [payload_offset + 1],
       packet->octets [payload_offset + 2],
       packet->octets [payload_offset + 3], packet->octets [payload_offset + 4],
       serial_number,
+      packet->octets [payload_offset + 5], packet->octets [payload_offset + 6], packet->octets [payload_offset + 7], packet->octets [payload_offset + 8],
       packet->octets [payload_offset + 9],
       packet->octets [payload_offset + 10],
       packet->octets [payload_offset + 11]);

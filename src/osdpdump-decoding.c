@@ -1,7 +1,7 @@
 /*
   osdpdump-decoding - decoding osdp packet into text
 
-  (C)2021-2022 Smithee Solutions LLC
+  (C)2021-2023 Smithee Solutions LLC
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are met:
@@ -197,6 +197,9 @@ char
     break;
   case OSDP_IEC_NAK_ENCRYPTION_REQUIRED:
     strcpy(answer, "Encryption Required");
+    break;
+  case OSDP_IEC_NAK_CMD_LENGTH_ERROR:
+    strcpy(answer, "Command length error");
     break;
   case OSDP_IEC_NAK_SECURITY_UNAVAILABLE:
     strcpy(answer, "No SC Mode         ");
