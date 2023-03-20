@@ -3,7 +3,7 @@
 
   "osdpdump --help" for instructions.
 
-  (C)2021-2022 Smithee Solutions LLC
+  (C)2021-2023 Smithee Solutions LLC
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are met:
@@ -426,7 +426,6 @@ int osdpdump_packet_accumulate
         sprintf(tstring, "  - Header Length %d. too large (>%d) - %d. bytes dropped.\n", pdu_length, OSDPDUMP_PDU_MAX, packet->octet_length);
         strcat(ctx->output_text, tstring);
         ctx->note_count ++;
-fprintf(stderr, "DEBUG: note count at 429 now %d\n", ctx->note_count);
 
         ctx->dropped_octets = ctx->dropped_octets + packet->octet_length;
         packet->octet_length = 0;
@@ -589,7 +588,6 @@ int
       sprintf(tstring, "  - CRC is wrong (wire %04X, calc %04X.)\n", wire_crc, calculated_crc);
       strcat(ctx->output_text, tstring);
       ctx->note_count ++;
-fprintf(stderr, "DEBUG: note count at 591 now %d\n", ctx->note_count);
     };
   }
   else
@@ -602,7 +600,6 @@ fprintf(stderr, "DEBUG: note count at 591 now %d\n", ctx->note_count);
       sprintf(tstring, "  - Checksum is wrong (wire %02X, calc %02X.)\n", wire_checksum, calculated_checksum);
       strcat(ctx->output_text, tstring);
       ctx->note_count ++;
-fprintf(stderr, "DEBUG: note count at 604 now %d\n", ctx->note_count);
     };
   };
 
@@ -618,7 +615,6 @@ fprintf(stderr, "DEBUG: note count at 604 now %d\n", ctx->note_count);
     {
       strcat(ctx->output_text, "  - sequence number not next in ACU sequence\n");
       ctx->note_count ++;
-fprintf(stderr, "DEBUG: note count at 619 now %d\n", ctx->note_count);
     };
   };
   if (!(packet->role))
