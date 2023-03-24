@@ -144,7 +144,7 @@ int
     if (status_io != NULL)
     {
       if (ctx->verbosity > 3)
-        fprintf(stderr, "DEBUG: l1 %d l2 %d l3 %d\n", OSDPDUMP_STRING, OSDPDUMP_PDU_MAX*3, strlen(line));
+        fprintf(stderr, "DEBUG: l1 %d l2 %d l3 %lu\n", OSDPDUMP_STRING, OSDPDUMP_PDU_MAX*3, strlen(line));
       if (ctx->verbosity > 8)
         fprintf(stderr, "line (%d chars) %s\n", (int)strlen(line), line);
       if (status EQUALS ST_OK)
