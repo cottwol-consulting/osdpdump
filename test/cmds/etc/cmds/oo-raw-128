@@ -1,2 +1,2 @@
-{"command":"present-card","bits":"128","raw":"00112233445566778899aabbccddeeff"}
+{"command":"present-card","format":"raw","bits":"128","raw":"00112233445566778899aabbccddeeff"}
 
