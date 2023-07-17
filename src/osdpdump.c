@@ -264,6 +264,8 @@ int
   status = ST_OK;
   memset(ctx, 0, sizeof(*ctx));
   ctx->verbosity = 3;
+  if (ctx->verbosity > 0)
+    fprintf(stderr, "osdpdump %s\n", OSDPDUMP_VERSION);
   ctx->print_format = OSDPDUMP_FMT_2LINE;
   ctx->analysis = OSDPDUMP_ANA_STRICT;
   ctx->input_source = OSDPDUMP_SOURCE_OSDPCAP;
