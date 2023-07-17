@@ -1,7 +1,7 @@
 /*
   osdpdump.h - definitions for osdpdump
 
-  (C)2021-2022 Smithee Solutions LLC
+  (C)2021-2023 Smithee Solutions LLC
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are met:
@@ -56,6 +56,7 @@
 #define OSDPDUMP_FMT_2LINE (0x02)     // 1-line, hex
 #define OSDPDUMP_FMT_ANNOTATED (0x03) // 2 lines plus commentary
 #define OSDPDUMP_FMT_SUMMARY   (0x04) // just the summary
+#define OSDPDUMP_FMT_MAC       (0x05) // output MAC only
 
 #define OSDPDUMP_PD_MAX (31)
 
@@ -131,6 +132,7 @@ typedef struct osdpdump_working_packet
   unsigned char packet_check [2];
   int check_type; // 0=CRC 1=Checksum
   int payload_length;
+  unsigned char mac [4];
 //  unsigned char remainder [2048];
 } OSDPDUMP_WORKING_PACKET;
 
@@ -158,6 +160,7 @@ typedef struct osdpdump_context
   char packet_nanoseconds [1024];
   char input_path [OSDPDUMP_STRING];
   OSDPDUMP_PD_CONTEXT pd_ctx [OSDPDUMP_PD_MAX+1];
+  unsigned long int histo_size;
   OSDPDUMP_INPUT accumulated_message;
   char output_text [16384]; //maxstring
 } OSDPDUMP_CONTEXT;
@@ -170,6 +173,8 @@ int osdpdump_digester(OSDPDUMP_CONTEXT *ctx);
 int osdpdump_hex_to_raw_bytes(OSDPDUMP_CONTEXT *ctx, char *hex_string, unsigned char *raw_bytes, int *returned_length);
 int osdpdump_initialize(OSDPDUMP_CONTEXT *ctx, int argc, char *argv []);
 void osdpdump_init_tracking(OSDPDUMP_CONTEXT *ctx, OSDPDUMP_TRACKING osdpdump_message_tracking [256]);
+int osdpdump_mac_stats(OSDPDUMP_CONTEXT *ctx, unsigned char *mac);
+int osdpdump_mac_stats_init(OSDPDUMP_CONTEXT *ctx);
 char *osdpdump_nak_reason(OSDPDUMP_CONTEXT *ctx, unsigned char nak_reason);
 int osdpdump_packet_accumulate(OSDPDUMP_CONTEXT *ctx, OSDPDUMP_INPUT *raw, OSDPDUMP_INPUT *accumulated_packet);
 int osdpdump_parse(OSDPDUMP_CONTEXT *ctx);

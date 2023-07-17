@@ -1,6 +1,6 @@
 # Make file for osdpdump
 
-# (C)Copyright 2021-2022 Smithee Solutions LLC
+# (C)Copyright 2021-2023 Smithee Solutions LLC
 
 PROGS=osdpdump
 CC=clang
@@ -20,11 +20,14 @@ test:	all
 clean:
 	rm -f core *.o ${PROGS}
 
-osdpdump:	osdpdump.o osdpdump-decoding.o osdpdump-input.o osdpdump-prims.o osdpdump-report.o osdp-crc.o Makefile
-	${LINK} -o osdpdump osdpdump.o osdpdump-decoding.o osdpdump-input.o osdpdump-prims.o osdpdump-report.o osdp-crc.o ${LDFLAGS}
+osdpdump:	osdpdump.o osdpdump-analyze1.o osdpdump-decoding.o osdpdump-input.o osdpdump-prims.o osdpdump-report.o osdp-crc.o Makefile
+	${LINK} -o osdpdump osdpdump.o osdpdump-analyze1.o osdpdump-decoding.o osdpdump-input.o osdpdump-prims.o osdpdump-report.o osdp-crc.o ${LDFLAGS}
 
 osdpdump.o:	osdpdump.c ../include/osdpdump.h ../include/osdpdump-decoding.h
 	${CC} ${CFLAGS} osdpdump.c
+
+osdpdump-analyze1.o:	osdpdump-analyze1.c
+	${CC} ${CFLAGS} osdpdump-analyze1.c
 
 osdpdump-decoding.o:	osdpdump-decoding.c ../include/osdpdump.h ../include/osdpdump-decoding.h
 	${CC} ${CFLAGS} osdpdump-decoding.c

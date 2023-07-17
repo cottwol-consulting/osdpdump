@@ -298,10 +298,10 @@ ctx->output_analysis = 1;
       ctx->command = OSDPDUMP_CMD_HELP;
       break;
     case OSDPDUMP_OPT_REPORT_FORMAT:
-      // 1,2,3,4 are allowed.  force it to 1 (1-liner) if out of range.
+      // 1,2,3,4,5 are allowed.  force it to 1 (1-liner) if out of range.
       ctx->print_format = 1;
       sscanf(optarg, "%d", &i);
-      if ((i >= 1) && (i <= 4))
+      if ((i >= 1) && (i <= 5))
         ctx->print_format = i;
       ctx->command = OSDPDUMP_CMD_DUMP;
       break;
@@ -331,6 +331,10 @@ ctx->output_analysis = 1;
   {
     ctx->pd_ctx [idx].state = OSDPDUMP_PD_ABSENT;
   };
+
+  // initialize MAC histogram
+
+  status = osdpdump_mac_stats_init(ctx);
 
   osdpdump_init_tracking(ctx, osdpdump_message_tracking);
 
@@ -530,6 +534,9 @@ int
       if (packet->octets [7] EQUALS 0) // 0 in 3rd octet of SCS header in osdp_CHLNG means SCBK-D
         packet->completion_status = packet->completion_status | OSDPDUMP_COMPLETION_SCBK_D;
     }
+
+    if (packet->scs_type >0x14)
+      memcpy(packet->mac, ctx->osdp_pdu.octets+packet->octet_length - 6, 4);
   };
 
 /// checksum vs. crc and offset glitches

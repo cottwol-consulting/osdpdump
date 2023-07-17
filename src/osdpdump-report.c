@@ -1,7 +1,7 @@
 /*
   osdpdump-report.c - reporting functions for osdpdump
 
-  (C)2021-2022 Smithee Solutions LLC
+  (C)2021-2023 Smithee Solutions LLC
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are met:
@@ -57,8 +57,10 @@ int
 
   int i;
   OSDPDUMP_WORKING_PACKET *packet;
+  int status;
 
 
+  status = ST_OK;
   packet = &(ctx->osdp_pdu);
   switch(ctx->print_format)
   {
@@ -92,11 +94,17 @@ int
       fprintf(stdout, " %02x", packet->octets [i]);
     fprintf(stdout, "\n");
     break;
+
+  case OSDPDUMP_FMT_MAC:
+    fprintf(stdout, "MAC: %02X%02X%02X%02X\n", packet->mac [0], packet->mac [1], packet->mac [2], packet->mac [3]);
+    status = osdpdump_mac_stats(ctx, packet->mac);
+    break;
+
   default:
     osdpdump_print_one_line(ctx, packet);
     break;
   };
-  return(0);
+  return(status);
 
 } /* osdpdump_print */
 
