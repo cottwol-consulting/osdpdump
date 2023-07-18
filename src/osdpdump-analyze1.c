@@ -52,7 +52,7 @@ int
 
 { /* osdpdump_mac_stats */
 
-  unsigned short int mac_as_value;
+  unsigned long int mac_as_value;
   int status;
 
 
