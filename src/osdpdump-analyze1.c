@@ -59,7 +59,7 @@ int
   status = ST_OK;
   if ((!mac_histo) && (ctx->print_format EQUALS OSDPDUMP_FMT_MAC))
   {
-    ctx->histo_size = 0x100000000 * sizeof(unsigned short int);
+    ctx->histo_size = (unsigned long)0x100000000l * (unsigned long)sizeof(unsigned short int);
 fprintf(stderr, "DEBUG: about to malloc MAC histogram (size %ld.)\n", ctx->histo_size);
     mac_histo = malloc(ctx->histo_size);
 fprintf(stderr, "DEBUG: mac_histo allocation %lX errno %d.\n", (unsigned long int)mac_histo, errno);
