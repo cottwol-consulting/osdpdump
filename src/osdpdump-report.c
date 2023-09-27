@@ -307,6 +307,24 @@ void
     break;
   case OSDP_IEC_POLL:
     break;
+  case OSDP_IEC_RAW:
+    {
+      int count;
+      int i;
+      char octet [3];
+      char raw_data [1024];
+
+      count = (packet->octets [payload_offset + 3])*256 + packet->octets [payload_offset + 2];
+      raw_data [0] = 0;
+      for (i=0; i<(7+count)/8; i++)
+      {
+        sprintf(octet, "%02X", packet->octets [payload_offset + 4 + i]);
+        strcat(raw_data, octet);
+      };
+      sprintf(otmp, " RAW: Rdr %d. Fmt %d. Bits %d. Data %s",
+        packet->octets [payload_offset + 0], packet->octets [payload_offset + 1], count, raw_data);
+    };
+    break;
   default:
     if (ctx->verbosity > 3)
       fprintf(stdout, "Warning: unknown command (%x) in osdpdump_print_one_line\n", packet->command_response);
