@@ -186,7 +186,7 @@ int
 
   status = ST_OK;
   if (ctx->verbosity > 0)
-    fprintf(stdout, "OSDP Dump of file %s\n", ctx->input_path);
+    fprintf(stdout, "OSDP Dump (version %s) dumping file file %s\n", OSDPDUMP_VERSION, ctx->input_path);
   memset(&input_value, 0, sizeof(input_value));
   packet = &(ctx->osdp_pdu);
   done = 0;
@@ -325,7 +325,9 @@ ctx->output_analysis = 1;
   };
 
   if (ctx->verbosity > 3)
+  {
     fprintf(stderr, "osdpdump %s is in startup.\n", OSDPDUMP_VERSION);
+  };
 
   for (idx=0; idx<OSDPDUMP_PD_MAX; idx++)
   {
