@@ -579,7 +579,7 @@ int
 
   if (ctx->osdp_pdu.command_response EQUALS ctx->pd_ctx [packet->address].last_command_response)
   {
-    sprintf(tstring, "  - Retry or skip\n");
+    sprintf(tstring, "  - Retry or skip");
     strcat(ctx->output_text, tstring);
     ctx->note_count ++;
     if (ctx->verbosity > 3)
@@ -622,7 +622,7 @@ int
       expected_seq = 1;
     if (packet->sequence != expected_seq)
     {
-      strcat(ctx->output_text, "  - sequence number not next in ACU sequence\n");
+      strcat(ctx->output_text, "  - sequence number not next in ACU sequence");
       ctx->note_count ++;
     };
   };

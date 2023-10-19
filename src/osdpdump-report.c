@@ -68,7 +68,7 @@ int
     osdpdump_print_one_line(ctx, packet);
     if (strlen(ctx->output_text) > 0)
     {
-      fprintf(stdout, "NOTE: %s", ctx->output_text);
+      fprintf(stdout, "NOTE: %s\n", ctx->output_text);
       ctx->output_text [0] = 0;
     };
     osdpdump_print_hex(ctx);
@@ -222,6 +222,23 @@ void
 " RND: %02x%02x%02x%02x %02x%02x%02x%02x",
         packet->octets [payload_offset +  8], packet->octets [payload_offset +  9], packet->octets [payload_offset + 10], packet->octets [payload_offset + 11],
         packet->octets [payload_offset + 12], packet->octets [payload_offset + 13], packet->octets [payload_offset + 14], packet->octets [payload_offset + 15]);
+
+      {
+        unsigned char rnd_b [8];
+        unsigned long int rnd_b_int;
+        char tstring [1024];
+
+        memset(rnd_b, 0, sizeof(rnd_b));
+        rnd_b_int = 0l;
+        memcpy(rnd_b, packet->octets + payload_offset + 8, 8);
+        rnd_b_int = *(unsigned long int *)rnd_b;
+        if (rnd_b_int EQUALS 0)
+        {
+          sprintf(tstring, " - RND.B invalid\n");
+          strcat(ctx->output_text, tstring);
+          ctx->note_count ++;
+        };
+      };
     };
     break;
   case OSDP_IEC_COM:
@@ -314,12 +331,20 @@ void
       char octet [3];
       char raw_data [1024];
 
-      count = (packet->octets [payload_offset + 3])*256 + packet->octets [payload_offset + 2];
+      // if it's encrypted we don't know the number of bits
+
+      count = 0;
       raw_data [0] = 0;
-      for (i=0; i<(7+count)/8; i++)
+      if (packet->completion_status & OSDPDUMP_COMPLETION_SCB)
+        strcpy(raw_data, "(encrypted)");
+      else
       {
-        sprintf(octet, "%02X", packet->octets [payload_offset + 4 + i]);
-        strcat(raw_data, octet);
+        count = (packet->octets [payload_offset + 3])*256 + packet->octets [payload_offset + 2];
+        for (i=0; i<(7+count)/8; i++)
+        {
+          sprintf(octet, "%02X", packet->octets [payload_offset + 4 + i]);
+          strcat(raw_data, octet);
+        };
       };
       sprintf(otmp, " RAW: Rdr %d. Fmt %d. Bits %d. Data %s",
         packet->octets [payload_offset + 0], packet->octets [payload_offset + 1], count, raw_data);
