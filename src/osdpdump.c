@@ -121,7 +121,7 @@ int
     };
   };
 
-  fprintf(stdout, "%s", ctx->output_text); ctx->output_text [0] = 0;
+  fprintf(stdout, "%s\n", ctx->output_text); ctx->output_text [0] = 0;
 
   if (status != ST_OK)
     fprintf(stderr, "osdpdump completed, status was %d. errno=%d.\n", status, errno);
@@ -215,7 +215,7 @@ int
             status = osdpdump_print(ctx);
             if (strlen(ctx->output_text) > 0)
             {
-              fprintf(stdout, "NOTES: %s", ctx->output_text); ctx->output_text [0] = 0;
+              fprintf(stdout, "NOTES: %s\n", ctx->output_text); ctx->output_text [0] = 0;
             };
 
             ctx->pd_ctx [packet->address].last_command_response = ctx->osdp_pdu.command_response;
