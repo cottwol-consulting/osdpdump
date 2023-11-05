@@ -290,9 +290,9 @@ void
     };
     break;
   case OSDP_IEC_NAK:
-    sprintf(otmp, " Reason:%s", osdpdump_nak_reason(ctx, packet->octets [payload_offset + 0]));
     if (packet->payload_length > 1)
     {
+      sprintf(otmp, " Reason:%s", osdpdump_nak_reason(ctx, packet->octets [payload_offset + 0]));
       sprintf(otmp2, " Detail %02x", packet->octets [payload_offset + 1]);
       strcat(otmp, otmp2);
     };
