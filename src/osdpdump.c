@@ -579,7 +579,7 @@ int
 
   if (ctx->osdp_pdu.command_response EQUALS ctx->pd_ctx [packet->address].last_command_response)
   {
-    sprintf(tstring, "  - Retry or skip");
+    sprintf(tstring, "  - Retry or skip\n");
     strcat(ctx->output_text, tstring);
     ctx->note_count ++;
     if (ctx->verbosity > 3)
