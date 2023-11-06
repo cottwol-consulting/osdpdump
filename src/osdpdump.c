@@ -186,7 +186,7 @@ int
 
   status = ST_OK;
   if (ctx->verbosity > 0)
-    fprintf(stdout, "OSDP Dump (version %s) dumping file file %s\n", OSDPDUMP_VERSION, ctx->input_path);
+    fprintf(stdout, "OSDP Dump (version %s) dumping file %s\n", OSDPDUMP_VERSION, ctx->input_path);
   memset(&input_value, 0, sizeof(input_value));
   packet = &(ctx->osdp_pdu);
   done = 0;
@@ -215,7 +215,7 @@ int
             status = osdpdump_print(ctx);
             if (strlen(ctx->output_text) > 0)
             {
-              fprintf(stdout, "NOTES: %s\n", ctx->output_text); ctx->output_text [0] = 0;
+              fprintf(stdout, "NOTES: %s", ctx->output_text); ctx->output_text [0] = 0;
             };
 
             ctx->pd_ctx [packet->address].last_command_response = ctx->osdp_pdu.command_response;
