@@ -74,6 +74,7 @@
 #define OSDPDUMP_OPT_SOURCE        (0x0003)
 #define OSDPDUMP_OPT_VERBOSITY     (0x0004)
 #define OSDPDUMP_OPT_VERSION       (0x0005)
+#define OSDPDUMP_OPT_ADDRESS       (0x0006)
 
 #define OSDPDUMP_CMD_DUMP (0x01)
 #define OSDPDUMP_CMD_HELP (0x00)
@@ -148,12 +149,15 @@ typedef struct osdpdump_context
   int analysis_view; // 0=PD, 1=ACU, 2-255 RFU
   int output_report; // 1=yes
   int output_analysis; // 1=yes
+  unsigned char specific_address;
+  int specific_address_requested;
   int print_format;
   FILE *dump_file_handle;
 
   // statistics
   int dropped_octets;
   int detected_packets;
+  int skipped_packets;
 
   OSDPDUMP_WORKING_PACKET osdp_pdu;
   char packet_seconds [1024];

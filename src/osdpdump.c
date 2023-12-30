@@ -53,6 +53,7 @@ struct option longopts [] = {
   {"analyze", optional_argument, &osdpdump_command_line.option, OSDPDUMP_OPT_ANALYZE},
   {"help", 0, &osdpdump_command_line.option, OSDPDUMP_OPT_HELP},
   {"format", required_argument, &osdpdump_command_line.option, OSDPDUMP_OPT_REPORT_FORMAT},
+  {"pd-address", required_argument, &osdpdump_command_line.option, OSDPDUMP_OPT_ADDRESS},
   {"source", required_argument, &osdpdump_command_line.option, OSDPDUMP_OPT_SOURCE},
   {"verbosity", required_argument, &osdpdump_command_line.option, OSDPDUMP_OPT_VERBOSITY},
   {"version", optional_argument, &osdpdump_command_line.option, OSDPDUMP_OPT_VERSION},
@@ -87,11 +88,13 @@ int
       fprintf(stdout,
 "--format=<n> - set report format.  1=2-line with dump; 2=1-line, no dump, 3=, 4=summary only\n");
       fprintf(stdout,
+"--help - this message\n");
+      fprintf(stdout,
+"--pd-address=<n> - address (in decimal) of PD address to dump.\n");
+      fprintf(stdout,
 "--source=<file> - set dump filename to read.\n");
       fprintf(stdout,
 "--verbosity=<n> - set message verbosity.  0=quiet, 3=normal, 9=debug.\n");
-      fprintf(stdout,
-"--help - this message\n");
       break;
 
     case OSDPDUMP_CMD_DUMP:
@@ -181,6 +184,7 @@ int
   int done;
   OSDPDUMP_INPUT input_value;
   OSDPDUMP_WORKING_PACKET *packet;
+  int skip;
   int status;
 
 
@@ -212,13 +216,24 @@ int
             status = osdpdump_review_input(ctx);
           if (status EQUALS ST_OK)
           {
-            status = osdpdump_print(ctx);
-            if (strlen(ctx->output_text) > 0)
+            skip = 0;
+            if (ctx->specific_address_requested)
             {
-              fprintf(stdout, "NOTES: %s", ctx->output_text); ctx->output_text [0] = 0;
+              if (ctx->specific_address != packet->address)
+              {
+                skip = 1;
+                ctx->skipped_packets ++;
+              };
             };
-
-            ctx->pd_ctx [packet->address].last_command_response = ctx->osdp_pdu.command_response;
+            if (!skip)
+            {
+              status = osdpdump_print(ctx);
+              if (strlen(ctx->output_text) > 0)
+              {
+                fprintf(stdout, "NOTES: %s", ctx->output_text); ctx->output_text [0] = 0;
+              };
+              ctx->pd_ctx [packet->address].last_command_response = ctx->osdp_pdu.command_response;
+            };
           };
         };
       };
@@ -291,6 +306,11 @@ ctx->output_analysis = 1;
     {
       switch (osdpdump_command_line.option)
     {
+    case OSDPDUMP_OPT_ADDRESS:
+      sscanf(optarg, "%d", &i);
+      ctx->specific_address = i;
+      ctx->specific_address_requested = 1;
+      break;
     case OSDPDUMP_OPT_ANALYZE:
       sscanf(optarg, "%d", &i);
       ctx->analysis = i;

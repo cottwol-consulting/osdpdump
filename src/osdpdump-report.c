@@ -389,8 +389,9 @@ int
   printf("\nOSDPDUMP ACTIVITY SUMMARY\n");
   printf("=========================\n");
   sprintf(otmp, "Notes: %d\n", ctx->note_count); strcat(ctx->output_text, otmp);
-  sprintf(otmp, "%d. packets\n", ctx->detected_packets); strcat(ctx->output_text, otmp);
-  sprintf(otmp, "Detected:\n"); strcat(ctx->output_text, otmp);
+  sprintf(otmp, "%d. detected\n", ctx->detected_packets); strcat(ctx->output_text, otmp);
+  sprintf(otmp, "%d. skipped\n", ctx->skipped_packets); strcat(ctx->output_text, otmp);
+  sprintf(otmp, "Statistics:\n"); strcat(ctx->output_text, otmp);
   for (idx=0; idx<255; idx++)
   {
     if (osdpdump_message_tracking [idx].count > 0)
