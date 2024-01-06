@@ -1,7 +1,7 @@
 /*
   osdpdump.h - definitions for osdpdump
 
-  (C)2021-2023 Smithee Solutions LLC
+  (C)2021-2024 Smithee Solutions LLC
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are met:
@@ -43,6 +43,7 @@
 #define ST_OSDPDUMP_INPUT_ERROR_2        (-9)
 #define ST_OSDPDUMP_INPUT_ERROR_3        (-10)
 #define ST_OSDPDUMP_LINE_TOO_LONG        (-11)
+#define ST_OSDPDUMP_UNKNOWN_ARGUMENT     (-12)
 
 #define OSDPDUMP_BUFFER_MAX (8192)
 #define OSDPDUMP_STRING     (3*OSDPDUMP_BUFFER_MAX)

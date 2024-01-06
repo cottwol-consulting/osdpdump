@@ -3,7 +3,7 @@
 
   "osdpdump --help" for instructions.
 
-  (C)2021-2023 Smithee Solutions LLC
+  (C)2021-2024 Smithee Solutions LLC
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are met:
@@ -296,6 +296,16 @@ ctx->output_analysis = 1;
   while (!done)
   {
     status_opt = getopt_long (argc, argv, optstring, longopts, NULL);
+    if (status_opt EQUALS '?')
+    {
+      done = 1;
+      status = ST_OSDPDUMP_UNKNOWN_ARGUMENT;
+    };
+    if (ctx->verbosity > 3)
+    {
+      if (status_opt > 0)
+        fprintf(stderr, "option %c returned\n", status_opt);
+    };
     if (ctx->verbosity > 9)
       fprintf(stderr, "getopt_long: %d\n", status_opt);
     if (status_opt EQUALS -1)
