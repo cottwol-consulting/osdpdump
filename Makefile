@@ -39,7 +39,7 @@ clean:
 
 build:	all
 	mkdir -p opt/tester/etc
-	(cd test/cmds/etc; tar czvf ../../../opt/tester/etc/cmds.tgz cmds)
+	(cd test/cmds-ex; tar czvf ../../opt/tester/etc/cmds.tgz *)
 	(cd src; make build)
 	(cd src-converters; make build)
 	@echo cd to package and make arm64 or amd64

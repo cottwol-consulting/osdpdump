@@ -1,3 +1,7 @@
+changes in 0.22
+
+cmds now directly in etc
+
 changes in 0.8.2
 fix processing of max size data
 added more command samples
