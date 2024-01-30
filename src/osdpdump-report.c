@@ -38,7 +38,7 @@ extern OSDPDUMP_TRACKING osdpdump_message_tracking [256];
 
 
 /*
-  osdpdump_print - dump a PDU as text line(s)
+  osdpdump_print - dump a PDU as a text line
 
   Inputs:
     context
@@ -189,9 +189,14 @@ void
   fprintf(stdout, "P:%06d ", ctx->current_packet_number);
   fprintf(stdout, "t=%9s.%9s ", ctx->packet_seconds, ctx->packet_nanoseconds);
   if (!(ctx->osdp_pdu.completion_status & OSDPDUMP_COMPLETION_RSP)) // Command
+  {
     fprintf(stdout, "C:");
+    ctx->pd_ctx [packet->address].last_command_sequence = packet->sequence;
+  }
   else
+  {
     fprintf(stdout, "R:");
+  };
   fprintf(stdout, "%s ", osdpdump_command_string(ctx, packet->command_response));
   fprintf(stdout, " A %2d.", packet->address);
   fprintf(stdout, " S%d", packet->sequence);

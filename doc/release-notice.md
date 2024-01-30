@@ -1,5 +1,10 @@
+changes in 0.23
+
+detect retransmitted command
+
 changes in 0.22
 
+added max size text command
 cmds now directly in etc
 
 changes in 0.8.2

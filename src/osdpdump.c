@@ -647,24 +647,35 @@ int
   // make sure sequence numbers are consistent
 
   last_seq = ctx->pd_ctx [packet->address].last_received_sequence;
-  if (packet->role)
+  if (packet->role) // Response
   {
-    expected_seq = last_seq ++;
-    if (expected_seq == 4)
-      expected_seq = 1;
-    if (packet->sequence != expected_seq)
     {
-      strcat(ctx->output_text, "  - sequence number not next in ACU sequence");
-      ctx->note_count ++;
+      expected_seq = last_seq ++;
+      if (expected_seq == 4)
+        expected_seq = 1;
+      if (packet->sequence != expected_seq)
+      {
+        strcat(ctx->output_text, "  - sequence number not next in ACU sequence\n");
+        ctx->note_count ++;
+      };
     };
   };
-  if (!(packet->role))
+  if (!(packet->role)) // Command
   {
-    if (packet->sequence != last_seq)
+    if (ctx->pd_ctx [packet->address].last_command_sequence EQUALS packet->sequence)
     {
-      strcat(ctx->output_text, "  - PD is responding on unexpected sequence number\n");
+      strcat(ctx->output_text, "  - Command retransmission\n");
       ctx->note_count ++;
+    }
+    else
+    {
+// TODO check this, it's in the ACU section why does it mention PD...
+      if (packet->sequence != last_seq)
+      {
+        strcat(ctx->output_text, "  - PD is responding on unexpected sequence number\n");
+        ctx->note_count ++;
 fprintf(stderr, "DEBUG: note count at 629 now %d\n", ctx->note_count);
+      };
     };
   };
 

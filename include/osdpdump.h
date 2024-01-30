@@ -94,6 +94,7 @@ typedef struct osdpdump_pd_context
 {
   int state;
   int last_received_sequence;
+  unsigned char last_command_sequence;
   unsigned char last_command_response;
   unsigned short int scs_status;
 } OSDPDUMP_PD_CONTEXT;
