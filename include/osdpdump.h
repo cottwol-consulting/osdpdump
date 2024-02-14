@@ -81,11 +81,12 @@
 #define OSDPDUMP_CMD_HELP (0x00)
 #define OSDPDUMP_CMD_VERSION (0x02)
 
+#define OSDPDUMP_INPUT_STRING_MAX (8*OSDPDUMP_STRING)
 typedef struct osdpdump_input
 {
   int length;
   unsigned char raw_bytes[OSDPDUMP_BUFFER_MAX];
-  char input_string [8*OSDPDUMP_STRING];
+  char input_string [OSDPDUMP_INPUT_STRING_MAX];
   char time_seconds [1024];
   char time_nanoseconds [1024];
 } OSDPDUMP_INPUT;

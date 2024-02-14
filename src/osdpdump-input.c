@@ -173,7 +173,7 @@ int
       value = json_object_get(line_root, "data");
       if (json_is_string(value))
       {
-        if (strlen(json_string_value(value)) > OSDPDUMP_PDU_MAX*3)
+        if (strlen(json_string_value(value)) > OSDPDUMP_INPUT_STRING_MAX)
         {
           // this is too long.  bail.
           sprintf(tstring, "Data too long (%d. char, expected %d) - aborting.\n", (int)strlen(line), OSDPDUMP_PDU_MAX*3);
