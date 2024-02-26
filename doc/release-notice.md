@@ -1,3 +1,9 @@
+changes in 0.25
+
+fix detect ccrypt as dup
+fix wrong scs length check on lstatr
+added init secure channel command sample
+
 changes in 0.23
 
 detect retransmitted command

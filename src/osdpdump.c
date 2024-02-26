@@ -611,11 +611,21 @@ int
 
   if (ctx->osdp_pdu.command_response EQUALS ctx->pd_ctx [packet->address].last_command_response)
   {
-    sprintf(tstring, "  - Retry or skip\n");
-    strcat(ctx->output_text, tstring);
-    ctx->note_count ++;
-    if (ctx->verbosity > 3)
-      fprintf(stderr, "retry detector activated, now %d. notes.\n", ctx->note_count);
+    // assuming it's not a CCRYPT, which uses same command/response value as a CHLNG
+
+    if ((ctx->osdp_pdu.role EQUALS 0x80) && (ctx->osdp_pdu.command_response EQUALS OSDP_IEC_CCRYPT))
+    {
+      if (ctx->verbosity > 3)
+        fprintf(stderr, "CCRYPT/CHLNG dupe detected.\n");
+    }
+    else
+    {
+      sprintf(tstring, "  - Retry or skip\n");
+      strcat(ctx->output_text, tstring);
+      ctx->note_count ++;
+      if (ctx->verbosity > 3)
+        fprintf(stderr, "retry detector activated, now %d. notes.\n", ctx->note_count);
+    };
   };
 
   if (!packet->check_type)
@@ -706,9 +716,17 @@ fprintf(stderr, "DEBUG: note count at 629 now %d\n", ctx->note_count);
     {
       if (packet->scs_length != 2)
       {
-        sprintf(tstring, "  - SCS sub-header wrong length (%d not %d)\n", packet->scs_length, 2);
-        strcat(ctx->output_text, tstring);
-        ctx->note_count ++;
+        // if we are tracking proper length check against that
+
+        if (osdpdump_message_tracking [packet->command_response].payload EQUALS OSDPDUMP_VALID)
+        {
+          if (packet->scs_length != 3)
+          {
+            sprintf(tstring, "  - SCS sub-header wrong length (%d not %d)\n", packet->scs_length, 2);
+            strcat(ctx->output_text, tstring);
+            ctx->note_count ++;
+          };
+        };
       };
     };
   };

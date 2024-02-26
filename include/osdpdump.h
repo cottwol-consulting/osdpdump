@@ -114,6 +114,7 @@ typedef struct opsdpdump_tracking
   unsigned char valid_r_SCB;
   unsigned char valid_clear_always;
   int payload; // -1 prohibited, 0=unchecked, 1-14xx
+  int valid_scb_length;
 } OSDPDUMP_TRACKING;
 
 #define OSDPDUMP_COMPLETION_SOM    (0x0001)
