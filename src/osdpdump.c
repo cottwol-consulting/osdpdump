@@ -714,19 +714,13 @@ fprintf(stderr, "DEBUG: note count at 629 now %d\n", ctx->note_count);
     }
     else
     {
+      // all others should have a 2-byte scs header
+
       if (packet->scs_length != 2)
       {
-        // if we are tracking proper length check against that
-
-        if (osdpdump_message_tracking [packet->command_response].payload EQUALS OSDPDUMP_VALID)
-        {
-          if (packet->scs_length != 3)
-          {
             sprintf(tstring, "  - SCS sub-header wrong length (%d not %d)\n", packet->scs_length, 2);
             strcat(ctx->output_text, tstring);
             ctx->note_count ++;
-          };
-        };
       };
     };
   };
