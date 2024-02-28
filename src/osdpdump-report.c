@@ -36,6 +36,13 @@
 #include <osdpdump-decoding.h>
 extern OSDPDUMP_TRACKING osdpdump_message_tracking [256];
 
+unsigned char OUI_PSIA[] = {0x1A, 0x90, 0x21};
+#define PSIA_PKOC_MFGREP_CARD_PRESENT        (0xE0)
+#define PSIA_PKOC_MFG_AUTH_REQUEST           (0xE1)
+#define PSIA_PKOC_MFGREP_AUTH_RESPONSE       (0xE2)
+#define PSIA_PKOC_MFG_NEXT_TRANSACTION       (0xE3)
+#define PSIA_PKOC_MFGREP_TRANSACTION_REFRESH (0xE4)
+#define PSIA_PKOC_MFGREP_READER_ERROR        (0xE5)
 
 /*
   osdpdump_print - dump a PDU as a text line
@@ -294,6 +301,32 @@ void
         packet->octets [payload_offset + 2]);
     };
     break;
+  case OSDP_IEC_MFGREP:
+    {
+      sprintf(otmp, " MFGREP...");
+
+      // for PKOC specifically, interpret the MFGREP response
+
+      if (0 EQUALS memcmp(packet->octets + payload_offset, OUI_PSIA, sizeof(OUI_PSIA))) // first 3 of mfgrep response are an OUI
+      {
+        switch(*(packet->octets + payload_offset + 3))
+        {
+        case PSIA_PKOC_MFGREP_AUTH_RESPONSE:
+          sprintf(otmp, " PKOC Auth Response");
+         break;
+        case PSIA_PKOC_MFGREP_CARD_PRESENT:
+          sprintf(otmp, " PKOC Card Present");
+          break;
+        case PSIA_PKOC_MFGREP_READER_ERROR:
+          sprintf(otmp, " PKOC Reader Error");
+          break;
+        case PSIA_PKOC_MFGREP_TRANSACTION_REFRESH:
+          sprintf(otmp, " PKOC Transaction Refresh");
+          break;
+        };
+      };
+    };
+    break;
   case OSDP_IEC_NAK:
     if (packet->payload_length > 1)
     {
@@ -325,6 +358,23 @@ void
     else
     {
       sprintf(otmp, " MFG...");
+
+      {
+        // for PKOC specifically, interpret the MFG command
+
+        if (0 EQUALS memcmp(packet->octets + payload_offset, OUI_PSIA, sizeof(OUI_PSIA))) // first 3 of mfgrep response are an OUI
+        {
+          switch(*(packet->octets + payload_offset + 3))
+          {
+          case PSIA_PKOC_MFG_AUTH_REQUEST:
+            sprintf(otmp, " PKOC Auth Request");
+            break;
+          case PSIA_PKOC_MFG_NEXT_TRANSACTION:
+            sprintf(otmp, " PKOC Next Transaction");
+            break;
+          };
+        };
+      };
     };
     break;
   case OSDP_IEC_POLL:

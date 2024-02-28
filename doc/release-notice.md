@@ -1,3 +1,7 @@
+changes in 0.30
+
+add support for summary descriptions of PSIA PKOC messages
+
 changes in 0.25
 
 fix detect ccrypt as dup

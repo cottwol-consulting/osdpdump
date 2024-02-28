@@ -1,7 +1,7 @@
 /*
   osdpdump-decoding - decoding osdp packet into text
 
-  (C)2021-2023 Smithee Solutions LLC
+  (C)2021-2024 Smithee Solutions LLC
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are met:
@@ -51,8 +51,13 @@ char
 
 { /* osdpdump_command_string */
 
+  int payload_offset;
   static char decoded [1024]; //maxstring
 
+
+  payload_offset = ctx->osdp_pdu.payload_offset;
+  if (payload_offset EQUALS 0) // not yet filled in
+    payload_offset = 6; // cleartext
 
   if (osdpdump_message_tracking [command_response].tag)
   {

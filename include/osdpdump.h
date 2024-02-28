@@ -137,6 +137,7 @@ typedef struct osdpdump_working_packet
   unsigned char packet_check [2];
   int check_type; // 0=CRC 1=Checksum
   int payload_length;
+  int payload_offset;
   unsigned char mac [4];
 //  unsigned char remainder [2048];
 } OSDPDUMP_WORKING_PACKET;
