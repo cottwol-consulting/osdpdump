@@ -2,7 +2,7 @@
 
 # (C)Copyright 2021-2024 Smithee Solutions LLC
 
-DOC-PDF=osdpdump.pdf release-notice.pdf
+DOC-PDF=osdpdump.pdf osdpdump_release-notice.pdf
 
 all:	$(DOC-PDF)
 
@@ -13,8 +13,8 @@ build:	all
 osdpdump.pdf:
 	pandoc --toc -o osdpdump.pdf osdpdump.md
 
-release-notice.pdf:
-	pandoc --toc -o release-notice.pdf release-notice.md
+osdpdump_release-notice.pdf:
+	pandoc --toc -o osdpdump_release-notice.pdf osdpdump_release-notice.md
 
 clean:
 	rm -f ${DOC-PDF}

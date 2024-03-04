@@ -1,7 +1,7 @@
 /*
   osdpdump-report.c - reporting functions for osdpdump
 
-  (C)2021-2023 Smithee Solutions LLC
+  (C)2021-2024 Smithee Solutions LLC
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are met:
@@ -328,7 +328,7 @@ void
     };
     break;
   case OSDP_IEC_NAK:
-    if (packet->payload_length > 1)
+    if (packet->payload_length > 0)
     {
       sprintf(otmp, " Reason:%s", osdpdump_nak_reason(ctx, packet->octets [payload_offset + 0]));
       sprintf(otmp2, " Detail %02x", packet->octets [payload_offset + 1]);

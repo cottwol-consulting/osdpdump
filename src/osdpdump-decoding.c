@@ -204,7 +204,10 @@ char
     strcpy(answer, "Encryption Required");
     break;
   case OSDP_IEC_NAK_CMD_LENGTH_ERROR:
-    strcpy(answer, "Command length error");
+    strcpy(answer, "Command lth error  ");
+    break;
+  case OSDP_IEC_NAK_MESSAGE_CHECK:
+    strcpy(answer, "Msg Chk (CRC/Cksum)");
     break;
   case OSDP_IEC_NAK_SECURITY_UNAVAILABLE:
     strcpy(answer, "No SC Mode         ");
