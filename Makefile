@@ -1,6 +1,6 @@
 # Make file for osdpdump
 
-# (C)Copyright 2021-2023 Smithee Solutions LLC
+# (C)Copyright 2021-2024 Smithee Solutions LLC
 
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -34,6 +34,7 @@ all:
 clean:
 	(cd src; make clean)
 	(cd src-converters; make clean)
+	(cd doc; make clean)
 	(cd package; make clean)
 	rm -rvf opt *.deb
 
@@ -42,7 +43,7 @@ build:	all
 	(cd test/cmds-ex; tar czvf ../../opt/tester/etc/cmds.tgz *)
 	(cd src; make build)
 	(cd src-converters; make build)
-	@echo cd to package and make arm64 or amd64
+	(cd doc; make build)
 
 package:	build
 	(cd package; make package)

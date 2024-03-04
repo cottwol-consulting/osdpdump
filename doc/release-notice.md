@@ -1,3 +1,7 @@
+changes in 0.31
+
+reorg make file to build doc.  make package requirs pandoc, make build does not.
+
 changes in 0.30
 
 add support for summary descriptions of PSIA PKOC messages
