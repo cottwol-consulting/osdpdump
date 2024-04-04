@@ -34,7 +34,7 @@ all:
 clean:
 	(cd src; make clean)
 	(cd src-converters; make clean)
-	(cd doc; make clean)
+	(cd documentation; make clean)
 	(cd package; make clean)
 	rm -rvf opt *.deb
 
@@ -43,7 +43,7 @@ build:	all
 	(cd test/cmds-ex; tar czvf ../../opt/tester/etc/cmds.tgz *)
 	(cd src; make build)
 	(cd src-converters; make build)
-	(cd doc; make build)
+	(cd documentation; make build)
 
 package:	build
 	(cd package; make package)
