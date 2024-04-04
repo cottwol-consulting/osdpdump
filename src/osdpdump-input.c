@@ -38,6 +38,7 @@
 
 
 #include <osdpdump.h>
+#include <osdpdump-decoding.h>
 
 
 unsigned char
@@ -113,6 +114,124 @@ int
 
 
 /*
+  osdpdump_packet_accumulate - actually put the input in the packet
+*/
+
+int osdpdump_packet_accumulate
+  (OSDPDUMP_CONTEXT *ctx,
+  OSDPDUMP_INPUT *input_bytes,
+  OSDPDUMP_INPUT *pkt)
+
+{ /* osdpdump_packet_accumulate */
+
+  unsigned char current_byte;
+  int drop_octets;
+  OSDPDUMP_WORKING_PACKET *packet;
+  unsigned int pdu_length;
+  int status;
+  unsigned char temp_bytes [8*2048]; //max
+
+
+  // assume we used it or trashed it and need more.
+
+  status = ST_OSDPDUMP_NEED_MORE_DATA;
+  drop_octets = 0;
+  packet = &(ctx->osdp_pdu);
+  pdu_length = -1; // bogus so it doesn't match
+
+  if (input_bytes->length > 0)
+  {
+    // take first byte
+    input_bytes->length --;
+    current_byte = input_bytes->raw_bytes [0];
+    memset(temp_bytes, 0, sizeof(temp_bytes));
+    memcpy(temp_bytes, input_bytes->raw_bytes+1, input_bytes->length);
+    memcpy(input_bytes->raw_bytes, temp_bytes, input_bytes->length);
+    input_bytes->raw_bytes [input_bytes->length] = 0x00;
+
+    // depending on how much we have processing differs.
+
+    switch(packet->octet_length)
+    {
+    case 0:
+      // we're looking for the SOM
+      if (current_byte EQUALS OSDP_IEC_SOM)
+      {
+        packet->octets [packet->octet_length] = current_byte;
+        packet->octet_length++;
+        packet->completion_status = packet->completion_status | OSDPDUMP_COMPLETION_SOM;
+        status = ST_OSDPDUMP_NEED_MORE_DATA;
+      }
+      else
+      {
+        drop_octets = 1;
+      };
+      break;
+    case 1:
+      // looking for address/command-response marker
+      packet->octets [packet->octet_length] = current_byte;
+      packet->octet_length++;
+      status = ST_OSDPDUMP_NEED_MORE_DATA;
+      break;
+    case 2:
+      // looking for first byte of length
+      packet->octets [packet->octet_length] = current_byte;
+      packet->octet_length++;
+      status = ST_OSDPDUMP_NEED_MORE_DATA;
+      break;
+    case 3:
+      // looking for second byte of length
+      packet->octets [packet->octet_length] = current_byte;
+      packet->octet_length++;
+      status = ST_OSDPDUMP_NEED_MORE_DATA;
+      pdu_length = (packet->octets [3] << 8) + packet->octets [2];
+      if (pdu_length <= OSDPDUMP_PDU_MAX)
+      {
+        if (ctx->verbosity > 3)
+          fprintf(stderr, "DEBUG: have length (0x%x)\n", pdu_length);
+        status = ST_OSDPDUMP_NEED_MORE_DATA;
+      }
+      else
+      {
+        char tstring [1024];
+
+        // input was bigger than a packet.  drop it and note it.
+
+        sprintf(tstring, "  - Header Length %d. too large (>%d) - %d. bytes dropped.\n", pdu_length, OSDPDUMP_PDU_MAX, packet->octet_length);
+        strcat(ctx->output_text, tstring);
+        ctx->note_count ++;
+
+        ctx->dropped_octets = ctx->dropped_octets + packet->octet_length;
+        packet->octet_length = 0;
+        status = ST_OSDPDUMP_NEED_MORE_DATA;
+      };
+      break;
+
+    // for all other lengths just accept it for now.
+
+    default:
+      pdu_length = (packet->octets [3] << 8) + packet->octets [2];
+      if (packet->octet_length < pdu_length)
+      {
+        packet->octets [packet->octet_length] = current_byte;
+        packet->octet_length++;
+        status = ST_OSDPDUMP_NEED_MORE_DATA;
+      }; 
+      break;
+    };
+    if (drop_octets)
+      ctx->dropped_octets ++;
+    if (packet->octet_length EQUALS pdu_length)
+      status = ST_OSDPDUMP_PACKET;
+  };
+  if (ctx->verbosity > 3)
+    fprintf(stderr, "DEBUG: pktlth %X otxt %s\n", pdu_length, ctx->output_text);
+  return(status);
+
+} /* osdpdump_packet_accumulate */
+
+
+/*
   osdpdump_read_input - reads various input types
 
   in principle.  for now, reads osdpcap.
@@ -126,6 +245,7 @@ int
 
 { /* osdpdump_read_input */
 
+  extern char last_input_line [];
   char line [OSDPDUMP_STRING]; // big enough for 1500 bytes as 2-digit octets with a space
   json_t *line_root;
   json_t *value;
@@ -143,10 +263,11 @@ int
     status_io = fgets(line, sizeof(line), ctx->dump_file_handle);
     if (status_io != NULL)
     {
-      if (ctx->verbosity > 3)
+      strcpy(last_input_line, line);
+      if (ctx->verbosity > 9)
         fprintf(stderr, "DEBUG: l1 %d l2 %d l3 %u\n", OSDPDUMP_STRING, OSDPDUMP_PDU_MAX*3, (unsigned)strlen(line));
       if (ctx->verbosity > 8)
-        fprintf(stderr, "line (%d chars) %s\n", (int)strlen(line), line);
+        fprintf(stderr, "line (%d chars) %s", (int)strlen(line), line);
       if (status EQUALS ST_OK)
       {
         strcpy(input_value->input_string, line);

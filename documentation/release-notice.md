@@ -1,3 +1,8 @@
+changes in 0.34
+
+more detection of invalid lines
+updated saleae converter
+
 changes in 0.31
 
 reorg make file to build doc.  make package requirs pandoc, make build does not.
