@@ -1,7 +1,7 @@
 /*
   osdp-input - input low level processing
 
-  (C)2021-2023 Smithee Solutions LLC
+  (C)2021-2024 Smithee Solutions LLC
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are met:
@@ -134,6 +134,15 @@ int osdpdump_packet_accumulate
 
   // assume we used it or trashed it and need more.
 
+if (ctx->verbosity > 9)
+{
+  int i;
+  fprintf(stderr, "DEBUG: input bytes (%d.)", input_bytes->length);
+  for(i=0; i<input_bytes->length; i++)
+    fprintf(stderr, " %02X", input_bytes->raw_bytes[i]);
+  fprintf(stderr, "\n");
+}
+    memcpy(temp_bytes, input_bytes->raw_bytes+1, input_bytes->length);
   status = ST_OSDPDUMP_NEED_MORE_DATA;
   drop_octets = 0;
   packet = &(ctx->osdp_pdu);
@@ -157,6 +166,8 @@ int osdpdump_packet_accumulate
       // we're looking for the SOM
       if (current_byte EQUALS OSDP_IEC_SOM)
       {
+        if (ctx->verbosity > 9)
+          fprintf(stderr, "DEBUG: SOM detected? lth now %d.\n", packet->octet_length);
         packet->octets [packet->octet_length] = current_byte;
         packet->octet_length++;
         packet->completion_status = packet->completion_status | OSDPDUMP_COMPLETION_SOM;
@@ -225,7 +236,10 @@ int osdpdump_packet_accumulate
       status = ST_OSDPDUMP_PACKET;
   };
   if (ctx->verbosity > 3)
-    fprintf(stderr, "DEBUG: pktlth %X otxt %s\n", pdu_length, ctx->output_text);
+  {
+    if ((ctx->verbosity > 9) || (pdu_length != -1))
+      fprintf(stderr, "DEBUG: pktlth %X otxt %s\n", pdu_length, ctx->output_text);
+  };
   return(status);
 
 } /* osdpdump_packet_accumulate */
@@ -260,6 +274,7 @@ int
   {
   case OSDPDUMP_SOURCE_OSDPCAP:
     input_value->input_string [0] = 0; // init string to empty
+    memset(line, 0, sizeof(line));
     status_io = fgets(line, sizeof(line), ctx->dump_file_handle);
     if (status_io != NULL)
     {
@@ -267,7 +282,7 @@ int
       if (ctx->verbosity > 9)
         fprintf(stderr, "DEBUG: l1 %d l2 %d l3 %u\n", OSDPDUMP_STRING, OSDPDUMP_PDU_MAX*3, (unsigned)strlen(line));
       if (ctx->verbosity > 8)
-        fprintf(stderr, "line (%d chars) %s", (int)strlen(line), line);
+        fprintf(stderr, "Input line was %d. characters: %s", (int)strlen(line), line);
       if (status EQUALS ST_OK)
       {
         strcpy(input_value->input_string, line);

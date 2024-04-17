@@ -120,7 +120,8 @@ int
       break;
 
     case OSDPDUMP_CMD_VERSION:
-      printf("osdpdump %s\n", OSDPDUMP_VERSION);
+      // init code prints the version so we don't have to here.
+      // printf("osdpdump %s\n", OSDPDUMP_VERSION);
       break;
     };
   };
@@ -211,6 +212,14 @@ int
     if (status EQUALS ST_OK)
     {
       status = osdpdump_accumulate_input(ctx, &input_value);
+if (ctx->verbosity > 9)
+{
+  int i;
+  fprintf(stderr, "DEBUG: input bytes after osdpdump_accumulate_input (%d.)", input_value.length);
+  for(i=0; i<input_value.length; i++)
+    fprintf(stderr, " %02X", input_value.raw_bytes[i]);
+  fprintf(stderr, "\n");
+}
       if (status EQUALS ST_OSDPDUMP_PACKET)
       {
 if (ctx->verbosity > 3)
@@ -243,6 +252,10 @@ if (ctx->verbosity > 3)
               {
                 fprintf(stdout, "NOTES: %s", ctx->output_text); ctx->output_text [0] = 0;
               };
+
+              // clear things out for the next packet
+              memset(&input_value, 0, sizeof(input_value));
+
               ctx->pd_ctx [packet->address].last_command_response = ctx->osdp_pdu.command_response;
             };
           };
@@ -404,25 +417,38 @@ int
 
   status = ST_OK;
   packet = &(ctx->osdp_pdu);
+  if (ctx->verbosity > 9)
+    fprintf(stderr, "DEBUG: 419 payload length %03d.\n", packet->payload_length);
   packet->role = 0x80 & (packet->octets [1]);
   packet->address = 0x7F & (packet->octets [1]);
   packet->payload_length = packet->octet_length - 6; // less SOM addr len(2) ctrl c/r
+  if (ctx->verbosity > 9)
+    fprintf(stderr, "DEBUG: 422 payload length %03d.\n", packet->payload_length);
 // sanity check address
   control_octet = packet->octets [4];
   if (control_octet & OSDP_IEC_CTL_CRC)
   {
     packet->payload_length = packet->payload_length - 2; // less CRC
+    if (ctx->verbosity > 9)
+      fprintf(stderr, "DEBUG: 429 payload length %03d.\n", packet->payload_length);
     packet->check_type = 0;
   }
   else
   {
     packet->payload_length = packet->payload_length - 1; // less Checksum
+fprintf(stderr, "DEBUG: 435 payload length %03d.\n", packet->payload_length);
     packet->check_type = 1;
   };
   if (control_octet & OSDP_IEC_CTL_SCB)
   {
+    // it had an SCB.  the payload is (SCP length) shorter.
+    // the SCB length is always in the 6th octet (index 5)
+
     packet->completion_status = packet->completion_status | OSDPDUMP_COMPLETION_SCB;
-    packet->payload_length = packet->payload_length - packet->octets [6]; // less SCB header
+    packet->payload_length = packet->payload_length - packet->octets [5]; // less SCB header
+    packet->payload_length = packet->payload_length - 4; // less MAC
+    if (ctx->verbosity > 9)
+      fprintf(stderr, "DEBUG: 445 payload length %03d.\n", packet->payload_length);
   };
   packet->sequence = control_octet & 0x03;
   if ((status EQUALS ST_OK) && !(packet->role)) // do this for commands not responses
@@ -622,6 +648,8 @@ fprintf(stderr, "DEBUG: note count at 629 now %d\n", ctx->note_count);
 
   // make sure it has an appropriate payload
 
+  if (ctx->verbosity > 9)
+    fprintf(stderr, "DEBUG: tracking CR %02X payload %d.\n", ctx->osdp_pdu.command_response, osdpdump_message_tracking [ctx->osdp_pdu.command_response].payload);
   if ((osdpdump_message_tracking [ctx->osdp_pdu.command_response].payload EQUALS OSDPDUMP_TRACKING_NO_PAYLOAD) &&
     (packet->payload_length > 0))
   {

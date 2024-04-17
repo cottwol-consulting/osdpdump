@@ -1,3 +1,7 @@
+changes in 0.35
+
+fix errors decoding encrypted packets
+
 changes in 0.34
 
 more detection of invalid lines

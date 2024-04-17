@@ -69,6 +69,8 @@ int
 
   status = ST_OK;
   packet = &(ctx->osdp_pdu);
+  if (ctx->verbosity > 10)
+    fprintf(stderr, "DEBUG: print format %d.\n", ctx->print_format);
   switch(ctx->print_format)
   {
   case OSDPDUMP_FMT_ANNOTATED:
@@ -253,6 +255,8 @@ void
       };
     };
     break;
+  case OSDP_IEC_CAP:
+    break;
   case OSDP_IEC_COM:
       speed_returned = 0;
       speed_returned = speed_returned + packet->octets [payload_offset + 1];
@@ -334,6 +338,8 @@ void
       sprintf(otmp2, " Detail %02x", packet->octets [payload_offset + 1]);
       strcat(otmp, otmp2);
     };
+    break;
+  case OSDP_IEC_PDCAP:
     break;
   case OSDP_IEC_PDID:
     serial_number = 
