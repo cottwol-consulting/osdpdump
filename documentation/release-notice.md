@@ -1,3 +1,7 @@
+changes in 0.36
+
+add scbk type (default/paired) to osdp_CHLNG output
+
 changes in 0.35
 
 fix errors decoding encrypted packets

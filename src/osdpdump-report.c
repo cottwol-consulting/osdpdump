@@ -225,10 +225,17 @@ void
   case OSDP_IEC_CHLNG:
     if (!(ctx->osdp_pdu.completion_status & OSDPDUMP_COMPLETION_RSP)) // CHLNG
     {
+      char *scbk_flavor;
+
+      if (packet->octets [6] EQUALS 1)
+        scbk_flavor = "Default";
+      else
+        scbk_flavor = "Paired";
       sprintf(otmp,
-" RND: %02x%02x%02x%02x %02x%02x%02x%02x",
+" RND: %02x%02x%02x%02x %02x%02x%02x%02x (%s)",
         packet->octets [payload_offset + 0], packet->octets [payload_offset + 1], packet->octets [payload_offset + 2], packet->octets [payload_offset + 3],
-        packet->octets [payload_offset + 4], packet->octets [payload_offset + 5], packet->octets [payload_offset + 6], packet->octets [payload_offset + 7]);
+        packet->octets [payload_offset + 4], packet->octets [payload_offset + 5], packet->octets [payload_offset + 6], packet->octets [payload_offset + 7],
+        scbk_flavor);
     };
     if (ctx->osdp_pdu.completion_status & OSDPDUMP_COMPLETION_RSP) // CCRYPT
     {
