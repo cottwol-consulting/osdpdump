@@ -1,7 +1,10 @@
 /*
   convert-salea - convert from Salea 485 trace to osdpcap
 
-  (C)2021-2022 Smithee Solutions LLC
+  This takes an exported CSV file as standard input and converts
+  it to OSDPCAP format on standard output.
+
+  (C)2021-2024 Smithee Solutions LLC
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are met:
@@ -60,6 +63,7 @@ int
 
 
   fprintf(stderr, "Convert Salea trace to OSDPCAP %s\n", OSDPDUMP_VERSION);
+  fprintf(stderr, "Reading standard input, writing to standard output...\n");
   line_count = 0;
   verbosity = 3;
   input_file = stdin;
@@ -71,7 +75,6 @@ int
   else
     status = -1;
 
-//  printf("{ \"timeSec\":\"0\",\"timeNano\":\"0\",\"io\":\"trace\",\"data\":\"");
   done = 0;
   while (!done)
   {
@@ -86,67 +89,92 @@ int
         buffer [strlen(buffer)-1] = 0;
       if (buffer [strlen(buffer)-1] EQUALS 0x0d)
         buffer [strlen(buffer)-1] = 0;
-if (verbosity > 9)
-  fprintf(stderr, "DEBUG: buffer was %s\n", buffer);
+      if (verbosity > 9)
+        fprintf(stderr, "DEBUG: buffer was %s\n", buffer);
 
-//"Async Serial","data",2.49785639,0.00098958,0x53
+// 1              2      3                                   4         5
+// "Async Serial","data",2024-07-06T21:54:02.105977600+00:00,0.0009895,0x53
+
       // pull time and data
 
-strcpy(timestamp_string, "-");
+      strcpy(timestamp_string, "-");
       strcpy(my_buffer, buffer);
-      token = strtok(my_buffer, ",");
-if (verbosity > 3)
-fprintf(stderr, "DEBUG: token 1 %s\n", token);
-      token = strtok(NULL, ",");
-if (verbosity > 3)
-fprintf(stderr, "DEBUG: token 2 %s\n", token);
-      token = strtok(NULL, ",");
-if (verbosity > 3)
-fprintf(stderr, "DEBUG: token 3 %s\n", token);
-      token = strtok(NULL, ",");
-if (verbosity > 3)
-fprintf(stderr, "DEBUG: token 4 %s\n", token);
 
-//      strcpy(timestamp_string, token);
+      // fetch token 1
+      token = strtok(my_buffer, ",");
+      if (verbosity > 3)
+        fprintf(stderr, "DEBUG: token 1 %s\n", token);
+
+      // fetch token 2
       token = strtok(NULL, ",");
-if (verbosity > 3)
-fprintf(stderr, "DEBUG: token 5 %s\n", token);
+      if (verbosity > 3)
+        fprintf(stderr, "DEBUG: token 2 %s\n", token);
+
+      // fetch token 3.  this is the ISO8601 timestamp
+      token = strtok(NULL, ",");
+      strcpy(timestamp_string, token);
+      if (verbosity > 3)
+        fprintf(stderr, "DEBUG: token 3 %s\n", token);
+
+      // fetch token 4
+      token = strtok(NULL, ",");
+      if (verbosity > 3)
+        fprintf(stderr, "DEBUG: token 4 %s\n", token);
+
+      // fetch token 5.  this is the data byte
+      token = strtok(NULL, ",");
+      if (verbosity > 3)
+        fprintf(stderr, "DEBUG: token 5 %s\n", token);
       strcpy(octet_buffer, token);
-if (verbosity > 3)
-fprintf(stderr, "DEBUG: octet buffer %s\n", octet_buffer);
+      if (verbosity > 3)
+        fprintf(stderr, "DEBUG: octet buffer %s\n", octet_buffer);
       if (strncmp(octet_buffer, "0x", 2) EQUALS 0)
         strncpy(octet_buffer, octet_buffer+2, 2);
       octet_buffer [2] = 0;
-if (verbosity > 9)
-  fprintf(stderr, "DEBUG: octet buffer 1 %s", octet_buffer);
+      if (verbosity > 9)
+        fprintf(stderr, "DEBUG: octet buffer 1 %s", octet_buffer);
       if (0 EQUALS strcmp(octet_buffer, "53"))
       {
-        char nano_digits [1024];
-        //int i;
-        int time_sec;
-
         if (line_count > 0)
           printf("\"}\n");
         line_count ++;
 
         // convert timestamp to timeSec/timeNano
 
-#if 0
-        token = strtok(timestamp_string, ".");
-        sscanf(token, "%d", &i);
-        time_sec = i;
-        token = strtok(NULL, ".");
-        sscanf(token, "%d", &i);
-        memset(nano_digits, 0, sizeof(nano_digits));
-        memset(nano_digits, 0x30, 9);
-        strcpy(nano_digits, token);
-        nano_digits [strlen(nano_digits)] = 0x30;
-        nano_digits [9] = 0;
-#endif
-time_sec = 0;
-strcpy(nano_digits, "0");
-        printf("{ \"timeSec\":\"%d\",\"timeNano\":\"%s\",\"io\":\"trace\",\"data\":\"", time_sec, nano_digits);
-//{ "timeSec" : "1623638395", "timeNano" : "020800268", "io" : "trace", "data" : " 00 00 56 ef ff f7 3f 29 aa fe", "osdpTraceVersion":"1", "osdpSource":"libosdp-conformance 0.92-1" }
+// The ISO 8601 field looks like this:
+// 2024-07-06T21:54:02.105977600+00:00
+// 01234567890123456789012345678901234
+// 00000000001111111111222222222233333
+{
+  char digits [1024];
+  unsigned long long time_nanoseconds;
+  unsigned long time_seconds;
+  int value;
+  unsigned long long value_long;
+
+  memset(digits, 0, sizeof(digits));
+  memcpy(digits, timestamp_string+11, 2);
+  sscanf(digits, "%d", &value);
+  time_seconds = 60*60*value; // add hours
+
+  memset(digits, 0, sizeof(digits));
+  memcpy(digits, timestamp_string+14, 2);
+  sscanf(digits, "%d", &value);
+  time_seconds = time_seconds + 60*value; // add minutes
+
+  memset(digits, 0, sizeof(digits));
+  memcpy(digits, timestamp_string+17, 2);
+  sscanf(digits, "%d", &value);
+  time_seconds = time_seconds + value; // add seconds
+
+  memset(digits, 0, sizeof(digits));
+  memcpy(digits, timestamp_string+20, 9);
+  sscanf(digits, "%llu", &value_long);
+  time_nanoseconds = value_long;
+
+        // fprintf(stderr, "using timestamp string %s digits %s\n", timestamp_string, digits);
+        printf("{ \"osdpSource\":\"convert-saleae\",\"timeSec\":\"%lu\",\"timeNano\":\"%09llu\",\"io\":\"trace\",\"data\":\"", time_seconds, time_nanoseconds);
+};
         fflush(stdout);
       };
       printf(" %s", octet_buffer);

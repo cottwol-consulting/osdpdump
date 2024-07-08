@@ -1,3 +1,7 @@
+changes in 0.40
+
+added ISO 8601 timestamp conversion to convert-saleae
+
 changes in 0.36
 
 add scbk type (default/paired) to osdp_CHLNG output
