@@ -416,7 +416,9 @@ int
 
 
   status = ST_OK;
-  packet = &(ctx->osdp_pdu);
+  packet = (OSDPDUMP_WORKING_PACKET *)&(ctx->osdp_pdu);
+  packet->completion_status = 0;
+
   if (ctx->verbosity > 9)
     fprintf(stderr, "DEBUG: 419 payload length %03d.\n", packet->payload_length);
   packet->role = 0x80 & (packet->octets [1]);
@@ -445,6 +447,7 @@ fprintf(stderr, "DEBUG: 435 payload length %03d.\n", packet->payload_length);
     // the SCB length is always in the 6th octet (index 5)
 
     packet->completion_status = packet->completion_status | OSDPDUMP_COMPLETION_SCB;
+fprintf(stdout, "DEBUG: 448 set completion_status %04X\n", packet->completion_status);
     packet->payload_length = packet->payload_length - packet->octets [5]; // less SCB header
     packet->payload_length = packet->payload_length - 4; // less MAC
     if (ctx->verbosity > 9)
@@ -468,6 +471,7 @@ fprintf(stderr, "DEBUG: 435 payload length %03d.\n", packet->payload_length);
     packet->completion_status = packet->completion_status | OSDPDUMP_COMPLETION_RSP;
   else
     packet->completion_status = packet->completion_status | OSDPDUMP_COMPLETION_CMD;
+fprintf(stdout, "DEBUG: 472 set completion_status %04X\n", packet->completion_status);
 
   ctx->pd_ctx [packet->address].state = OSDPDUMP_PD_PRESENT;
 
@@ -488,6 +492,7 @@ fprintf(stderr, "DEBUG: 435 payload length %03d.\n", packet->payload_length);
     {
       if (packet->octets [7] EQUALS 0) // 0 in 3rd octet of SCS header in osdp_CHLNG means SCBK-D
         packet->completion_status = packet->completion_status | OSDPDUMP_COMPLETION_SCBK_D;
+fprintf(stdout, "DEBUG: 493 set completion_status %04X\n", packet->completion_status);
     }
 
     if (packet->scs_type >0x14)

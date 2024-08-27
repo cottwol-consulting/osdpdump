@@ -1,3 +1,7 @@
+changes in 0.41
+
+fix "paired" vs. "default" in SCS 11
+
 changes in 0.40
 
 added ISO 8601 timestamp conversion to convert-saleae

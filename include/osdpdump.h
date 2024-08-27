@@ -195,5 +195,6 @@ int osdpdump_read_input(OSDPDUMP_CONTEXT *ctx, OSDPDUMP_INPUT *input_value);
 int osdpdump_review_input(OSDPDUMP_CONTEXT *ctx);
 char *osdpdump_strip_to_hexits(char *hex_string);
 int osdpdump_summary(OSDPDUMP_CONTEXT *ctx);
+char *oui_lookup(unsigned char octet1, unsigned char octet2, unsigned char octet3);
 unsigned short int fCrcBlk(unsigned char *pData, unsigned short int nLength);
 

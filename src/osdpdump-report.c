@@ -227,10 +227,10 @@ void
     {
       char *scbk_flavor;
 
-      if (packet->octets [6] EQUALS 1)
-        scbk_flavor = "Default";
-      else
+      if (packet->octets [7] EQUALS 1)
         scbk_flavor = "Paired";
+      else
+        scbk_flavor = "Default";
       sprintf(otmp,
 " RND: %02x%02x%02x%02x %02x%02x%02x%02x (%s)",
         packet->octets [payload_offset + 0], packet->octets [payload_offset + 1], packet->octets [payload_offset + 2], packet->octets [payload_offset + 3],
@@ -349,21 +349,32 @@ void
   case OSDP_IEC_PDCAP:
     break;
   case OSDP_IEC_PDID:
+    {
+      char text [1024];
+      char oui_name [1024];
+
     serial_number = 
       packet->octets [payload_offset + 5] +
       (packet->octets [payload_offset + 6] <<  8) +
       (packet->octets [payload_offset + 7] << 16) +
       (packet->octets [payload_offset + 8] << 24);
 
-    sprintf(otmp, " OUI %02X-%02X-%02X Model %d. Version %d. Serial %d.(%02X%02X%02X%02X) FW %d.%d-%d",
+    text [0] = 0;
+    strcpy(oui_name, oui_lookup(packet->octets [payload_offset + 0],
+      packet->octets [payload_offset + 1], packet->octets [payload_offset + 2]));
+    if (strlen(oui_name) > 0)
+      sprintf(text, "(%s)", oui_name);
+
+    sprintf(otmp, " OUI %02X-%02X-%02X%s Model %d. Version %d. Serial %d.(%02X%02X%02X%02X) FW %d.%d-%d",
       packet->octets [payload_offset + 0], packet->octets [payload_offset + 1],
-      packet->octets [payload_offset + 2],
+      packet->octets [payload_offset + 2], text,
       packet->octets [payload_offset + 3], packet->octets [payload_offset + 4],
       serial_number,
       packet->octets [payload_offset + 5], packet->octets [payload_offset + 6], packet->octets [payload_offset + 7], packet->octets [payload_offset + 8],
       packet->octets [payload_offset + 9],
       packet->octets [payload_offset + 10],
       packet->octets [payload_offset + 11]);
+    }
     break;
   case OSDP_IEC_PIVDATAR:
     if (packet->completion_status EQUALS OSDPDUMP_COMPLETION_CMD)

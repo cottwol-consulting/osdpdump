@@ -20,8 +20,10 @@ test:	all
 clean:
 	rm -f core *.o ${PROGS}
 
-osdpdump:	osdpdump.o osdpdump-analyze1.o osdpdump-decoding.o osdpdump-input.o osdpdump-prims.o osdpdump-report.o osdp-crc.o Makefile
-	${LINK} -o osdpdump osdpdump.o osdpdump-analyze1.o osdpdump-decoding.o osdpdump-input.o osdpdump-prims.o osdpdump-report.o osdp-crc.o ${LDFLAGS}
+osdpdump:	osdpdump.o osdpdump-analyze1.o osdpdump-decoding.o osdpdump-input.o \
+	osdpdump-prims.o osdpdump-report.o osdpdump-vendor-lookup.o osdp-crc.o Makefile
+	${LINK} -o osdpdump osdpdump.o osdpdump-analyze1.o osdpdump-decoding.o \
+	  osdpdump-input.o osdpdump-prims.o osdpdump-report.o osdpdump-vendor-lookup.o osdp-crc.o ${LDFLAGS}
 
 osdpdump.o:	osdpdump.c ../include/osdpdump.h ../include/osdpdump-decoding.h
 	${CC} ${CFLAGS} osdpdump.c
@@ -43,4 +45,7 @@ osdpdump-report.o:	osdpdump-report.c ../include/osdpdump.h ../include/osdpdump-d
 
 osdp-crc.o:	osdp-crc.c
 	${CC} ${CFLAGS} osdp-crc.c
+
+osdp-vendor-lookup.o:	osdp-vendor-lookup.c
+	${CC} ${CFLAGS} osdp-vendor-lookup.c
 
