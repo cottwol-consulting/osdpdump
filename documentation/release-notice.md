@@ -1,6 +1,8 @@
 changes in 0.41
 
 fix "paired" vs. "default" in SCS 11
+added 64bit card test and input test
+
 
 changes in 0.40
 
