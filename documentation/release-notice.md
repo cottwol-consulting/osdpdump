@@ -1,3 +1,7 @@
+changes in 0.42
+
+remove extra debug logging
+
 changes in 0.41
 
 fix "paired" vs. "default" in SCS 11

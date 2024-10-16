@@ -471,7 +471,6 @@ fprintf(stdout, "DEBUG: 448 set completion_status %04X\n", packet->completion_st
     packet->completion_status = packet->completion_status | OSDPDUMP_COMPLETION_RSP;
   else
     packet->completion_status = packet->completion_status | OSDPDUMP_COMPLETION_CMD;
-fprintf(stdout, "DEBUG: 472 set completion_status %04X\n", packet->completion_status);
 
   ctx->pd_ctx [packet->address].state = OSDPDUMP_PD_PRESENT;
 
