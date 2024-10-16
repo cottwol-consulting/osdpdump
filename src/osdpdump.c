@@ -438,7 +438,6 @@ int
   else
   {
     packet->payload_length = packet->payload_length - 1; // less Checksum
-fprintf(stderr, "DEBUG: 435 payload length %03d.\n", packet->payload_length);
     packet->check_type = 1;
   };
   if (control_octet & OSDP_IEC_CTL_SCB)
@@ -447,7 +446,6 @@ fprintf(stderr, "DEBUG: 435 payload length %03d.\n", packet->payload_length);
     // the SCB length is always in the 6th octet (index 5)
 
     packet->completion_status = packet->completion_status | OSDPDUMP_COMPLETION_SCB;
-fprintf(stdout, "DEBUG: 448 set completion_status %04X\n", packet->completion_status);
     packet->payload_length = packet->payload_length - packet->octets [5]; // less SCB header
     packet->payload_length = packet->payload_length - 4; // less MAC
     if (ctx->verbosity > 9)
