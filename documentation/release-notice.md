@@ -1,3 +1,7 @@
+changes in 0.43
+
+added do-transfer command
+
 changes in 0.42
 
 remove extra debug logging
