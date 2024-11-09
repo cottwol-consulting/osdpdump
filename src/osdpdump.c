@@ -305,7 +305,7 @@ int
   ctx->verbosity = 3;
   if (ctx->verbosity > 0)
     fprintf(stderr, "osdpdump %s\n", OSDPDUMP_VERSION);
-  ctx->print_format = OSDPDUMP_FMT_2LINE;
+  ctx->print_format = OSDPDUMP_FMT_1LINE;
   ctx->analysis = OSDPDUMP_ANA_STRICT;
   ctx->input_source = OSDPDUMP_SOURCE_OSDPCAP;
   strcpy(ctx->input_path, "./current.osdpcap");
@@ -489,7 +489,6 @@ int
     {
       if (packet->octets [7] EQUALS 0) // 0 in 3rd octet of SCS header in osdp_CHLNG means SCBK-D
         packet->completion_status = packet->completion_status | OSDPDUMP_COMPLETION_SCBK_D;
-fprintf(stdout, "DEBUG: 493 set completion_status %04X\n", packet->completion_status);
     }
 
     if (packet->scs_type >0x14)
@@ -607,7 +606,6 @@ int
       {
         strcat(ctx->output_text, "  - PD is responding on unexpected sequence number\n");
         ctx->note_count ++;
-fprintf(stderr, "DEBUG: note count at 629 now %d\n", ctx->note_count);
       };
     };
   };
