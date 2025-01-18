@@ -1,7 +1,7 @@
 /*
   osdpdump-decoding - decoding osdp packet into text
 
-  (C)2021-2024 Smithee Solutions LLC
+  (C)2021-2025 Smithee Solutions LLC
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are met:
@@ -177,6 +177,100 @@ void
 
 } /* osdpdump_init_tracking */
 
+
+char
+  *osdpdump_led_perm_command
+  (OSDPDUMP_CONTEXT *ctx,
+  unsigned char perm_command)
+{
+
+  static char command_found [1024];
+
+
+  switch(perm_command)
+  {
+  default:
+    strcpy(command_found, "?");
+    break;
+  case OSDP_IEC_LED_PERM_NOP:
+    strcpy(command_found, "NOP");
+    break;
+  case OSDP_IEC_LED_PERM_SET:
+    strcpy(command_found, "SET");
+    break;
+  };
+  return(command_found);
+
+}
+
+
+char
+  *osdpdump_led_temp_command
+  (OSDPDUMP_CONTEXT *ctx,
+  unsigned char temp_command)
+{
+
+  static char command_found [1024];
+
+
+  switch(temp_command)
+  {
+  default:
+    strcpy(command_found, "?");
+    break;
+  case OSDP_IEC_LED_TEMP_CANCEL:
+    strcpy(command_found, "CAN");
+    break;
+  case OSDP_IEC_LED_TEMP_NOP:
+    strcpy(command_found, "NOP");
+    break;
+  case OSDP_IEC_LED_TEMP_SET:
+    strcpy(command_found, "SET");
+    break;
+  };
+  return(command_found);
+
+}
+
+
+char
+  *osdpdump_led_color
+  (OSDPDUMP_CONTEXT *ctx,
+  unsigned char led_color)
+{
+  static char color_found [1024];
+  switch(led_color)
+  {
+  default:
+    strcpy(color_found, "?");
+    break;
+  case OSDP_IEC_LED_AMBER:
+    strcpy(color_found, "Amb");
+    break;
+  case OSDP_IEC_LED_BLACK:
+    strcpy(color_found, "Blk");
+    break;
+  case OSDP_IEC_LED_BLUE:
+    strcpy(color_found, "Blu");
+    break;
+  case OSDP_IEC_LED_CYAN:
+    strcpy(color_found, "Cyn");
+    break;
+  case OSDP_IEC_LED_GREEN:
+    strcpy(color_found, "Grn");
+    break;
+  case OSDP_IEC_LED_MAGENTA:
+    strcpy(color_found, "Mgn");
+    break;
+  case OSDP_IEC_LED_RED:
+    strcpy(color_found, "Red");
+    break;
+  case OSDP_IEC_LED_WHITE:
+    strcpy(color_found, "Wht");
+    break;
+  }
+  return(&(color_found [0]));
+}
 
 /*
   osdpdump_nak_reason - return text string for NAK reason code

@@ -1,3 +1,7 @@
+changes in 0.50
+
+added more decoding of LED command
+
 changes in 0.43
 
 added do-transfer command

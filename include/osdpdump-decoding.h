@@ -1,7 +1,7 @@
 /*
   osdpdump-decoding.h - values and strings for OSDP decoding
 
-  (C)2021-2022 Smithee Solutions LLC
+  (C)2021-2025 Smithee Solutions LLC
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are met:
@@ -96,3 +96,20 @@
 #define OSDP_IEC_NAK_ENCRYPTION_REQUIRED  (0x06)
 #define OSDP_IEC_NAK_BIO_TYPE_UNSUPPORTED (0x07)
 #define OSDP_IEC_NAK_UNABLE_TO_PROCESS    (0x09)
+
+#define OSDP_IEC_LED_BLACK   (0x00)
+#define OSDP_IEC_LED_RED     (0x01)
+#define OSDP_IEC_LED_GREEN   (0x02)
+#define OSDP_IEC_LED_AMBER   (0x03)
+#define OSDP_IEC_LED_BLUE    (0x04)
+#define OSDP_IEC_LED_CYAN    (0x05)
+#define OSDP_IEC_LED_MAGENTA (0x06)
+#define OSDP_IEC_LED_WHITE   (0x07)
+
+#define OSDP_IEC_LED_TEMP_NOP (0x00)
+#define OSDP_IEC_LED_TEMP_CANCEL (0x01)
+#define OSDP_IEC_LED_TEMP_SET (0x02)
+
+#define OSDP_IEC_LED_PERM_NOP (0x00)
+#define OSDP_IEC_LED_PERM_SET (0x01)
+

@@ -1,7 +1,7 @@
 /*
   osdpdump-report.c - reporting functions for osdpdump
 
-  (C)2021-2024 Smithee Solutions LLC
+  (C)2021-2025 Smithee Solutions LLC
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are met:
@@ -186,6 +186,7 @@ void
 
 { /* osdpdump_print_one_line */
 
+  int offset;
   char otmp [8*1024]; //maxstring large
   char otmp2 [1024]; //maxstring
   int payload_offset;
@@ -310,6 +311,28 @@ void
         packet->octets [payload_offset + 0],
         packet->octets [payload_offset + 1],
         packet->octets [payload_offset + 2]);
+    };
+    break;
+  case OSDP_IEC_LED:
+    offset = payload_offset;
+    while (offset < packet->payload_length)
+    {
+      otmp [0] = 0;
+      sprintf(otmp2, " Rdr %02X LED %02X",
+        packet->octets [payload_offset + 0], packet->octets [payload_offset + 1]);
+      strcpy(otmp, otmp2);
+      sprintf(otmp2, " TEMP %s Ton %02X Toff %02X OnCol %s OffCol %s TmpTime %02X%02X",
+        osdpdump_led_temp_command(ctx, packet->octets [offset + 2]),
+        packet->octets [offset + 3], packet->octets [offset + 4],
+        osdpdump_led_color(ctx, packet->octets [offset + 5]), osdpdump_led_color(ctx, packet->octets [offset + 6]),
+        packet->octets [offset + 8], packet->octets [offset + 7]); // Temp Time is lo/hi
+      strcat(otmp, otmp2);
+      sprintf(otmp2, " PERM %s Pon %02X Poff %02X POnCol %s POffCol %s",
+        osdpdump_led_perm_command(ctx, packet->octets [offset +  9]),
+        packet->octets [offset + 10], packet->octets [offset + 11],
+        osdpdump_led_color(ctx, packet->octets [offset + 12]), osdpdump_led_color(ctx, packet->octets [offset + 13]));
+      strcat(otmp, otmp2);
+      offset = offset + 14;
     };
     break;
   case OSDP_IEC_MFGREP:

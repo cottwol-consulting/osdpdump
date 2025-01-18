@@ -1,7 +1,7 @@
 /*
   osdpdump.h - definitions for osdpdump
 
-  (C)2021-2024 Smithee Solutions LLC
+  (C)2021-2025 Smithee Solutions LLC
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are met:
@@ -182,6 +182,9 @@ int osdpdump_digester(OSDPDUMP_CONTEXT *ctx);
 int osdpdump_hex_to_raw_bytes(OSDPDUMP_CONTEXT *ctx, char *hex_string, unsigned char *raw_bytes, int *returned_length);
 int osdpdump_initialize(OSDPDUMP_CONTEXT *ctx, int argc, char *argv []);
 void osdpdump_init_tracking(OSDPDUMP_CONTEXT *ctx, OSDPDUMP_TRACKING osdpdump_message_tracking [256]);
+char *osdpdump_led_color(OSDPDUMP_CONTEXT *ctx, unsigned char led_color);
+char *osdpdump_led_perm_command(OSDPDUMP_CONTEXT *ctx, unsigned char perm_command);
+char *osdpdump_led_temp_command(OSDPDUMP_CONTEXT *ctx, unsigned char temp_command);
 int osdpdump_mac_stats(OSDPDUMP_CONTEXT *ctx, unsigned char *mac);
 int osdpdump_mac_stats_init(OSDPDUMP_CONTEXT *ctx);
 char *osdpdump_nak_reason(OSDPDUMP_CONTEXT *ctx, unsigned char nak_reason);
