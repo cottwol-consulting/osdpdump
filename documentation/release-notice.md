@@ -1,3 +1,7 @@
+changes in 0.51
+
+verbose details for osdp_BUZ
+
 changes in 0.50
 
 added more decoding of LED command

@@ -223,6 +223,12 @@ void
   {
   case OSDP_IEC_ACK:
     break;
+  case OSDP_IEC_BUZ:
+      sprintf(otmp,
+" Buzzer: Rdr %d Tone Code %d OnTime %03d. OffTime %03d. Count %d.",
+        packet->octets [payload_offset + 0], packet->octets [payload_offset + 1],
+        packet->octets [payload_offset + 2], packet->octets [payload_offset + 3], packet->octets [payload_offset + 4]);
+    break;
   case OSDP_IEC_CHLNG:
     if (!(ctx->osdp_pdu.completion_status & OSDPDUMP_COMPLETION_RSP)) // CHLNG
     {
