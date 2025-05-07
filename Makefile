@@ -1,6 +1,6 @@
 # Make file for osdpdump
 
-# (C)Copyright 2021-2024 Smithee Solutions LLC
+# (C)Copyright 2021-2025 Smithee Solutions LLC
 
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -40,7 +40,7 @@ clean:
 
 build:	all
 	mkdir -p opt/tester/etc
-	(cd test/cmds-ex; tar czvf ../../opt/tester/etc/cmds.tgz *)
+	(tar czvf opt/tester/etc/osdp-tests.tgz test/exercises test/osdp-directives test/scripts test/test-data)
 	(cd src; make build)
 	(cd src-converters; make build)
 	(cd documentation; make build)

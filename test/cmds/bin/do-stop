@@ -1,8 +1,0 @@
-!/bin/bash
-set -x
-ps acux | grep osdp
-# stop the ACU in 8111 (used in pd-bolo etc.)
-sudo /opt/osdp-conformance/bin/open-osdp-kick -/opt/tester/results/diag/diag8111 </opt/osdp-conformance/etc/cmds/oo-stop
-# stop the conventional ACU
-sudo /opt/osdp-conformance/bin/open-osdp-kick ACU </opt/osdp-conformance/etc/cmds/oo-stop
-

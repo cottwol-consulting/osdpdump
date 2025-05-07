@@ -1,0 +1,11 @@
+#!/bin/bash
+set -x
+CMDS_DIR=~opsadmin1/test/osdp-directives
+KICK="/opt/osdp-conformance/bin/open-osdp-kick ACU"
+echo ${KICK} < ${CMDS_DIR}/oo_o00_perm-off-abort
+WHICH_CMD=${CMDS_DIR}/oo_o00_perm-off-abort
+${KICK} < ~opsadmin1/test/osdp-directives/oo_o00_perm-off-abort
+${KICK} < ~opsadmin1/test/osdp-directives/oo_o00_perm-on-abort
+sleep 3
+${KICK} < ~opsadmin1/test/osdp-directives/oo_o00_perm-off-abort
+

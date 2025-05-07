@@ -1,3 +1,7 @@
+changes in 0.60
+
+reorganized test directives and associated scripts and test data.
+
 changes in 0.51
 
 verbose details for osdp_BUZ
