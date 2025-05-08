@@ -1,3 +1,7 @@
+changes in 0.61
+
+added secure channel setup for paired case
+
 changes in 0.60
 
 reorganized test directives and associated scripts and test data.
