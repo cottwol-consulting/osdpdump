@@ -1,6 +1,7 @@
 changes in 0.60
 
 reorganized test directives and associated scripts and test data.
+added "lite on read" exercise.
 
 changes in 0.51
 

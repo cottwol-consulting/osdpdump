@@ -11,5 +11,5 @@ mkdir -p ${LOG}
 # arg 5 is the json blob
 echo >${RESPONSES}/response_RAW $5
 echo >>${LOG}/actions.log osdp_RAW called $1 $2 $3 $4 $5 $6 $7 $8
-/opt/osdp-conformance/bin/open-osdp-kick ACU <test/exercises/light-on-read/LED-response
+/opt/osdp-conformance/bin/open-osdp-kick ACU <test/exercises/lite-on-read/LED-response
 
