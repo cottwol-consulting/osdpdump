@@ -1,3 +1,7 @@
+changes in 0.62 
+
+include scripts in tree
+
 changes in 0.61
 
 added secure channel setup for paired case
