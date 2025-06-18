@@ -34,9 +34,9 @@
 
 #include <osdpdump.h>
 #include <osdpdump-decoding.h>
+#include <osdpdump-vendor-identification.h>
 extern OSDPDUMP_TRACKING osdpdump_message_tracking [256];
 
-unsigned char OUI_PSIA[] = {0x1A, 0x90, 0x21};
 #define PSIA_PKOC_MFGREP_CARD_PRESENT        (0xE0)
 #define PSIA_PKOC_MFG_AUTH_REQUEST           (0xE1)
 #define PSIA_PKOC_MFGREP_AUTH_RESPONSE       (0xE2)

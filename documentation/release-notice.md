@@ -1,3 +1,11 @@
+changes in 0.64
+
+added comset on config address to test cases
+
+changes in 0.63
+
+added OUI for armatura
+
 changes in 0.62 
 
 include scripts in tree
