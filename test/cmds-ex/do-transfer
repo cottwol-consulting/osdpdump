@@ -1,7 +1,0 @@
-#!/bin/bash
-set -x
-echo >/opt/tester/tmp/osdp-command.json \
-  "{\"command\":\"transfer\",\"file\":\"$1\"}"
-/opt/osdp-conformance/bin/open-osdp-kick ACU </opt/tester/tmp/osdp-command.json
-
-

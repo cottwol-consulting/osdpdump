@@ -1,3 +1,7 @@
+changes in 0.65
+
+added supervised input test cases
+
 changes in 0.64
 
 added comset on config address to test cases
