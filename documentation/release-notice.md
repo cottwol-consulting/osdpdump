@@ -1,3 +1,7 @@
+changes in 0.66
+
+publish my osdp command/response symbols to /opt/tester/include
+
 changes in 0.65
 
 added supervised input test cases

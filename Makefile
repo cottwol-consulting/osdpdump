@@ -40,6 +40,8 @@ clean:
 
 build:	all
 	mkdir -p opt/tester/etc
+	mkdir -p opt/tester/include
+	cp include/osdpdump-decoding.h opt/tester/include
 	(tar czvf opt/tester/etc/osdp-tests.tgz test/exercises test/osdp-directives test/scripts test/test-data)
 	(cd src; make build)
 	(cd src-converters; make build)
