@@ -1,6 +1,9 @@
 changes in 0.66
 
 publish my osdp command/response symbols to /opt/tester/include
+improve mfg/mfgrep decoding
+add format 6 which puts the hex dump on the same line as the one-liner, making for
+easier analysis i.e. with grep
 
 changes in 0.65
 

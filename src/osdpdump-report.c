@@ -84,6 +84,19 @@ int
     osdpdump_print_annotation(ctx, packet);
     break;
 
+  case OSDPDUMP_FMT_APPEND:
+    osdpdump_print_one_line(ctx, packet);
+    if (strlen(ctx->output_text) > 0)
+    {
+      fprintf(stdout, "%s", ctx->output_text);
+      ctx->output_text [0] = 0;
+    };
+    fprintf(stdout, "P:%06d Dump:", ctx->current_packet_number);
+    for (i=0; i<packet->octet_length; i++)
+      fprintf(stdout, " %02x", packet->octets [i]);
+    fprintf(stdout, "\n");
+    break;
+
   case OSDPDUMP_FMT_SUMMARY:
     break;
 
@@ -406,12 +419,15 @@ void
     }
     break;
   case OSDP_IEC_PIVDATAR:
-    if (packet->completion_status EQUALS OSDPDUMP_COMPLETION_CMD)
+    if (packet->completion_status != OSDPDUMP_COMPLETION_CMD)
       sprintf(otmp, " PIVDATAR...");
     else
     {
-      sprintf(otmp, " MFG...");
+      sprintf(otmp, " MFG OUI %02X-%02X-%02X Cmd %02x",
+        packet->octets [payload_offset + 0], packet->octets [payload_offset + 1],
+        packet->octets [payload_offset + 2], packet->octets [payload_offset + 3]);
 
+      // yes the following will over-write otmp
       {
         // for PKOC specifically, interpret the MFG command
 
@@ -473,7 +489,10 @@ void
     fprintf(stdout, " CK  %02x", packet->packet_check [1]);
   else
     fprintf(stdout, " CRC %02x%02x", packet->packet_check [0], packet->packet_check [1]);
-  fprintf(stdout, "\n");
+  if (ctx->print_format != OSDPDUMP_FMT_APPEND)
+    fprintf(stdout, "\n");
+  else
+    fprintf(stdout, " ");
 
 } /* osdpdump_print_one_line */
 

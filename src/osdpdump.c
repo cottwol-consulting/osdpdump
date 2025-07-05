@@ -314,6 +314,12 @@ ctx->analysis_view = OSDPDUMP_ANA_PD;
 ctx->output_report = 1;
 ctx->output_analysis = 1;
 
+  if (argc EQUALS 2)
+  {
+    ctx->command = OSDPDUMP_CMD_DUMP;
+    strcpy(ctx->input_path, argv [1]);
+  };
+
   // option switch processing
 
   done = 0;
@@ -357,7 +363,7 @@ ctx->output_analysis = 1;
       // 1,2,3,4,5 are allowed.  force it to 1 (1-liner) if out of range.
       ctx->print_format = 1;
       sscanf(optarg, "%d", &i);
-      if ((i >= 1) && (i <= 5))
+      if ((i >= 1) && (i <= 6))
         ctx->print_format = i;
       ctx->command = OSDPDUMP_CMD_DUMP;
       break;

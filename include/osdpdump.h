@@ -58,6 +58,7 @@
 #define OSDPDUMP_FMT_ANNOTATED (0x03) // 2 lines plus commentary
 #define OSDPDUMP_FMT_SUMMARY   (0x04) // just the summary
 #define OSDPDUMP_FMT_MAC       (0x05) // output MAC only
+#define OSDPDUMP_FMT_APPEND    (0x06) // append the hex to the one liner for grepping
 
 #define OSDPDUMP_PD_MAX (31)
 
