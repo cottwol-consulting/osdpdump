@@ -1,3 +1,7 @@
+changes in 0.67
+
+updated test case for comset (new- not new_)
+
 changes in 0.66
 
 publish my osdp command/response symbols to /opt/tester/include
