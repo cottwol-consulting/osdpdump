@@ -31,24 +31,25 @@
 all:
 	(cd src; make)
 
+package-nodoc:
+	(cd src; make build)
+	(cd src-converters; make build)
+	mkdir -p opt/tester/etc
+	mkdir -p opt/tester/include
+	cp include/osdpdump-decoding.h opt/tester/include
+	(tar czvf opt/tester/etc/osdp-tests.tgz test/exercises test/osdp-directives test/scripts test/test-data)
+	(cd package; make package)
+
+package:	package-nodoc
+	(cd documentation; make build)
+	(cd package; make package)
+
 clean:
 	(cd src; make clean)
 	(cd src-converters; make clean)
 	(cd documentation; make clean)
 	(cd package; make clean)
 	rm -rvf opt *.deb
-
-build:	all
-	mkdir -p opt/tester/etc
-	mkdir -p opt/tester/include
-	cp include/osdpdump-decoding.h opt/tester/include
-	(tar czvf opt/tester/etc/osdp-tests.tgz test/exercises test/osdp-directives test/scripts test/test-data)
-	(cd src; make build)
-	(cd src-converters; make build)
-	(cd documentation; make build)
-
-package:	build
-	(cd package; make package)
 
 setup:
 	apt-get install libjansson-dev
