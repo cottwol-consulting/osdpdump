@@ -1,3 +1,11 @@
+changes in 0.71
+
+added/renamed more max packet test cases
+
+changes in 0.70
+
+added PDID block display in osdp_ID
+
 changes in 0.67
 
 updated test case for comset (new- not new_)

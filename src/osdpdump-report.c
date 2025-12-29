@@ -323,6 +323,9 @@ void
         packet->octets [payload_offset + 5], packet->octets [payload_offset + 6]);
     };
     break;
+  case OSDP_IEC_ID:
+    sprintf(otmp, " ID-Blk %02x", packet->octets [payload_offset]);
+    break;
   case OSDP_IEC_KEYPAD:
     {
       sprintf(otmp,
