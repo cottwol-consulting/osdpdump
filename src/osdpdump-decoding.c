@@ -123,6 +123,7 @@ void
   osdpdump_message_tracking [OSDP_IEC_BUZ].tag = "osdp_BUZ         ";
   osdpdump_message_tracking [OSDP_IEC_BUZ].valid_SCB = OSDP_SCS_17;
   osdpdump_message_tracking [OSDP_IEC_BUZ].valid_clear_always = OSDPDUMP_INVALID;
+  TRACK(OSDP_IEC_EXT_PDID,     "osdp_EXT_PDID    ", OSDP_SCS_18, OSDPDUMP_VALID);
   TRACK(OSDP_IEC_FILETRANSFER, "osdp_FILETRANSFER", OSDP_SCS_17, OSDPDUMP_VALID);
   TRACK(OSDP_IEC_BIOMATCH,     "osdp_BIOMATCH    ", OSDP_SCS_17, OSDPDUMP_INVALID);
   TRACK(OSDP_IEC_BIOMATCHR,    "osdp_BIOMATCHR   ", OSDP_SCS_18, OSDPDUMP_INVALID);

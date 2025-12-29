@@ -2,6 +2,9 @@ changes in 0.71
 
 added/renamed more max packet test cases
 
+Added interim extended pdid logging.  detects extended PDID, notes some values on the oneline report,
+dumps the payload to a file for later processing.  Warning - this assumes only one fragment for now.
+
 changes in 0.70
 
 added PDID block display in osdp_ID

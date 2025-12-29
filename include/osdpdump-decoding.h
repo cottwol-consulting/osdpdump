@@ -56,6 +56,7 @@
 #define OSDP_IEC_CCRYPT       (0x76)
 #define OSDP_IEC_GENAUTH      (0xA4)
 #define OSDP_IEC_CRAUTH       (0xA5)
+#define OSDP_IEC_EXT_PDID     (0x59)
 #define OSDP_IEC_FILETRANSFER (0x7C)
 #define OSDP_IEC_FTSTAT       (0x7A)
 #define OSDP_IEC_ID           (0x61)

@@ -296,6 +296,30 @@ void
         packet->octets [payload_offset + 1], packet->octets [payload_offset + 2], packet->octets [payload_offset + 3], packet->octets [payload_offset + 4],
         speed_returned);
     break;
+  case OSDP_IEC_EXT_PDID:
+    {
+      int xid_frag_lth;
+      int xid_tot_lth;
+      FILE *xidf;
+
+
+      xid_tot_lth = packet->octets [payload_offset + 0] + 256*packet->octets [payload_offset + 1];
+      xid_frag_lth = packet->octets [payload_offset + 4] + 256*packet->octets [payload_offset + 5];
+      sprintf(otmp,
+" Ext-PDID Total %04X Offset %04X Fraglen TLV(%04X octets): %02X %02X %02X %02X %02X %02X %02X %02X...",
+        xid_tot_lth, packet->octets [payload_offset + 2] + 256*packet->octets [payload_offset + 3], xid_frag_lth,
+        packet->octets [payload_offset + 6], packet->octets [payload_offset + 7],
+        packet->octets [payload_offset + 8], packet->octets [payload_offset + 9],
+        packet->octets [payload_offset + 10], packet->octets [payload_offset + 11],
+        packet->octets [payload_offset + 12], packet->octets [payload_offset + 13]);
+
+      fprintf(stderr, "Exporting Extended PDID Report to ext-pdid_response.bin\n");
+      xidf = fopen("ext-pdid_response.bin", "w");
+if (xid_frag_lth != xid_tot_lth)
+  fprintf(stderr, "DEBUG: fix! only writes last fragment.\n");
+      fwrite(packet->octets + payload_offset + 6, sizeof(packet->octets[0]), xid_frag_lth, xidf);
+    };
+    break;
   case OSDP_IEC_FILETRANSFER:
     if (!(packet->completion_status & OSDPDUMP_COMPLETION_SCB))
     {

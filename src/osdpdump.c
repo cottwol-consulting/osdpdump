@@ -87,7 +87,7 @@ int
       fprintf(stdout,
 "--analyze [=n] - set analysis level to n (0-9,default 1)\n");
       fprintf(stdout,
-"--format=<n> - set report format.  1=2-line with dump; 2=1-line, no dump, 3=, 4=summary only\n");
+"--format=<n> - set report format.  1=1-line no dump; 2=1-line with dump, 3=, 4=summary only\n");
       fprintf(stdout,
 "--help - this message\n");
       fprintf(stdout,
