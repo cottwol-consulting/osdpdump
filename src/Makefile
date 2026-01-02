@@ -20,9 +20,9 @@ test:	all
 clean:
 	rm -f core *.o ${PROGS}
 
-osdpdump:	osdpdump.o osdpdump-analyze1.o osdpdump-decoding.o osdpdump-input.o \
+osdpdump:	osdpdump.o osdpdump-analyze1.o osdpdump-decode-ext-pdid.o osdpdump-decoding.o osdpdump-input.o \
 	osdpdump-prims.o osdpdump-report.o osdpdump-vendor-lookup.o osdp-crc.o Makefile
-	${LINK} -o osdpdump osdpdump.o osdpdump-analyze1.o osdpdump-decoding.o \
+	${LINK} -o osdpdump osdpdump.o osdpdump-analyze1.o osdpdump-decode-ext-pdid.o osdpdump-decoding.o \
 	  osdpdump-input.o osdpdump-prims.o osdpdump-report.o osdpdump-vendor-lookup.o osdp-crc.o ${LDFLAGS}
 
 osdpdump.o:	osdpdump.c ../include/osdpdump.h ../include/osdpdump-decoding.h
@@ -30,6 +30,9 @@ osdpdump.o:	osdpdump.c ../include/osdpdump.h ../include/osdpdump-decoding.h
 
 osdpdump-analyze1.o:	osdpdump-analyze1.c
 	${CC} ${CFLAGS} osdpdump-analyze1.c
+
+osdpdump-decode-ext-pdid.o:	osdpdump-decode-ext-pdid.c ../include/osdpdump.h ../include/osdpdump-decoding.h
+	${CC} ${CFLAGS} osdpdump-decode-ext-pdid.c
 
 osdpdump-decoding.o:	osdpdump-decoding.c ../include/osdpdump.h ../include/osdpdump-decoding.h
 	${CC} ${CFLAGS} osdpdump-decoding.c

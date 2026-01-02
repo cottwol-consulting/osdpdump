@@ -179,6 +179,7 @@ unsigned char checksum(unsigned char *msg, int length);
 int osdpdump_accumulate_input(OSDPDUMP_CONTEXT *ctx, OSDPDUMP_INPUT *input_value);
 int osdpdump_command_offset(OSDPDUMP_CONTEXT *ctx, OSDPDUMP_WORKING_PACKET *pkt);
 char *osdpdump_command_string(OSDPDUMP_CONTEXT *ctx, unsigned char command_response);
+int osdpdump_decode_extended_id(OSDPDUMP_CONTEXT *ctx, unsigned char *ext_id_response, int length);
 int osdpdump_digester(OSDPDUMP_CONTEXT *ctx);
 int osdpdump_hex_to_raw_bytes(OSDPDUMP_CONTEXT *ctx, char *hex_string, unsigned char *raw_bytes, int *returned_length);
 int osdpdump_initialize(OSDPDUMP_CONTEXT *ctx, int argc, char *argv []);

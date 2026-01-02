@@ -3,7 +3,7 @@
 
   "osdpdump --help" for instructions.
 
-  (C)2021-2024 Smithee Solutions LLC
+  (C)2021-2026 Smithee Solutions LLC
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are met:
@@ -87,7 +87,7 @@ int
       fprintf(stdout,
 "--analyze [=n] - set analysis level to n (0-9,default 1)\n");
       fprintf(stdout,
-"--format=<n> - set report format.  1=1-line no dump; 2=1-line with dump, 3=, 4=summary only\n");
+"--format=<n> - set report format.  1=1-line no dump; 2=1-line with dump, 3=annotate, 4=summary only\n");
       fprintf(stdout,
 "--help - this message\n");
       fprintf(stdout,

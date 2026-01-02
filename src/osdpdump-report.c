@@ -155,6 +155,13 @@ void osdpdump_print_annotation
       fprintf(stdout, "\n");
     };
     break;
+  case OSDP_IEC_EXT_PDID:
+    {
+      int xid_frag_lth;
+      xid_frag_lth = packet->octets [payload_offset + 4] + 256*packet->octets [payload_offset + 5];
+      osdpdump_decode_extended_id(ctx, packet->octets + payload_offset + 6, xid_frag_lth);
+    };
+    break;
   };
 }
 

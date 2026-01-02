@@ -114,3 +114,10 @@
 #define OSDP_IEC_LED_PERM_NOP (0x00)
 #define OSDP_IEC_LED_PERM_SET (0x01)
 
+#define OSDP_EXTID_TAG_MFG        (0x00)
+#define OSDP_EXTID_TAG_PRODUCT    (0x01)
+#define OSDP_EXTID_TAG_SERIAL     (0x02)
+#define OSDP_EXTID_TAG_FW_VERSION (0x03)
+#define OSDP_EXTID_TAG_HARDWARE   (0x04)
+#define OSDP_EXTID_TAG_URL        (0x05)
+
