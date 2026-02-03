@@ -1,5 +1,5 @@
 Package: osdpdump
-Version: 0.72
+Version: 0.80
 Section: custom
 Priority: optional
 Architecture: arm64

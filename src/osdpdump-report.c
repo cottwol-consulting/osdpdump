@@ -1,7 +1,7 @@
 /*
   osdpdump-report.c - reporting functions for osdpdump
 
-  (C)2021-2025 Smithee Solutions LLC
+  (C)2021-2026 Smithee Solutions LLC
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are met:
@@ -212,6 +212,7 @@ void
   int payload_offset;
   unsigned int serial_number;
   int speed_returned;
+  char tstring [1024];
 
 
   payload_offset = osdpdump_command_offset(ctx, packet) + 1;
@@ -274,7 +275,6 @@ void
       {
         unsigned char rnd_b [8];
         unsigned long int rnd_b_int;
-        char tstring [1024];
 
         memset(rnd_b, 0, sizeof(rnd_b));
         rnd_b_int = 0l;
@@ -481,6 +481,12 @@ if (xid_frag_lth != xid_tot_lth)
     };
     break;
   case OSDP_IEC_POLL:
+    if (packet->payload_length > 0)
+    {
+      sprintf(tstring, "%d. excess data", packet->payload_length);
+      strcat(ctx->output_text, tstring);
+      ctx->note_count ++;
+    };
     break;
   case OSDP_IEC_RAW:
     {

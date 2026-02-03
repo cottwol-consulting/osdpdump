@@ -1,3 +1,7 @@
+changes in 0.80
+
+note excess data in POLL
+
 changes in 0.71
 
 added/renamed more max packet test cases
