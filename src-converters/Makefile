@@ -2,7 +2,7 @@
 
 # (C)Copyright 2021-2022 Smithee Solutions LLC
 
-PROGS=convert-saleae
+PROGS=convert-saleae import-hex
 CC=clang
 CFLAGS=-c -g -I../include -Wall -Werror
 LINK=${CC}
@@ -23,6 +23,12 @@ clean:
 convert-saleae:	convert-saleae.o Makefile
 	${LINK} -o convert-saleae convert-saleae.o ${LDFLAGS}
 
+import-hex:	import-hex.o Makefile
+	${LINK} -o import-hex import-hex.o ${LDFLAGS}
+
 convert-saleae.o:	convert-saleae.c
 	${CC} ${CFLAGS} convert-saleae.c
+
+import-hex.o:	import-hex.c
+	${CC} ${CFLAGS} import-hex.c
 

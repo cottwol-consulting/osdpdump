@@ -8,7 +8,7 @@ all:	makefile-package
 	cp package-control/control-`./get-arch` ${PACKAGE_NAME}/DEBIAN/control
 	make -f makefile-package
 	mkdir -p ${PACKAGE_NAME}-dist
-	dpkg-deb --build ${PACKAGE_NAME} ${PACKAGE_NAME}-dist
+	dpkg-deb --root-owner-group --build ${PACKAGE_NAME} ${PACKAGE_NAME}-dist
 	cp ${PACKAGE_NAME}-dist/*.deb .
 
 clean:

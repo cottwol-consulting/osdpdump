@@ -39,3 +39,10 @@ This exercises is used to make the test ACU send an LED command
 upon receipt of an osdp_RAW message.  It does not process the card number,
 it always responds.
 
+## Dump Formatting Tools ##
+
+- convert-saleae
+
+- import-hex - reads lines of hex and converts to osdpcap format.
+
+

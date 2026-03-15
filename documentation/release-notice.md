@@ -1,6 +1,10 @@
 changes in 0.80
 
 note excess data in POLL
+more robust decoding of LED parameters.
+
+Added new converter "import-hex" to read hex dump lines
+
 
 changes in 0.71
 

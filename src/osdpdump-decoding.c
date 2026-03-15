@@ -1,7 +1,7 @@
 /*
   osdpdump-decoding - decoding osdp packet into text
 
-  (C)2021-2025 Smithee Solutions LLC
+  (C)2021-2026 Smithee Solutions LLC
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are met:
@@ -234,16 +234,29 @@ char
 }
 
 
+/*
+  osdpdump_led_color - return text representation of an LED color.
+
+  Input:
+    context
+    led_color - octet from packet
+  Output:
+    returns char* text message, formatted to fit dump.  Returns "?" if unknown.
+*/
 char
   *osdpdump_led_color
   (OSDPDUMP_CONTEXT *ctx,
   unsigned char led_color)
-{
+
+{ /* osdpdump_led_color */
+
   static char color_found [1024];
+
+
   switch(led_color)
   {
   default:
-    strcpy(color_found, "?");
+    sprintf(color_found, "?(%02X)", led_color);
     break;
   case OSDP_IEC_LED_AMBER:
     strcpy(color_found, "Amb");

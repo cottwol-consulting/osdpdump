@@ -206,6 +206,8 @@ void
 
 { /* osdpdump_print_one_line */
 
+  char color_temp1 [1024];
+  char color_temp2 [1024];
   int offset;
   char otmp [8*1024]; //maxstring large
   char otmp2 [1024]; //maxstring
@@ -374,11 +376,14 @@ if (xid_frag_lth != xid_tot_lth)
       sprintf(otmp2, " Rdr %02X LED %02X",
         packet->octets [payload_offset + 0], packet->octets [payload_offset + 1]);
       strcpy(otmp, otmp2);
+      strcpy(color_temp1, osdpdump_led_color(ctx, packet->octets [offset + 5]));
+      strcpy(color_temp2, osdpdump_led_color(ctx, packet->octets [offset + 6]));
       sprintf(otmp2, " TEMP %s Ton %02X Toff %02X OnCol %s OffCol %s TmpTime %02X%02X",
         osdpdump_led_temp_command(ctx, packet->octets [offset + 2]),
         packet->octets [offset + 3], packet->octets [offset + 4],
-        osdpdump_led_color(ctx, packet->octets [offset + 5]), osdpdump_led_color(ctx, packet->octets [offset + 6]),
+        color_temp1, color_temp2,
         packet->octets [offset + 8], packet->octets [offset + 7]); // Temp Time is lo/hi
+//        osdpdump_led_color(ctx, packet->octets [offset + 5]), osdpdump_led_color(ctx, packet->octets [offset + 6]),
       strcat(otmp, otmp2);
       sprintf(otmp2, " PERM %s Pon %02X Poff %02X POnCol %s POffCol %s",
         osdpdump_led_perm_command(ctx, packet->octets [offset +  9]),

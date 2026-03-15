@@ -1,7 +1,7 @@
 /*
   osdp-input - input low level processing
 
-  (C)2021-2024 Smithee Solutions LLC
+  (C)2021-2026 Smithee Solutions LLC
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are met:
@@ -237,7 +237,7 @@ if (ctx->verbosity > 9)
   };
   if (ctx->verbosity > 3)
   {
-    if ((ctx->verbosity > 9) || (pdu_length != -1))
+    if ((ctx->verbosity > 9) && (pdu_length != -1))
       fprintf(stderr, "DEBUG: pktlth %X otxt %s\n", pdu_length, ctx->output_text);
   };
   return(status);
