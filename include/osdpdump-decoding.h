@@ -1,7 +1,7 @@
 /*
   osdpdump-decoding.h - values and strings for OSDP decoding
 
-  (C)2021-2025 Smithee Solutions LLC
+  (C)2021-2026 Smithee Solutions LLC
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are met:
@@ -56,9 +56,11 @@
 #define OSDP_IEC_CCRYPT       (0x76)
 #define OSDP_IEC_GENAUTH      (0xA4)
 #define OSDP_IEC_CRAUTH       (0xA5)
+#define OSDP_IEC_CRAUTHR      (0x82)
 #define OSDP_IEC_EXT_PDID     (0x59)
 #define OSDP_IEC_FILETRANSFER (0x7C)
 #define OSDP_IEC_FTSTAT       (0x7A)
+#define OSDP_IEC_GENAUTHR     (0x81)
 #define OSDP_IEC_ID           (0x61)
 #define OSDP_IEC_ISTAT        (0x65)
 #define OSDP_IEC_ISTATR       (0x49)
@@ -86,8 +88,8 @@
 #define OSDP_IEC_RSTATR       (0x4b)
 #define OSDP_IEC_SCRYPT       (0x77)
 #define OSDP_IEC_TEXT         (0x6b)
-#define OSDP_IEC_GENAUTHR     (0x81)
-#define OSDP_IEC_CRAUTHR      (0x82)
+#define OSDP_IEC_XRD          (0xB1)
+#define OSDP_IEC_XWR          (0xA1)
 
 #define OSDP_IEC_NAK_MESSAGE_CHECK        (0x01)
 #define OSDP_IEC_NAK_CMD_LENGTH_ERROR     (0x02)

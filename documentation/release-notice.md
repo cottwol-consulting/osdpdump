@@ -5,6 +5,7 @@ more robust decoding of LED parameters.
 
 Added new converter "import-hex" to read hex dump lines
 
+Preliminary XRD and XWR support.
 
 changes in 0.71
 

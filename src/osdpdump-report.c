@@ -519,6 +519,14 @@ if (xid_frag_lth != xid_tot_lth)
         packet->octets [payload_offset + 0], packet->octets [payload_offset + 1], count, raw_data);
     };
     break;
+  case OSDP_IEC_XRD:
+    sprintf(otmp, " Mode %02X PREPLY %02X (MODE lth=%02X)",
+      packet->octets [payload_offset + 0], packet->octets [payload_offset + 1], packet->payload_length - 2);
+    break;
+  case OSDP_IEC_XWR:
+    sprintf(otmp, " Mode %02X PCMND %02X (PDATA lth=%02X)",
+      packet->octets [payload_offset + 0], packet->octets [payload_offset + 1], packet->payload_length - 2);
+    break;
   default:
     if (ctx->verbosity > 3)
       fprintf(stdout, "Warning: unknown command (%x) in osdpdump_print_one_line\n", packet->command_response);
