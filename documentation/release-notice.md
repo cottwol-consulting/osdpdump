@@ -1,3 +1,7 @@
+changes in 0.81
+
+clean up vendor lookup (OUI
+
 changes in 0.80
 
 note excess data in POLL

@@ -175,6 +175,13 @@ typedef struct osdpdump_context
   char output_text [16384]; //maxstring
 } OSDPDUMP_CONTEXT;
 
+typedef struct oui_list
+{
+  unsigned char oui [3];
+  char *vendor_name;
+} OUI_LIST;
+
+
 unsigned char checksum(unsigned char *msg, int length);
 int osdpdump_accumulate_input(OSDPDUMP_CONTEXT *ctx, OSDPDUMP_INPUT *input_value);
 int osdpdump_command_offset(OSDPDUMP_CONTEXT *ctx, OSDPDUMP_WORKING_PACKET *pkt);
