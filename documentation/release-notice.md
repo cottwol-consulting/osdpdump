@@ -1,6 +1,6 @@
 changes in 0.81
 
-clean up vendor lookup (OUI
+clean up vendor lookup (OUI)
 
 changes in 0.80
 

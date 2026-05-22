@@ -58,6 +58,14 @@ char *oui_lookup
   oui_index = 0;
   while (!done)
   {
+#if 0
+fprintf(stderr, "DEBUG: oui_lookup: OIQ %02X-%02X-%02X list entry %02d is %02X-%02X-%02X Name is %s\n",
+  oui_in_question [0], oui_in_question [1], oui_in_question [2],
+  oui_index,
+  (oui_list+oui_index)->oui [0], (oui_list+oui_index)->oui [1], (oui_list+oui_index)->oui [2],
+  (oui_list+oui_index)->vendor_name);
+fflush(stderr);
+#endif
     if (!memcmp(oui_in_question, (oui_list+oui_index)->oui, sizeof(oui_list [0].oui)))
       strcpy(text, (oui_list+oui_index)->vendor_name);
     if (strlen(oui_list [oui_index].vendor_name) EQUALS 0)

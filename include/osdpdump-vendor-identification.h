@@ -15,7 +15,7 @@ OUI_LIST oui_list [] = {
   {{0xDC, 0x99, 0xFE}, "Armatura"},
   {{0xe4, 0x47, 0x91}, "Iris ID Systems, Inc."},
   {{0xfa, 0x14, 0x66}, "Allegion PLC"},
-  {{0,   0,   0   }, NULL}
+  {{0,   0,   0   }, ""} //length of last entry name field must be zero
 };
 
 
