@@ -1,3 +1,7 @@
+changes in 0.82
+
+Added IEEE 24-bit prefix to start catching 28 bit vendor identification.
+
 changes in 0.81
 
 clean up vendor lookup (OUI)
