@@ -1,0 +1,7 @@
+#!/bin/bash
+set -x
+echo >/opt/tester/tmp/osdp-command.json \
+  "{\"command\":\"transfer-cancel\"}"
+/opt/osdp-conformance/bin/open-osdp-kick ACU </opt/tester/tmp/osdp-command.json
+
+
