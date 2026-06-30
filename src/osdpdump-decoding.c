@@ -1,7 +1,7 @@
 /*
   osdpdump-decoding - decoding osdp packet into text
 
-  (C)2021-2026 Smithee Solutions LLC
+  (C)2026 Cottwol Consulting
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are met:
@@ -175,8 +175,8 @@ void
   TRACK(OSDP_IEC_RSTATR, "osdp_RSTATR      ", OSDP_SCS_18, OSDPDUMP_INVALID);
   TRACK(OSDP_IEC_SCRYPT, "osdp_SCRYPT      ", OSDP_SCS_13, OSDPDUMP_VALID);
   TRACK(OSDP_IEC_TEXT, "osdp_TEXT        ", OSDP_SCS_17, OSDPDUMP_INVALID);
-  TRACK(OSDP_IEC_XRD,      "osdp_XRD        ", OSDP_SCS_18, OSDPDUMP_INVALID); 
-  TRACK(OSDP_IEC_XWR,      "osdp_XWR        ", OSDP_SCS_16, OSDPDUMP_INVALID);
+  TRACK(OSDP_IEC_XRD,     "osdp_XRD         ", OSDP_SCS_18, OSDPDUMP_INVALID); 
+  TRACK(OSDP_IEC_XWR,     "osdp_XWR         ", OSDP_SCS_16, OSDPDUMP_INVALID);
 
 } /* osdpdump_init_tracking */
 

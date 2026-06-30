@@ -1,10 +1,10 @@
 Package: osdpdump
-Version: 0.82
+Version: 0.83
 Section: custom
 Priority: optional
 Architecture: amd64
 Essential: no
 Installed-Size: 1024
-Maintainer: github@smithee.solutions
+Maintainer: git@cottwol.com
 Description: OSDP trace dump tools
 

@@ -1,7 +1,7 @@
 /*
   osdpdump-report.c - reporting functions for osdpdump
 
-  (C)2021-2026 Smithee Solutions LLC
+  (C)2026 Cottwol Consulting
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are met:
@@ -524,7 +524,7 @@ if (xid_frag_lth != xid_tot_lth)
       packet->octets [payload_offset + 0], packet->octets [payload_offset + 1], packet->payload_length - 2);
     break;
   case OSDP_IEC_XWR:
-    sprintf(otmp, " Mode %02X PCMND %02X (PDATA lth=%02X)",
+    sprintf(otmp, " Mode %02X PCMND  %02X (PDATA lth=%02X)",
       packet->octets [payload_offset + 0], packet->octets [payload_offset + 1], packet->payload_length - 2);
     break;
   default:

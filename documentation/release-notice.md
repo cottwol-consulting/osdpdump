@@ -1,3 +1,7 @@
+changes in 0.83
+
+typos in XWR and XRD
+
 changes in 0.82
 
 Added IEEE 24-bit prefix to start catching 28 bit vendor identification.

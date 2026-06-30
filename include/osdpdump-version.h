@@ -1,7 +1,7 @@
 /*
   osdpdump-version.h - version string for the various programs
 
-  (C)2021-2026 Smithee Solutions LLC
+  (C)2026 Cottwol Consulting
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are met:
@@ -30,5 +30,5 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#define OSDPDUMP_VERSION "0.82"
+#define OSDPDUMP_VERSION "0.83"
 
