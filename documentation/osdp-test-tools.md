@@ -46,3 +46,16 @@ it always responds.
 - import-hex - reads lines of hex and converts to osdpcap format.
 
 
+\newpage {}
+
+# Annex Directive Exercises #
+
+# oo-explicit-1440 #
+
+This sends a very large packet to the PD.
+
+The command is (trimmed):
+
+```
+{"command":"send-explicit","data":"53006E050462aabb1122334455667 ... 00000000000000000000004234"}
+```

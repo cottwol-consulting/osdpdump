@@ -2,6 +2,9 @@ changes in 0.84
 
 added proper checksum version of large packet oo-explicit-1440
 
+Note the oo-explicit-1440 test throws the wrong CRC value (but still performs the
+intended exercise.)
+
 changes in 0.83
 
 typos in XWR and XRD
