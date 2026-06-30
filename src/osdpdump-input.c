@@ -1,7 +1,7 @@
 /*
   osdp-input - input low level processing
 
-  (C)2021-2026 Smithee Solutions LLC
+  (C)2026 Cottwol Consulting
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are met:
@@ -196,6 +196,7 @@ if (ctx->verbosity > 9)
       packet->octet_length++;
       status = ST_OSDPDUMP_NEED_MORE_DATA;
       pdu_length = (packet->octets [3] << 8) + packet->octets [2];
+
       if (pdu_length <= OSDPDUMP_PDU_MAX)
       {
         if (ctx->verbosity > 3)
@@ -232,6 +233,9 @@ if (ctx->verbosity > 9)
     };
     if (drop_octets)
       ctx->dropped_octets ++;
+if (ctx->verbosity > 9)
+  fprintf(stderr, "octet_length %04d pdu_length %04d\n",
+    packet->octet_length, pdu_length);
     if (packet->octet_length EQUALS pdu_length)
       status = ST_OSDPDUMP_PACKET;
   };
