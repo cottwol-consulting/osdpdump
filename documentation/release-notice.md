@@ -1,3 +1,7 @@
+changes in 0.84
+
+added proper checksum version of large packet oo-explicit-1440
+
 changes in 0.83
 
 typos in XWR and XRD
