@@ -24,6 +24,8 @@ osdpdump \<switches\>
 
   --source=\<file\>     set dump filename to read.
 
+  --time-format=[0|1]  display timestamp(0) or delta (1)
+
   --verbosity=\<n\>     set message verbosity.  0=quiet, 3=normal, 9=debug.
 -------------------------------------------------------------------
 

@@ -1,3 +1,7 @@
+changes in 0.90
+
+added --time-format switch
+
 changes in 0.84
 
 added proper checksum version of large packet oo-explicit-1440

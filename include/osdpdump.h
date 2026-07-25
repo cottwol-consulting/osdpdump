@@ -1,7 +1,7 @@
 /*
   osdpdump.h - definitions for osdpdump
 
-  (C)2021-2025 Smithee Solutions LLC
+  (C)2026 Cottwol Consulting
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are met:
@@ -77,6 +77,7 @@
 #define OSDPDUMP_OPT_VERBOSITY     (0x0004)
 #define OSDPDUMP_OPT_VERSION       (0x0005)
 #define OSDPDUMP_OPT_ADDRESS       (0x0006)
+#define OSDPDUMP_OPT_TIME_FORMAT   (0x0007)
 
 #define OSDPDUMP_CMD_DUMP (0x01)
 #define OSDPDUMP_CMD_HELP (0x00)
@@ -158,6 +159,7 @@ typedef struct osdpdump_context
   unsigned char specific_address;
   int specific_address_requested;
   int print_format;
+  int time_format;
   FILE *dump_file_handle;
 
   // statistics
@@ -166,6 +168,8 @@ typedef struct osdpdump_context
   int skipped_packets;
 
   OSDPDUMP_WORKING_PACKET osdp_pdu;
+  char previous_packet_seconds [1024];
+  char previous_packet_nanoseconds [1024];
   char packet_seconds [1024];
   char packet_nanoseconds [1024];
   char input_path [OSDPDUMP_STRING];

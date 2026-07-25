@@ -3,7 +3,7 @@
 
   "osdpdump --help" for instructions.
 
-  (C)2021-2026 Smithee Solutions LLC
+  (C)2026 Cottwol Consulting
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are met:
@@ -56,6 +56,7 @@ struct option longopts [] = {
   {"format", required_argument, &osdpdump_command_line.option, OSDPDUMP_OPT_REPORT_FORMAT},
   {"pd-address", required_argument, &osdpdump_command_line.option, OSDPDUMP_OPT_ADDRESS},
   {"source", required_argument, &osdpdump_command_line.option, OSDPDUMP_OPT_SOURCE},
+  {"time-format", required_argument, &osdpdump_command_line.option, OSDPDUMP_OPT_TIME_FORMAT},
   {"verbosity", required_argument, &osdpdump_command_line.option, OSDPDUMP_OPT_VERBOSITY},
   {"version", optional_argument, &osdpdump_command_line.option, OSDPDUMP_OPT_VERSION},
   {0, 0, 0, 0}};
@@ -94,6 +95,8 @@ int
 "--pd-address=<n> - address (in decimal) of PD address to dump.\n");
       fprintf(stdout,
 "--source=<file> - set dump filename to read.\n");
+      fprintf(stdout,
+"--time-format=<format> - set time to direct or delta (1).\n");
       fprintf(stdout,
 "--verbosity=<n> - set message verbosity.  0=quiet, 3=normal, 9=debug.\n");
       break;
@@ -222,8 +225,10 @@ if (ctx->verbosity > 9)
 }
       if (status EQUALS ST_OSDPDUMP_PACKET)
       {
-if (ctx->verbosity > 3)
-  fprintf(stderr, "DEBUG: whole packet detected\n");
+        if (ctx->verbosity > 3)
+          fprintf(stderr, "DEBUG: whole packet detected\n");
+        strcpy(ctx->previous_packet_seconds, ctx->packet_seconds);
+        strcpy(ctx->previous_packet_nanoseconds, ctx->packet_nanoseconds);
         strcpy(ctx->packet_seconds, input_value.time_seconds);
         strcpy(ctx->packet_nanoseconds, input_value.time_nanoseconds);
         ctx->current_packet_number ++;
@@ -369,6 +374,12 @@ ctx->output_analysis = 1;
       break;
     case OSDPDUMP_OPT_SOURCE:
       strcpy(ctx->input_path, optarg);
+      ctx->command = OSDPDUMP_CMD_DUMP;
+      break;
+    case OSDPDUMP_OPT_TIME_FORMAT:
+      sscanf(optarg, "%d", &i);
+      if (i != 0)
+      ctx->time_format = 1;
       ctx->command = OSDPDUMP_CMD_DUMP;
       break;
     case OSDPDUMP_OPT_VERBOSITY:

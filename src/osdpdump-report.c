@@ -220,7 +220,48 @@ void
   payload_offset = osdpdump_command_offset(ctx, packet) + 1;
 
   fprintf(stdout, "P:%06d ", ctx->current_packet_number);
-  fprintf(stdout, "t=%9s.%9s ", ctx->packet_seconds, ctx->packet_nanoseconds);
+  if (ctx->time_format EQUALS 0)
+  {
+    // display seconds/nanoseconds
+    fprintf(stdout, "t=%9s.%9s ", ctx->packet_seconds, ctx->packet_nanoseconds);
+  }
+  else
+  {
+    long current_nsec;
+    long current_sec;
+    char delta_string [1024];
+    long delta_time;
+    long previous_nsec;
+    long previous_sec;
+
+
+    // display delta when it is a response
+    strcpy(delta_string, "        ");
+    if (ctx->osdp_pdu.completion_status & OSDPDUMP_COMPLETION_RSP)
+    {
+
+      if (strlen(ctx->previous_packet_seconds) > 0)
+      {
+        sscanf(ctx->previous_packet_seconds, "%ld", &previous_sec);
+        sscanf(ctx->previous_packet_nanoseconds, "%ld", &previous_nsec);
+
+        sscanf(ctx->packet_seconds, "%ld", &current_sec);
+        sscanf(ctx->packet_nanoseconds, "%ld", &current_nsec);
+
+        if (current_sec EQUALS previous_sec)
+        {
+          delta_time = current_nsec - previous_nsec;
+        }
+        else
+        {
+          delta_time = (1000000000L - previous_nsec);
+          delta_time = delta_time + current_nsec;
+        };
+        sprintf(delta_string, "d=%5ld ", delta_time / 100000);
+      };
+    };
+    fprintf(stdout, "%s", delta_string);
+  };
   if (!(ctx->osdp_pdu.completion_status & OSDPDUMP_COMPLETION_RSP)) // Command
   {
     fprintf(stdout, "C:");
