@@ -1,3 +1,7 @@
+changes in 1.00
+
+moved to new repo
+
 changes in 0.91
 
 added Idesco OUI
