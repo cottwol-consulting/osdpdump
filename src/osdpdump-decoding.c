@@ -211,7 +211,8 @@ char
   *osdpdump_led_temp_command
   (OSDPDUMP_CONTEXT *ctx,
   unsigned char temp_command)
-{
+
+{ /* osdpdump_led_temp_command */
 
   static char command_found [1024];
 
@@ -222,18 +223,18 @@ char
     strcpy(command_found, "?");
     break;
   case OSDP_IEC_LED_TEMP_CANCEL:
-    strcpy(command_found, "CAN");
+    strcpy(command_found, "CNCL");
     break;
   case OSDP_IEC_LED_TEMP_NOP:
-    strcpy(command_found, "NOP");
+    strcpy(command_found, "NOP ");
     break;
   case OSDP_IEC_LED_TEMP_SET:
-    strcpy(command_found, "SET");
+    strcpy(command_found, "SET ");
     break;
   };
   return(command_found);
 
-}
+} /* osdpdump_led_temp_command */
 
 
 /*

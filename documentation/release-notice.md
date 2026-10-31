@@ -1,3 +1,11 @@
+changes in 1.02
+
+tune up temp led cancel message
+
+changes in 1.01
+
+added spintly
+
 changes in 1.00
 
 moved to new repo
